@@ -1,0 +1,4 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function UpdatePassword(){const supabase=await createClient();if(!supabase)redirect("/entrar");const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/entrar?erro=link");return <main className="form-wrap"><form className="form-card" action="/api/auth/update-password" method="post"><span className="eyebrow">Acesso protegido</span><h1>Escolha sua nova senha.</h1><p>Use pelo menos 10 caracteres.</p><div className="form-field"><label htmlFor="new-password">Nova senha</label><input id="new-password" name="password" type="password" autoComplete="new-password" minLength={10} required/></div><button className="btn" style={{width:"100%"}}>Salvar nova senha</button></form></main>}

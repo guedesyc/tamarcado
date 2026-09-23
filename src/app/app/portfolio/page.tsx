@@ -1,0 +1,5 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { PortfolioManager } from "@/components/portfolio-manager";
+
+export default async function PortfolioPage(){const supabase=await createClient();if(!supabase)redirect("/entrar");const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/entrar");const {data:member}=await supabase.from("business_members").select("business_id").eq("user_id",user.id).limit(1).maybeSingle();if(!member)redirect("/app/onboarding");const {data:items}=await supabase.from("portfolio_items").select("id,storage_path,alt_text").eq("business_id",member.business_id).order("position");const baseUrl=process.env.NEXT_PUBLIC_SUPABASE_URL??"";return <main className="wrap" style={{maxWidth:1000,paddingTop:30,paddingBottom:90}}><span className="eyebrow">Mostre seu trabalho</span><h1 className="serif" style={{fontSize:44,margin:"12px 0 5px"}}>Portfólio</h1><p style={{fontSize:13,color:"var(--muted)"}}>Você decide o que aparece na sua página pública.</p><PortfolioManager items={items??[]} baseUrl={baseUrl}/></main>}
