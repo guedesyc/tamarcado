@@ -1,56 +1,68 @@
-# Tá Marcado — checklist local-first
+# Tá Marcado — andamento e próximos passos
 
-Objetivo: validar os fluxos do produto no computador, sem conta externa, banco remoto ou hospedagem. A demonstração em `/demo` e `/demo/fluxo` grava dados fictícios no `localStorage` deste navegador. Ela serve para validar UX e regras, não para uso com clientes reais.
+Atualizado em 24/09/2026. Este documento diferencia a demonstração local, a prévia estática do GitHub Pages e os recursos conectados que ainda dependem de infraestrutura.
 
-## Já construído
+## O que existe
 
-- [x] Landing page, identidade visual, páginas de ajuda/termos/privacidade e prévia pública de trancista.
-- [x] Identidade visual da marca Tá Marcado com paleta blush/rose gold e ameixa escura para contraste; logo aplicada nas páginas e centralizada no painel e cabeçalho da demonstração.
-- [x] Estrutura do produto em Next.js/TypeScript e configuração de segurança para desenvolvimento local.
-- [x] Base de autenticação, onboarding, painel e APIs preparadas para Supabase (dependem de credenciais e banco para rodar).
-- [x] Migrations com modelo multi-tenant, RLS, agenda, solicitações, serviços, trial, portfólio e assinatura.
-- [x] Demonstração da profissional Ana: dashboard, calendário mensal, clientes, serviços, finanças ilustrativas, perfil e configurações.
-- [x] Configurador local de perguntas por serviço: escolha única/múltipla, texto, número, sim/não e foto de referência (na demo, guarda apenas o nome do arquivo).
-- [x] Editor local permite editar serviço, valor, duração, disponibilidade, perguntas e opções. Os controles de opção identificam o valor extra em reais e o tempo adicional em minutos; zero significa sem acréscimo, e o botão de exclusão tem tamanho compacto.
-- [x] Fluxo da cliente em etapas com calendário mensal, seleção de data e horários disponíveis, perguntas e cálculo local de preço/duração a partir das opções (formato para novas opções: `nome | valor em R$ | minutos`).
-- [x] Contato telefônico obrigatório com DDD e solicitação da cliente visível na visão da profissional.
-- [x] Profissional pode confirmar, recusar ou propor horário, preço, duração e mensagem; a cliente pode aceitar, sugerir outro horário ou cancelar.
-- [x] Histórico básico do pedido e sincronização entre as visões do fluxo via `localStorage`.
-- [x] Chaves de armazenamento separadas para o painel `/demo` e o fluxo `/demo/fluxo`, evitando que os formatos de dados distintos provoquem erro de renderização/tela preta ao trocar de visão. Dados antigos do fluxo guardados na chave compartilhada anterior não são migrados automaticamente.
-- [x] Verificação de TypeScript (`npm run typecheck`) passa após estas alterações.
+### Produto e experiência
 
-Prompt reutilizável para a próxima etapa: `docs/PROMPT-CONTINUACAO-LOCAL-FIRST.md`.
+- [x] Landing page, páginas iniciais de ajuda/termos/privacidade e exemplo público de trancista.
+- [x] Marca Tá Marcado, catálogo visual de serviços, perguntas por serviço, preços e durações em `hh:mm`, imagens de serviços, logo e capa.
+- [x] Página pública com nome do negócio, localização pública e chamada para iniciar agendamento.
+- [x] Painel profissional em Next.js com início, agenda, solicitações, clientes, serviços, financeiro, portfólio, página, configurações e assinatura.
+- [x] Configuração local de expediente, bloqueios e sinal Pix; os dias começam na segunda-feira e os estados do calendário de demonstração diferenciam confirmado (verde) e pendente (vermelho).
+- [x] Fluxo demonstrativo `/demo/fluxo`: a cliente escolhe serviço, responde perguntas, escolhe um horário e envia solicitação; a profissional responde ou propõe alterações; a cliente pode aceitar, pedir outro horário ou cancelar. Dados ficam no `localStorage` do navegador.
+- [x] Página de acompanhamento por link individual no fluxo conectado, sem exigir cadastro da cliente. Mensagens preparadas para WhatsApp incluem o link de acompanhamento.
+- [x] Sinal Pix no fluxo conectado: reserva temporária de uma hora, cliente informa que pagou, profissional confere manualmente e então confirma. A confirmação não é automática por comprovante.
+- [x] Assinatura mensal ajustada para **R$ 49,99** na comunicação e no valor enviado ao checkout Asaas.
 
-## Falta para validar a V1 localmente, antes do banco/hospedagem
+### Código de backend preparado
 
-### Em andamento
+- [x] Projeto Next.js/TypeScript, rotas de autenticação, APIs, integração Supabase/PostgreSQL, RLS e Asaas já presentes no repositório.
+- [x] Migration nova `supabase/migrations/202609230001_public_booking_signal.sql` adiciona configurações Pix, estado/prazo do sinal e tokens adicionais de acompanhamento com hash.
+- [x] `npm run typecheck`, `npm run build` e `git diff --check` passaram na última validação local.
 
-- Painel `/demo`: já oferece calendário mensal para profissional e cliente; ao selecionar data exibe atendimentos ou horários disponíveis. Inclui solicitações com ID do cliente e respostas, clientes/histórico agrupados por telefone, edição de serviços, perguntas associadas a múltiplos serviços, portfólio local por serviço, expediente com domingo e pausa para almoço, bloqueios de agenda e financeiro demonstrativo calculado a partir dos atendimentos. Ainda faltam validação manual mobile/desktop, exceções de expediente, edição/cancelamento de atendimentos e revisão dos limites de armazenamento local.
-- Fluxo `/demo/fluxo`: a escolha de data da cliente agora é mensal. A aba Calendário da profissional ainda precisa migrar da apresentação semanal para calendário mensal e permitir inspeção detalhada dos horários.
-- O editor local já cobre os campos principais, mas ainda faltam intervalo/preparação, reordenação das perguntas/opções e validação completa dos valores e estados.
+“Código preparado” não significa que o ambiente remoto esteja configurado: ainda é preciso aplicar e testar as migrations no projeto Supabase, conferir variáveis secretas, webhooks e permissões.
 
-- [ ] Exercitar manualmente os fluxos em tamanhos mobile e desktop, incluindo troca entre as abas Profissional: responder e Cliente: acompanhar.
-- [ ] Migrar a aba Calendário da profissional em `/demo/fluxo` para visão mensal, com resumo dos atendimentos por dia e horários ao abrir uma data.
-- [ ] Completar o editor: intervalo/preparação, reordenação de perguntas e opções, validação de campos e tratamento de perguntas opcionais.
-- [ ] Persistir arquivos de referência em armazenamento local de demonstração (hoje só guardamos o nome escolhido; nenhum arquivo é enviado).
-- [ ] Completar calendário local: criar atendimento manual, editar/cancelar atendimento, navegar por dias/meses e validar férias e exceções de expediente.
-- [ ] Transformar clientes e financeiro ilustrativos em registros locais editáveis, incluindo pagamentos e totais calculados a partir dos atendimentos.
-- [ ] Completar histórico/conversa: observações, respostas a propostas depois do aceite, estados expirados/concluídos/falta e regras de conflito/remarcação.
-- [ ] Permitir redefinir os dados fictícios da demonstração e criar migração/recuperação segura para dados antigos ou inválidos no navegador.
-- [ ] Adicionar testes automatizados locais para cálculo, disponibilidade, transições e persistência; revisar acessibilidade e lint.
-- [ ] Fazer aceite manual do percurso completo: configurar serviço → cliente responde → envia pedido → profissional responde → cliente aceita/troca/cancela → agenda atualiza.
+## GitHub Pages
 
-## Depois que a V1 local estiver aprovada
+- [x] Prévia de apresentação estática em `site/index.html`; esse é o arquivo de entrada `index.html` publicado na raiz do artefato.
+- [x] Workflow `.github/workflows/pages.yml` publica a pasta `site/` no GitHub Pages a cada push em `main` que altere o site ou o workflow.
+- [x] A prévia avisa que login, APIs, banco, WhatsApp e cobranças não funcionam nela.
+- [ ] Em **Settings → Pages**, selecionar **GitHub Actions** como origem de publicação, caso ainda não esteja selecionada.
+- [ ] Após o push, confirmar que a execução `Deploy static preview to GitHub Pages` terminou com sucesso e abrir `https://guedesyc.github.io/tamarcado/`.
 
-- [ ] Trocar persistência de demonstração por Supabase/PostgreSQL, aplicar migrations e testar RLS/isolamento entre negócios.
-- [ ] Validar concorrência da agenda e fluxos reais de autenticação, e-mail e uploads.
-- [ ] Configurar Asaas em sandbox, validar webhooks e só então configurar produção.
-- [ ] Preparar domínio, variáveis secretas, deploy, observabilidade, backup, privacidade e revisão jurídica.
+GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, APIs e lógica de servidor; por isso esta prévia não substitui a hospedagem do aplicativo. A documentação do Next.js lista recursos de servidor/API como incompatíveis com export estático. Para login, agenda conectada e links reais de acompanhamento será necessário um host com runtime Next.js, além de Supabase configurado.
 
-## Como abrir agora
+## Próximas etapas recomendadas
 
-1. Na pasta do projeto, rode `npm run dev`.
-2. Abra `http://localhost:3000/demo` para o painel.
-3. Em **Testar fluxo cliente ↔ profissional**, ou diretamente em `http://localhost:3000/demo/fluxo`, configure perguntas e percorra as duas pontas.
+### Antes de usar com profissionais/clientes reais
 
-Pedidos, configurações e respostas das demonstrações existem somente no perfil do navegador usado. Não são multiusuário, backup, persistência confiável nem sistema para produção.
+- [ ] Confirmar a publicação da prévia Pages e revisar o site em desktop e celular.
+- [ ] Revisar e testar a jornada inteira: solicitação, proposta, aceite/recusa, sinal, expiração, cancelamento e confirmação.
+- [ ] Validar concorrência de horários, cancelamento durante sinal pendente, liberação após expiração e consistência entre agenda e clientes.
+- [ ] Definir política operacional para cancelamento pela profissional e devolução/uso do sinal; o pagamento Pix é direto entre as partes.
+- [ ] Revisar notificações: hoje as integrações `wa.me` preparam mensagens para envio; não são disparos automáticos.
+- [ ] Completar estados de falta/no-show, atendimento concluído, lembretes e lista de espera.
+- [ ] Melhorar testes automatizados de regras de duração/preço, disponibilidade, transições e tokens; revisar acessibilidade, lint e comportamento mobile.
+- [ ] Revisar texto jurídico, privacidade, retenção de dados, suporte e política de cancelamento com assessoria apropriada antes do lançamento.
+
+### Para ativar o aplicativo conectado
+
+- [ ] Configurar Supabase, aplicar todas as migrations na ordem, testar RLS e isolamento entre negócios.
+- [ ] Configurar domínio e hospedagem com suporte a Next.js (a prévia GitHub Pages não executa o servidor).
+- [ ] Configurar variáveis de ambiente e autenticação/e-mail; nunca versionar chaves privadas.
+- [ ] Configurar Asaas em sandbox, validar checkout recorrente de R$ 49,99, webhooks idempotentes e cancelamento; só então habilitar produção.
+- [ ] Testar uploads, segurança, backups, logs, rate limiting e recuperação de falhas.
+
+## Como testar localmente
+
+1. Rodar `npm run dev`.
+2. Abrir `http://localhost:3000/demo` para o painel e `http://localhost:3000/demo/fluxo` para o laboratório cliente ↔ profissional.
+3. Os dados de demonstração pertencem ao navegador atual; não são sincronizados entre dispositivos nem devem conter dados reais.
+
+## Referências
+
+- Prompt para continuar o trabalho: `docs/PROMPT-CONTINUACAO-LOCAL-FIRST.md`.
+- Prévia estática: `site/index.html`.
+- Workflow Pages: `.github/workflows/pages.yml`.
