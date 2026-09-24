@@ -41,4 +41,4 @@ A base cobre site institucional, cadastro/recuperação de acesso, onboarding, c
 
 ## Prévia no GitHub Pages
 
-`site/index.html` é uma prévia estática de apresentação e é publicada pelo workflow `.github/workflows/pages.yml` em `https://guedesyc.github.io/tamarcado/`. Para o primeiro deploy, selecione **GitHub Actions** em Settings → Pages, se necessário. Esta prévia não executa o painel completo, autenticação, APIs, Supabase, WhatsApp nem checkout; o aplicativo Next.js completo precisa de hospedagem com runtime de servidor.
+`index.html` na raiz é uma prévia estática de apresentação publicada em `https://guedesyc.github.io/tamarcado/`. Ela não executa o painel completo, autenticação, APIs, Supabase, WhatsApp nem checkout; o aplicativo Next.js completo precisa de hospedagem com runtime de servidor.

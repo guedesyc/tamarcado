@@ -13,8 +13,7 @@ Construir e validar uma V1 confiável para profissionais autônomas de beleza. O
 - O fluxo ligado ao backend já tem acompanhamento por token, preparo de mensagens de WhatsApp com link individual e lógica de sinal Pix com prazo de uma hora e confirmação manual da profissional. Não prometa detecção automática de pagamento.
 - O preço do plano é R$ 49,99/mês nos textos e no valor do checkout Asaas.
 - A migration `202609230001_public_booking_signal.sql` foi criada, mas deve ser aplicada e validada no Supabase antes do fluxo de sinal funcionar no ambiente conectado.
-- A pasta `site/` contém uma página `index.html` independente para GitHub Pages. O workflow `.github/workflows/pages.yml` publica apenas essa prévia estática. Pages não executa o aplicativo Next.js, `proxy.ts`, APIs ou lógica de servidor; não tente habilitar `output: "export"` no app inteiro sem antes resolver as incompatibilidades e definir o escopo estático.
-- A publicação depende de Pages configurado para GitHub Actions em Settings → Pages e de confirmação da execução após o push.
+- A raiz contém `index.html`, uma prévia independente para GitHub Pages. O Pages estava servindo o README como home antes de haver um `index.html`. A publicação por branch está atualmente ativa; verificar a atualização após o push. Pages não executa o aplicativo Next.js, `proxy.ts`, APIs ou lógica de servidor; não tente habilitar `output: "export"` no app inteiro sem resolver incompatibilidades e definir o escopo estático.
 - Verificações locais recentes: `npm run typecheck`, `npm run build` e `git diff --check` passaram antes das últimas mudanças de documentação/publicação; rode-as novamente após mudanças.
 
 ## Próximos passos

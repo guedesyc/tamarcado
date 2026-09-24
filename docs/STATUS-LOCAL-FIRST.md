@@ -26,11 +26,9 @@ Atualizado em 24/09/2026. Este documento diferencia a demonstração local, a pr
 
 ## GitHub Pages
 
-- [x] Prévia de apresentação estática em `site/index.html`; esse é o arquivo de entrada `index.html` publicado na raiz do artefato.
-- [x] Workflow `.github/workflows/pages.yml` publica a pasta `site/` no GitHub Pages a cada push em `main` que altere o site ou o workflow.
+- [x] Prévia de apresentação estática em `index.html` na raiz do repositório; ela substitui o README como página inicial do GitHub Pages quando a origem atual é a branch `main`.
 - [x] A prévia avisa que login, APIs, banco, WhatsApp e cobranças não funcionam nela.
-- [ ] Em **Settings → Pages**, selecionar **GitHub Actions** como origem de publicação, caso ainda não esteja selecionada.
-- [ ] Após o push, confirmar que a execução `Deploy static preview to GitHub Pages` terminou com sucesso e abrir `https://guedesyc.github.io/tamarcado/`.
+- [ ] Após o push, confirmar que a atualização da branch chegou ao Pages e abrir `https://guedesyc.github.io/tamarcado/` para validar o `index.html` (o navegador de verificação está sem sessão autenticada no GitHub para consultar o painel de Pages).
 
 GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, APIs e lógica de servidor; por isso esta prévia não substitui a hospedagem do aplicativo. A documentação do Next.js lista recursos de servidor/API como incompatíveis com export estático. Para login, agenda conectada e links reais de acompanhamento será necessário um host com runtime Next.js, além de Supabase configurado.
 
@@ -64,5 +62,4 @@ GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, A
 ## Referências
 
 - Prompt para continuar o trabalho: `docs/PROMPT-CONTINUACAO-LOCAL-FIRST.md`.
-- Prévia estática: `site/index.html`.
-- Workflow Pages: `.github/workflows/pages.yml`.
+- Entrada do GitHub Pages: `index.html` na raiz do repositório.
