@@ -47,6 +47,9 @@ export function AppointmentActions({ id, status, paymentStatus, clientPhone, ser
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o sinal.");
+      if (typeof result.tracking_token !== "string" || !/^[A-Za-z0-9_-]{40,50}$/.test(result.tracking_token)) {
+        throw new Error("O sinal foi atualizado, mas não recebemos um link de acompanhamento válido. Atualize a página antes de avisar a cliente.");
+      }
       const trackingUrl = `${window.location.origin}/r/${result.tracking_token}`;
       let message: string;
       if (action === "request") {
