@@ -1,6 +1,18 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as três migrations `202609290003` a `202609290005`; após publicar as correções mais recentes, validar as telas conectadas no domínio.
+Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as migrations até `202609290005`; a migration `202609290006_cancellation_policy_reason.sql` desta revisão precisa ser aplicada antes de testar a nova política e cancelamento.
+
+## Revisão de agenda, cancelamento e navegação — 29/09/2026
+
+- [x] Agenda e Solicitações recarregam os dados automaticamente a cada 30 minutos enquanto a página estiver visível.
+- [x] A transição entre rotas começa imediatamente no clique, termina após a mudança de rota, tem timeout de segurança e não bloqueia interações na mesma rota (como escolher dia/mês na agenda). A opacidade do conteúdo durante a transição não fica presa.
+- [x] Solicitações mostram, em detalhes expansíveis, as respostas da cliente, adicionais positivos/negativos de preço e duração e a estimativa calculada; isso torna visível o total que já é gravado no pedido pelo cálculo de orçamento.
+- [x] Mensagem de solicitação de sinal no WhatsApp separa serviço/data e os dados do Pix (valor, chave, titular e prazo), com link de acompanhamento.
+- [x] Cancelamento pelo link exige motivo (mínimo 10 caracteres), grava esse motivo e prepara conversa de WhatsApp com profissional, informando data, serviço, sinal e política cadastrada. A profissional e cliente combinam a devolução manualmente; o sistema não movimenta Pix nem reembolsa automaticamente.
+- [x] Configurações incluem política “não reembolsar” ou “permitir avaliar se cancelado com antecedência mínima” de 1 a 720 horas.
+- [x] Nova migration aditiva `202609290006_cancellation_policy_reason.sql`: acrescenta colunas de política e motivo, RPC segura para cancelar com token, evento de auditoria e gatilho para rejeitar cancelamento legado sem justificativa. Não remove tabela nem dados.
+- [ ] Aplicar a migration `202609290006_cancellation_policy_reason.sql` no Supabase depois do deploy e validar pedido/cancelamento com e sem sinal, mensagens WhatsApp, política de prazo e configurações.
+- [ ] Após deploy, conferir no telefone e desktop que menus e calendário continuam interativos, datas passadas/fora da disponibilidade aparecem desabilitadas e novos horários continuam selecionáveis.
 
 ## Revisão do painel conectado — 29/09/2026
 
@@ -19,7 +31,7 @@ Alterações desta revisão (código versionado em `main`; confirmar a conclusã
 - [x] Nenhuma tabela é removida. Três novas migrations apenas adicionam função de edição de perguntas, função transacional de recebimento e uma política de leitura para o próprio portfólio ainda não publicado.
 - [x] Usuário confirmou que aplicou as migrations `202609290003_service_question_editor.sql`, `202609290004_record_service_balance.sql` e `202609290005_portfolio_owner_read.sql` no Supabase; elas são aditivas e não removem tabelas.
 - [ ] Depois de concluir o deploy das correções mais recentes, validar o fluxo autenticado no domínio Hostinger com conta real: salvar configurações e expediente, editar e responder perguntas, visualizar imagens privadas do portfólio, ver calendário/clientes, conferir sinal e lançar o saldo.
-- [ ] Correção solicitada em 29/09: loader de navegação disparava no clique antes da troca de rota, encerrava prematuramente e repetia quando a rota atualizava; agora inicia só após a mudança de pathname e não renderiza a página anterior como fallback. Clientes passou a consultar contatos, atendimentos e respostas separadamente, e expõe falhas em vez de exibir falso estado vazio. Financeiro e Clientes recebem botão Voltar visível dentro da página.
+- [x] Correção anterior: Clientes consulta contatos, atendimentos e respostas separadamente e expõe falhas em vez de exibir falso estado vazio; Financeiro e Clientes exibem botão Voltar visível dentro da página.
 - [ ] Persistem limitações externas já conhecidas: `wa.me` abre texto para envio manual; o Asaas permanece fora do escopo desta revisão; teste real em vários celulares e validação de DNS/ambiente continuam necessários.
 
 ## O que existe

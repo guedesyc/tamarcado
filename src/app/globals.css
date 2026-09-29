@@ -64,6 +64,12 @@
 .page-transition-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:8px;background:#fff9fae8;backdrop-filter:blur(9px);color:var(--green);font-size:13px;font-weight:700}
 .page-transition-overlay video{width:min(180px,42vw);height:min(180px,42vw);object-fit:contain;border-radius:24px}
 .page-transition-overlay span{letter-spacing:.06em}
+.request-estimate-details{flex:1 0 100%;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fffafb}
+.request-estimate-details summary{cursor:pointer;color:var(--green);font-size:12px;font-weight:700}
+.request-estimate-details>div{display:grid;gap:6px;margin-top:10px;font-size:12px;line-height:1.5}
+.request-estimate-details small{color:var(--muted)}
+.request-estimate-details p{margin:0;color:var(--muted);overflow-wrap:anywhere}
+.request-estimate-details p span{color:var(--ink);font-weight:700}
 @media(prefers-reduced-motion:reduce){.workspace-page-content{transition:none}.page-transition-overlay video{animation:none}}
 .professional-calendar-day.past{opacity:.44;background:#f8f4f5;filter:saturate(.45)}
 .professional-calendar-day.past:hover{opacity:.72}

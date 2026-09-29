@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { Check, X, Clock3, CalendarClock } from "lucide-react";
 import { durationToMinutes } from "@/lib/duration";
 
-type Props = { id: string; status: string; paymentStatus?: string; clientPhone?: string; serviceName?: string; requestedAt?: string };
+type Props = { id: string; status: string; paymentStatus?: string; clientPhone?: string; clientName?: string; serviceName?: string; requestedAt?: string; endAt?: string; priceEstimateCents?: number | null; answers?: { question_label: string; answer: unknown; price_delta_cents: number; duration_delta_minutes: number }[] };
 
 function whatsappPhone(value: string): string {
   const digits = value.replace(/\D/g, "");
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
 
-export function AppointmentActions({ id, status, paymentStatus, clientPhone, serviceName, requestedAt }: Props) {
+export function AppointmentActions({ id, status, paymentStatus, clientPhone, clientName, serviceName, requestedAt, endAt, priceEstimateCents, answers = [] }: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -55,7 +55,8 @@ export function AppointmentActions({ id, status, paymentStatus, clientPhone, ser
       if (action === "request") {
         const deadline = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(result.signal_deadline));
         const amount = (Number(result.signal_amount_cents) / 100).toFixed(2).replace(".", ",");
-        message = `Olá! Confirmei seu horário para ${serviceName ?? "seu atendimento"}. Para reservar, pague o sinal de R$ ${amount} via Pix (${result.pix_holder}): ${result.pix_key}. A vaga fica reservada por 1 hora, até ${deadline}. Acompanhe e avise sobre o pagamento neste link: ${trackingUrl}`;
+        const when = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(requestedAt)) : "data combinada";
+        message = `Olá, ${clientName || "tudo bem"}!\n\nSeu atendimento de ${serviceName ?? "serviço"} está confirmado para ${when}.\n\nPIX DO SINAL\nValor: R$ ${amount}\nChave Pix: ${result.pix_key}\nTitular da chave: ${result.pix_holder}\nPrazo para pagamento: até ${deadline} (a vaga fica reservada por 1 hora).\n\nDepois de pagar, acesse o link abaixo e toque em “Já fiz o Pix” para me avisar. Vou conferir o recebimento no extrato.\n\nAcompanhe seu atendimento: ${trackingUrl}\n\nObrigada pela confiança!\nTá Marcado!`;
       } else {
         const when = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(requestedAt)) : "a data combinada";
         message = `Olá! Conferi seu Pix e confirmei seu atendimento de ${serviceName ?? "serviço"} para ${when}. Obrigada pela confiança. Tá Marcado! Acompanhe seu pedido por aqui: ${trackingUrl}`;
@@ -84,7 +85,10 @@ export function AppointmentActions({ id, status, paymentStatus, clientPhone, ser
   }
 
   const pending = ["requested", "under_review", "proposed"].includes(status);
+  const durationMinutes = requestedAt && endAt ? Math.max(0, Math.round((new Date(endAt).getTime() - new Date(requestedAt).getTime()) / 60000)) : 0;
+  const answerText = (value: unknown): string => value == null || value === "" ? "—" : Array.isArray(value) ? value.map(answerText).join(", ") : typeof value === "object" ? Object.values(value as Record<string, unknown>).map(answerText).join(", ") : typeof value === "boolean" ? value ? "Sim" : "Não" : String(value);
   return <div className="appointment-actions">
+    {(priceEstimateCents != null || answers.length > 0) && <details className="request-estimate-details"><summary>Ver respostas e valor calculado</summary><div><b>Estimativa do serviço com as opções: {priceEstimateCents == null ? "A combinar" : `R$ ${(priceEstimateCents / 100).toFixed(2).replace(".", ",")}`}</b>{durationMinutes > 0 && <small>Duração calculada: {Math.floor(durationMinutes / 60)}h {durationMinutes % 60}min</small>}{answers.map((answer, index) => <p key={`${answer.question_label}-${index}`}><span>{answer.question_label}:</span> {answerText(answer.answer)}{answer.price_delta_cents ? ` · adicional ${answer.price_delta_cents > 0 ? "+" : "−"}R$ ${(Math.abs(answer.price_delta_cents) / 100).toFixed(2).replace(".", ",")}` : ""}{answer.duration_delta_minutes ? ` · ${answer.duration_delta_minutes > 0 ? "+" : "−"}${Math.floor(Math.abs(answer.duration_delta_minutes) / 60)}h ${Math.abs(answer.duration_delta_minutes) % 60}min` : ""}</p>)}</div></details>}
     {pending && <>
       <button className="pill" disabled={busy} onClick={() => signal("request")}><Check size={14}/> Confirmar e pedir sinal</button>
       <button className="pill" disabled={busy} onClick={() => update("cancelled_by_professional")}><X size={14}/> Recusar</button>

@@ -20,6 +20,8 @@ export function BookingControls({ token, status, paymentStatus, service, profess
   const [success, setSuccess] = useState("");
   const [busy, setBusy] = useState(false);
   const [choosing, setChoosing] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
 
   async function loadSlots(value: string) {
     setDate(value);
@@ -37,15 +39,15 @@ export function BookingControls({ token, status, paymentStatus, service, profess
     }
   }
 
-  async function act(action: Action) {
+  async function act(action: Action, reason?: string) {
     setBusy(true);
     setMessage("");
     setSuccess("");
-    const popup = action === "report_signal" && professionalPhone ? window.open("about:blank", "_blank") : null;
+    const popup = (action === "report_signal" || action === "cancel") && professionalPhone ? window.open("about:blank", "_blank") : null;
     try {
       const response = await fetch(`/api/booking/${token}/action`, {
         method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action, date: action === "request_another_time" ? date : undefined, time: action === "request_another_time" ? time : undefined }),
+        body: JSON.stringify({ action, date: action === "request_another_time" ? date : undefined, time: action === "request_another_time" ? time : undefined, reason: action === "cancel" ? reason : undefined }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o atendimento.");
@@ -55,6 +57,19 @@ export function BookingControls({ token, status, paymentStatus, service, profess
         const when = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone }).format(new Date(requestedAt));
         const text = `Olá! Avisei pelo link que fiz o Pix do sinal do meu atendimento de ${service}, marcado para ${when}. Pode conferir, por favor? Link para acompanhar o pedido: ${window.location.href}`;
         popup.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+      } else if (action === "cancel") {
+        const cancellation = result.cancellation as { professional_phone?: string; business_name?: string; client_name?: string; service_name?: string; requested_at?: string; signal_amount_cents?: number | null; refund_eligible?: boolean; refund_policy?: string; refund_hours?: number } | undefined;
+        const phoneDigits = (cancellation?.professional_phone || professionalPhone).replace(/\D/g, "");
+        const phone = phoneDigits.length === 10 || phoneDigits.length === 11 ? `55${phoneDigits}` : phoneDigits;
+        const when = cancellation?.requested_at ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(cancellation.requested_at)) : "data combinada";
+        const signal = cancellation?.signal_amount_cents ? `R$ ${(cancellation.signal_amount_cents / 100).toFixed(2).replace(".", ",")}` : "não houve sinal pago";
+        const policy = cancellation?.refund_policy === "before_hours" ? `A regra cadastrada permite conversar sobre devolução se o cancelamento ocorrer com pelo menos ${cancellation.refund_hours} horas de antecedência.` : "A regra cadastrada informa que não há reembolso do sinal, independentemente do prazo.";
+        const decision = cancellation?.refund_eligible ? "Pelo prazo, o pedido está dentro dos critérios cadastrados para avaliar a devolução." : "Pelo prazo/regra cadastrada, o pedido não atende ao critério de devolução automática.";
+        const text = `Olá! Sou ${cancellation?.client_name || "sua cliente"} e preciso cancelar meu atendimento.\n\nServiço: ${cancellation?.service_name || service}\nData e horário: ${when}\nMotivo: ${reason?.trim() || "Não informado"}\nSinal informado: ${signal}\n\nPolítica do espaço (${cancellation?.business_name || "negócio"}): ${policy}\n${decision}\n\nQuero conversar com você para combinarmos a questão do sinal. A devolução não é feita automaticamente pelo sistema.\n\nLink do pedido: ${window.location.href}`;
+        if (phone && popup) popup.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        else popup?.close();
+        setCanceling(false);
+        setSuccess("Cancelamento registrado. Converse com a profissional pelo WhatsApp para tratar do sinal.");
       } else popup?.close();
       if (action === "accept") setSuccess("Proposta aceita. A profissional ainda precisa solicitar o sinal; o horário não está confirmado neste momento.");
       else if (action === "report_signal") setSuccess("Aviso de pagamento registrado. Aguarde a conferência do Pix pela profissional.");
@@ -85,7 +100,8 @@ export function BookingControls({ token, status, paymentStatus, service, profess
         <button className="btn" disabled={busy || !time} onClick={() => act("request_another_time")}>Pedir este horário</button>
       </div>}
     </>}
-    {canCancel && <button className="btn secondary" style={{ width: "100%", marginTop: 9 }} disabled={busy} onClick={() => act("cancel")}><X size={15}/> Cancelar solicitação</button>}
+    {canCancel && !canceling && <button className="btn secondary" style={{ width: "100%", marginTop: 9 }} disabled={busy} onClick={() => { setCancelReason(""); setCanceling(true); }}><X size={15}/> Cancelar solicitação</button>}
+    {canceling && <div className="trial-box" style={{ marginTop: 12 }}><div className="form-field"><label htmlFor="booking-cancel-reason">Por que você precisa cancelar?</label><textarea id="booking-cancel-reason" rows={4} maxLength={500} minLength={10} required value={cancelReason} onChange={event => setCancelReason(event.target.value)} placeholder="Conte brevemente o motivo. Essa informação será enviada à profissional pelo WhatsApp."/></div><button className="btn" style={{ width: "100%" }} disabled={busy || cancelReason.trim().length < 10} onClick={() => act("cancel", cancelReason)}>{busy ? "Cancelando…" : "Confirmar cancelamento e conversar no WhatsApp"}</button><button className="btn secondary" style={{ width: "100%", marginTop: 8 }} disabled={busy} onClick={() => setCanceling(false)}>Voltar sem cancelar</button></div>}
     {message && <p className="form-error" role="alert">{message}</p>}
     {success && <p className="trial-box" role="status">{success}</p>}
   </div>;

@@ -16,23 +16,56 @@ export function BackButton() {
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const routeKey = pathname;
+  const router = useRouter();
   const [active, setActive] = useState(false);
   const previousRoute = useRef(routeKey);
+  const currentRoute = useRef(routeKey);
+  const pendingRoute = useRef<string | null>(null);
+  const safetyTimer = useRef(0);
 
   useEffect(() => {
+    currentRoute.current = routeKey;
     if (previousRoute.current === routeKey) return;
     previousRoute.current = routeKey;
+    const startedFromLink = pendingRoute.current !== null;
+    pendingRoute.current = null;
+    window.clearTimeout(safetyTimer.current);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let hideTimer = 0;
-    const frame = window.requestAnimationFrame(() => {
-      setActive(true);
-      hideTimer = window.setTimeout(() => setActive(false), 360);
-    });
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(hideTimer);
-    };
+    const hideTimer = window.setTimeout(() => setActive(false), startedFromLink ? 180 : 0);
+    return () => window.clearTimeout(hideTimer);
   }, [routeKey]);
+
+  useEffect(() => {
+    function onClick(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const anchor = (event.target as HTMLElement | null)?.closest("a[href]");
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+      const target = new URL(anchor.href, window.location.href);
+      if (target.origin !== window.location.origin) return;
+      const nextRoute = target.pathname;
+      if (nextRoute === currentRoute.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      pendingRoute.current = nextRoute;
+      setActive(true);
+      window.clearTimeout(safetyTimer.current);
+      safetyTimer.current = window.setTimeout(() => {
+        pendingRoute.current = null;
+        setActive(false);
+      }, 15000);
+    }
+    document.addEventListener("click", onClick, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      window.clearTimeout(safetyTimer.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (pathname !== "/app/agenda" && pathname !== "/app/solicitacoes") return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") router.refresh();
+    }, 30 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [pathname, router]);
 
   return <>
     <div className={active ? "workspace-page-content is-transitioning" : "workspace-page-content"}>
