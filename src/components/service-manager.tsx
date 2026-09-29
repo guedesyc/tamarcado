@@ -9,6 +9,10 @@ type Question = { key: string; label: string; type: string; required: boolean; o
 const choices = new Set(["single_choice", "multiple_choice"]);
 const newOption = (): Option => ({ key: crypto.randomUUID(), label: "", priceDelta: "0", durationDelta: "0" });
 const newQuestion = (): Question => ({ key: crypto.randomUUID(), label: "", type: "single_choice", required: false, options: [newOption()] });
+const hoursToMinutes = (value: FormDataEntryValue | null) => {
+  const match = String(value ?? "").match(/^(\d{2}):(\d{2})$/);
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+};
 
 export function ServiceManager() {
   const router = useRouter();
@@ -28,6 +32,12 @@ export function ServiceManager() {
     event.preventDefault();
     setError("");
     const form = new FormData(event.currentTarget);
+    const duration = form.get("duration");
+    const durationMinutes = duration ? hoursToMinutes(duration) : null;
+    if (duration && (!durationMinutes || durationMinutes > 1440)) {
+      setError("Informe a duração entre 00:01 e 24:00.");
+      return;
+    }
     setSaving(true);
     let serviceCreated = false;
     try {
@@ -36,7 +46,7 @@ export function ServiceManager() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           name: form.get("name"), description: form.get("description"),
-          price: form.get("price") || null, duration: form.get("duration") || null,
+          price: form.get("price") || null, duration: durationMinutes,
           buffer: form.get("buffer") || 0, simultaneousCapacity: form.get("simultaneousCapacity") || 1,
           mode: form.get("mode"),
           questions: questions.map(question => ({
@@ -84,7 +94,7 @@ export function ServiceManager() {
       <div className="form-field"><label htmlFor="service-image">Foto de exemplo (opcional) · JPG, PNG ou WebP até 5 MB</label><input id="service-image" name="image" type="file" accept="image/jpeg,image/png,image/webp"/></div>
       <div className="stats" style={{ gridTemplateColumns: "1fr 1fr" }}>
         <div className="form-field"><label htmlFor="service-price">Preço base (R$)</label><input id="service-price" name="price" type="number" min="0" step="0.01" placeholder="Deixe vazio para combinar"/></div>
-        <div className="form-field"><label htmlFor="service-duration">Duração em minutos</label><input id="service-duration" name="duration" type="number" min="1" max="1440" placeholder="Deixe vazio para avaliar"/></div>
+        <div className="form-field"><label htmlFor="service-duration">Duração (horas:minutos)</label><input id="service-duration" name="duration" type="time" step="60"/><small>Deixe vazio para avaliar com a cliente.</small></div>
       </div>
       <div className="stats" style={{ gridTemplateColumns: "1fr 1fr" }}>
         <div className="form-field"><label htmlFor="service-buffer">Intervalo/preparação (min)</label><input id="service-buffer" name="buffer" type="number" min="0" max="240" defaultValue="0"/></div>
