@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 type Booking = {
   service_id: string; service_name: string; requested_at: string; status: string;
-  business_name: string; slug: string; timezone: string; note?: string;
+  business_name: string; slug: string; timezone: string; note?: string; proposal_reason?: string | null;
   payment_status: "unpaid" | "partial" | "paid" | "refunded" | "not_applicable" | "signal_requested" | "signal_reported" | "signal_expired";
   signal_amount_cents: number | null; signal_deadline: string | null;
   pix_key: string | null; pix_holder: string | null; professional_phone: string | null;
@@ -52,6 +52,7 @@ export default async function BookingStatus({ params }: { params: Promise<{ toke
       <p style={{ marginTop: 12 }}><CalendarDays size={14}/> {new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(booking.requested_at))}</p>
     </div>
     {booking.note && <p>{booking.note}</p>}
+    {booking.status === "proposed" && booking.proposal_reason && <div className="trial-box"><b>Mensagem da profissional</b><p>{booking.proposal_reason}</p></div>}
     {["signal_requested", "signal_reported"].includes(booking.payment_status) && <div className="trial-box">
       <b>Dados para o sinal</b>
       <p>Valor: <strong>{signalAmount}</strong></p>

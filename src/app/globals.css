@@ -55,14 +55,14 @@
 @media(max-width:560px){.appointment-actions{flex-basis:100%;justify-content:stretch}.appointment-actions>.pill{flex:1 1 130px;justify-content:center}.appointment-proposal{grid-template-columns:1fr}}
 
 /* Authenticated workspace: clear way back, low-motion-safe page transition and readable records. */
-.workspace-back-bar{position:relative;z-index:5;display:flex;justify-content:flex-end;align-items:center;min-height:42px;padding:4px clamp(16px,3vw,36px);background:var(--paper)}
+.workspace-back-bar{position:relative;z-index:5;display:flex;justify-content:flex-start;align-items:center;min-height:42px;padding:4px clamp(16px,3vw,36px);background:var(--paper)}
 .workspace-back-button{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font-size:12px;font-weight:700}
 .workspace-back-button:hover{border-color:var(--green2);background:var(--cream)}
 .app-page-back{display:flex;justify-content:flex-start;margin:0 0 14px}.app-page-back .workspace-back-button{min-height:40px;padding:8px 15px;font-size:13px}
 .workspace-page-content{min-height:calc(100vh - 42px);transition:filter .18s ease,opacity .18s ease}
 .workspace-page-content.is-transitioning{filter:blur(5px);opacity:.62;pointer-events:none;user-select:none}
-.page-transition-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:8px;background:#fff9fae8;backdrop-filter:blur(9px);color:var(--green);font-size:13px;font-weight:700}
-.page-transition-overlay video{width:min(180px,42vw);height:min(180px,42vw);object-fit:contain;border-radius:24px}
+.page-transition-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:12px;background:#fff;color:var(--green);font-size:15px;font-weight:700}
+.page-transition-overlay video{width:min(480px,82vw);height:min(480px,82vw);object-fit:contain;border-radius:24px;background:#fff}
 .page-transition-overlay span{letter-spacing:.06em}
 .request-estimate-details{flex:1 0 100%;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fffafb}
 .request-estimate-details summary{cursor:pointer;color:var(--green);font-size:12px;font-weight:700}
@@ -70,6 +70,22 @@
 .request-estimate-details small{color:var(--muted)}
 .request-estimate-details p{margin:0;color:var(--muted);overflow-wrap:anywhere}
 .request-estimate-details p span{color:var(--ink);font-weight:700}
+.appointment-proposal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:8px 0;padding:16px;flex:1 0 100%}
+.appointment-proposal .proposal-guidance,.appointment-proposal .proposal-reason-field,.appointment-proposal>.btn{grid-column:1/-1}
+.proposal-guidance{margin:0;color:var(--muted);font-size:13px;line-height:1.6}
+.public-service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:20px;margin:26px 0}
+.public-service-card{display:flex;flex-direction:column;gap:14px;min-width:0;padding:14px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 12px 34px #4b23300a}
+.public-service-card .service-thumb{display:block;position:relative;width:100%;height:auto;aspect-ratio:1/1;overflow:hidden;border-radius:15px;background:var(--cream)}
+.public-service-card .service-thumb img{width:100%;height:100%;object-fit:cover}
+.public-service-card .service-text{display:grid;gap:7px;align-content:start;min-height:0}
+.public-service-card .service-text>b{font-size:18px}
+.public-service-card .public-service-description{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.public-service-details{display:grid;gap:8px;margin-top:auto;color:var(--ink);font-size:14px}
+.public-service-details .service-price{display:block;text-align:left;font-size:16px}
+.public-service-details .service-price small{margin-left:7px}
+.public-service-card>.btn{width:100%;margin-top:3px}
+.proposal-guidance{padding:0 0 3px}
+.finance-success{color:#237445}
 @media(prefers-reduced-motion:reduce){.workspace-page-content{transition:none}.page-transition-overlay video{animation:none}}
 .professional-calendar-day.past{opacity:.44;background:#f8f4f5;filter:saturate(.45)}
 .professional-calendar-day.past:hover{opacity:.72}
@@ -229,3 +245,4 @@
 .public-calendar-day.selected{border:2px solid var(--rose-dark);background:#f7e9ed}
 .public-calendar-help{font-size:12px;color:var(--muted);margin:10px 0}
 @media(max-width:560px){.public-calendar-grid{gap:4px}.public-calendar-day{min-height:54px;padding:5px;font-size:12px;border-radius:8px}.public-calendar-day small{font-size:8px}.public-calendar-heading h2{min-width:130px;font-size:15px}}
+@media(max-width:560px){.page-transition-overlay{gap:10px;font-size:14px}.page-transition-overlay video{width:min(330px,82vw);height:min(330px,82vw)}.appointment-proposal{padding:13px}.public-service-card{padding:12px;border-radius:18px}}

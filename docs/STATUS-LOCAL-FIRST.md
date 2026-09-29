@@ -2,6 +2,20 @@
 
 Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as migrations até `202609290005`; a migration `202609290006_cancellation_policy_reason.sql` desta revisão precisa ser aplicada antes de testar a nova política e cancelamento.
 
+## Ajustes de proposta, sinal opcional e catálogo — 29/09/2026
+
+- [x] Loader do painel com fundo branco e dimensões maiores no desktop; mantém proporção responsiva em telas pequenas.
+- [x] Proposta de horário agora aceita apenas os campos alterados: data ou horário ausente preserva o valor original. Inclui justificativa opcional para a cliente, exibida no acompanhamento.
+- [x] API traduz conflito de expediente, bloqueio ou capacidade em mensagem explicativa. No exemplo reportado, 18h30 também excede o expediente exibido (até 18h), uma causa concreta para rejeição.
+- [x] Financeiro atualiza o total/saldo localmente após receber lançamento e oculta Registrar recebimento quando o serviço está quitado.
+- [x] Botão Voltar alinhado à esquerda na página Minha Página.
+- [x] Configuração de Pix/sinal inclui Sim/Não. Ao desligar, não exige nem exibe dados Pix; confirmações futuras seguem sem sinal. Atendimentos já com sinal pendente não são convertidos por essa alteração.
+- [x] Página pública de serviços usa cartões com imagem quadrada em destaque, dados do serviço e CTA “Quero Marcar!”, encaminhando para a solicitação com o serviço pré-selecionado.
+- [x] Migration aditiva criada: `supabase/migrations/202609290008_optional_signal_partial_proposals.sql`. Acrescenta somente `businesses.signal_enabled` (padrão `true`) e `appointments.proposal_reason`, e atualiza RPCs. Não contém remoção de tabelas nem exclusão de registros.
+- [ ] Aplicar `202609290008_optional_signal_partial_proposals.sql` no Supabase antes de usar propostas parciais ou desligar sinal. A tentativa de execução pelo editor não foi verificada e, portanto, não está marcada como aplicada.
+- [ ] Testar em produção proposta só com data, proposta só com horário, justificativa na página de acompanhamento, sinal Sim/Não, confirmação de sinal ligado, pagamentos já pendentes e recebimento financeiro após deploy.
+- [ ] Validar visualmente catálogo e loader em desktop e telefone real após deploy.
+
 ## Correção de disponibilidade do calendário público — 29/09/2026
 
 - [x] Reproduzido no Supabase o erro que deixava todos os dias como “Sem vagas”: `calculate_service_quote` falhava com `column reference "option_id" is ambiguous` ao calcular respostas de escolha. A API escondia o erro e o calendário o interpretava como mês sem disponibilidade.

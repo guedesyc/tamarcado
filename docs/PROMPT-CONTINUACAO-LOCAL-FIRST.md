@@ -32,18 +32,23 @@ Construir e validar uma V1 confiável para profissionais autônomas de beleza. O
 - Foi corrigida a validação do cabeçalho `Origin` nas APIs para considerar o endereço público encaminhado pelo proxy da Hostinger; no fluxo público, erros conhecidos (horário ocupado, perfil/serviço indisponível) têm mensagens específicas e falhas inesperadas geram log de servidor sem expor detalhes do banco.
 - A aceitação de proposta não confirma o horário: retorna para revisão profissional antes da solicitação do sinal. A página de acompanhamento consulta novos horários por token e respeita a duração real do pedido, inclusive adicionais das respostas.
 - Durações visíveis para serviços, opções, intervalo de preparação, propostas e atendimentos manuais usam `hh:mm`; o backend continua armazenando minutos. Testes automatizados cobrem conversões e adicionais positivos/negativos.
+- Revisão de 29/09/2026: loader do painel em fundo branco com marca maior/responsiva; catálogo público com imagem quadrada destacada e botão “Quero Marcar!” que pré-seleciona o serviço; propostas profissionais aceitam mudanças parciais e justificativa opcional; respostas conhecidas de conflito de expediente/bloqueio/capacidade ficaram explícitas; ajuste de estado financeiro após registrar recebimento; botão Voltar de Minha Página.
+- Configurações Pix incluem `signal_enabled` Sim/Não. Quando desligado, a solicitação não exige dados Pix e a profissional confirma diretamente. Pedidos que já aguardam sinal não são convertidos automaticamente.
+- Migration local nova `202609290008_optional_signal_partial_proposals.sql` adiciona `businesses.signal_enabled` (default `true`) e `appointments.proposal_reason`, substituindo RPCs de transição, solicitação de sinal, confirmação sem sinal e acompanhamento. É aditiva; sem DROP TABLE/DELETE. A aplicação desta migration no Supabase ainda NÃO foi confirmada; executar antes de testar/publicar estas funções.
+- Diagnóstico do exemplo de proposta: horário sugerido 18h30 para expediente informado até 18h; provável motivo da recusa. A aplicação agora informa conflito de expediente/bloqueio/capacidade em vez de erro genérico.
 
 ## Próximos passos
 
 1. Aguardar/conferir o deploy automático da `main` na Hostinger. Abrir `https://tamarcado.ygsystems.com.br/guedao-do-cabelao`, responder às perguntas e confirmar dias/horários disponíveis em outubro; depois validar login, configurações, expediente, portfólio, agenda, clientes e financeiro.
-2. Repetir a navegação entre páginas para confirmar que o loader aparece uma vez, sem retorno visual à rota anterior. Em Financeiro e Clientes, conferir o botão Voltar no topo do conteúdo.
-3. Confirmar que o atendimento já criado aparece em Clientes, com detalhes e respostas. Se ainda não aparecer, observar a mensagem de erro da tela e o log `[clients-page]` da Hostinger para localizar a falha específica de consulta/RLS.
-4. Completar teste E2E das transições pedido → proposta → resposta → sinal → verificação → confirmação, incluindo expiração, cancelamento, horários concorrentes e atualizações da agenda/clientes. Regras críticas já tiveram validação SQL transacional com rollback; isso não substitui teste completo na produção.
-4. Tratar GitHub Pages apenas como prévia estática; revisar visualmente em celular/desktop sem sugerir que o backend está conectado.
-5. Aplicar `202609290006_cancellation_policy_reason.sql` no Supabase; escolher e salvar a política em Configurações; testar motivo no cancelamento, mensagem WhatsApp, sinal já pago/pendente e antecedência mínima.
-6. Completar lembretes, estado de falta/no-show, lista de espera e notificações. Hoje `wa.me` apenas abre uma mensagem preparada para envio manual.
-7. Ampliar testes automatizados para disponibilidade, cálculo de preço, transições, tokens, RLS e concorrência; revisar acessibilidade e responsividade em aparelhos reais.
-8. Depois de validar o restante, configurar Asaas em sandbox e testar checkout recorrente/webhooks idempotentes antes de produção. GitHub Pages não hospeda o backend.
-9. Atualizar `docs/STATUS-LOCAL-FIRST.md` somente quando cada item for realmente implementado e verificado; diferenciar deploy bem-sucedido de integrações de produção configuradas.
+2. Antes de testar os recursos novos, aplicar no SQL Editor do Supabase a migration `supabase/migrations/202609290008_optional_signal_partial_proposals.sql`. Ela é aditiva e não remove tabelas ou registros. Conferir sucesso e existência das duas colunas e das RPCs `confirm_appointment_without_signal` e `transition_appointment`.
+3. Repetir a navegação entre páginas para confirmar que o loader aparece uma vez, sem retorno visual à rota anterior. Em Financeiro e Clientes, conferir o botão Voltar no topo do conteúdo.
+4. Confirmar que o atendimento já criado aparece em Clientes, com detalhes e respostas. Se ainda não aparecer, observar a mensagem de erro da tela e o log `[clients-page]` da Hostinger para localizar a falha específica de consulta/RLS.
+5. Completar teste E2E das transições pedido → proposta → resposta → sinal → verificação → confirmação, incluindo expiração, cancelamento, horários concorrentes e atualizações da agenda/clientes. Regras críticas já tiveram validação SQL transacional com rollback; isso não substitui teste completo na produção.
+6. Tratar GitHub Pages apenas como prévia estática; revisar visualmente em celular/desktop sem sugerir que o backend está conectado.
+7. Aplicar `202609290006_cancellation_policy_reason.sql` no Supabase caso ainda não esteja aplicada; escolher e salvar a política em Configurações; testar motivo no cancelamento, mensagem WhatsApp, sinal já pago/pendente e antecedência mínima.
+8. Completar lembretes, estado de falta/no-show, lista de espera e notificações. Hoje `wa.me` apenas abre uma mensagem preparada para envio manual.
+9. Ampliar testes automatizados para disponibilidade, cálculo de preço, transições, tokens, RLS e concorrência; revisar acessibilidade e responsividade em aparelhos reais.
+10. Depois de validar o restante, configurar Asaas em sandbox e testar checkout recorrente/webhooks idempotentes antes de produção. GitHub Pages não hospeda o backend.
+11. Atualizar `docs/STATUS-LOCAL-FIRST.md` somente quando cada item for realmente implementado e verificado; diferenciar deploy bem-sucedido de integrações de produção configuradas.
 
 Não presuma que um botão do WhatsApp enviou a mensagem; o app só prepara o texto/link. Não publique dados reais nem exponha chaves. Não altere banco remoto, domínio ou infraestrutura de produção sem autorização explícita.
