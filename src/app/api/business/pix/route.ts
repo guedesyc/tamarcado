@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const schema=z.object({pix_key:z.string().trim().max(200),pix_holder:z.string().trim().max(120),signal_type:z.enum(["fixed","percent"]),signal_amount:z.number().min(0).max(100000)}).superRefine((value,context)=>{if(value.signal_type==="percent"&&value.signal_amount>100)context.addIssue({code:"custom",path:["signal_amount"],message:"A porcentagem não pode ultrapassar 100%."})});
 
@@ -19,6 +20,7 @@ export async function GET(){
 }
 
 export async function PUT(request:Request){
+ if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível salvar desta página."},{status:403});
  const auth=await ownerBusiness();if("response" in auth)return auth.response;
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Confira os dados e tente novamente."},{status:400})}
  const parsed=schema.safeParse(body);if(!parsed.success)return NextResponse.json({error:"Confira chave, titular e valor do sinal."},{status:400});

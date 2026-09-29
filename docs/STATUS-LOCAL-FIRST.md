@@ -28,6 +28,10 @@ Atualizado em 28/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Migration `202609280001_shared_service_capacity_booking_window.sql` executada no Supabase conforme confirmação do usuário; inclui colunas, regras concorrentes, capacidade e janela de datas.
 - [x] Portfólio agora associa imagens a serviços, aceita foto de exemplo ao criar serviço e exibe a galeria de cada serviço na página pública; o usuário confirmou que aplicou `202609280002_portfolio_service_gallery.sql` no Supabase.
 - [x] Validação de origem das APIs atualizada para funcionar atrás do proxy da Hostinger; detalhes de erros do fluxo de agendamento agora são registrados no servidor e mensagens conhecidas ficam claras para a cliente.
+- [x] Falha real de sinal reproduzida no Supabase: `gen_random_bytes` estava em `extensions`, fora do `search_path` da função. Migration `202609280003_signal_crypto_and_capacity.sql` aplicada no projeto, com teste transacional que desfaz o pedido. O Pix da conta afetada já estava configurado.
+- [x] Conta técnica `teste@gmail.com` criada e confirmada; login e publicação de espaço de teste validados na Hostinger. O espaço de teste usa o slug `espaco-teste-qa-20260928` e deve permanecer identificado como demonstração.
+- [x] URL principal do Supabase Auth atualizada de `localhost` para `https://tamarcado.ygsystems.com.br`; callbacks de produção e desenvolvimento continuam na lista permitida.
+- [x] Página pública corrigida para mostrar o nome do negócio. Navegação móvel passa a incluir todas as seções; cartões de solicitações e botões receberam ajuste de leitura e toque.
 
 “Código preparado” não significa que o ambiente remoto esteja configurado: ainda é preciso aplicar e testar as migrations no projeto Supabase, conferir variáveis secretas, webhooks e permissões.
 
@@ -49,6 +53,7 @@ GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema 
 
 - [ ] Revisar a prévia Pages em desktop e celular; ela não é o ambiente de produção.
 - [ ] Revisar e testar a jornada inteira: solicitação, proposta, aceite/recusa, sinal, expiração, cancelamento e confirmação.
+- [x] Chamada de solicitar sinal reproduzida no banco, corrigida e verificada com reversão de transação; nenhum atendimento real foi modificado pelo teste.
 - [ ] Validar concorrência de horários, cancelamento durante sinal pendente, liberação após expiração e consistência entre agenda e clientes.
 - [ ] Definir política operacional para cancelamento pela profissional e devolução/uso do sinal; o pagamento Pix é direto entre as partes.
 - [ ] Revisar notificações: hoje as integrações `wa.me` preparam mensagens para envio; não são disparos automáticos.
