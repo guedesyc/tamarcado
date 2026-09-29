@@ -13,5 +13,13 @@ export async function POST(request: Request) {
   if (!supabase) return NextResponse.redirect(siteUrl("/entrar?erro=config", request.url), 303);
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return NextResponse.redirect(siteUrl("/entrar?erro=credentials", request.url), 303);
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: membership } = await supabase.from("business_members").select("business_id").eq("user_id", user.id).limit(1).maybeSingle();
+    if (membership) {
+      const { data: business } = await supabase.from("businesses").select("slug,published_at").eq("id", membership.business_id).maybeSingle();
+      if (business?.published_at && business.slug) return NextResponse.redirect(siteUrl(`/${business.slug}`, request.url), 303);
+    }
+  }
   return NextResponse.redirect(siteUrl("/app", request.url), 303);
 }
