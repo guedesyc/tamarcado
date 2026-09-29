@@ -32,6 +32,7 @@ Atualizado em 28/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Conta técnica `teste@gmail.com` criada e confirmada; login e publicação de espaço de teste validados na Hostinger. O espaço de teste usa o slug `espaco-teste-qa-20260928` e deve permanecer identificado como demonstração.
 - [x] URL principal do Supabase Auth atualizada de `localhost` para `https://tamarcado.ygsystems.com.br`; callbacks de produção e desenvolvimento continuam na lista permitida.
 - [x] Página pública corrigida para mostrar o nome do negócio. Navegação móvel passa a incluir todas as seções; cartões de solicitações e botões receberam ajuste de leitura e toque.
+- [x] Navegação móvel compartilhada por todas as páginas do painel, inclusive Início, Serviços e Portfólio; removidas iniciais decorativas remanescentes dos cartões do painel.
 
 “Código preparado” não significa que o ambiente remoto esteja configurado: ainda é preciso aplicar e testar as migrations no projeto Supabase, conferir variáveis secretas, webhooks e permissões.
 
