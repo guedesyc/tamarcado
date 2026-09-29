@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const schema=z.object({booking_window:z.enum(["month","year"])});
 
@@ -22,6 +23,7 @@ export async function GET(){
 }
 
 export async function PUT(request:Request){
+ if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível salvar desta página."},{status:403});
  const auth=await ownerBusiness();if("response" in auth)return auth.response;
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Confira a configuração e tente novamente."},{status:400})}
  const parsed=schema.safeParse(body);if(!parsed.success)return NextResponse.json({error:"Escolha mês atual ou ano atual."},{status:400});
