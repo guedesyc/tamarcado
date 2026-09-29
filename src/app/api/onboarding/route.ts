@@ -4,10 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { RESERVED_SLUGS } from "@/lib/domain";
 
 const schema=z.object({name:z.string().trim().min(2).max(120),displayName:z.string().trim().min(2).max(120),phone:z.string().trim().min(10).max(40),slug:z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).min(3).max(40),categories:z.array(z.string()).min(1).max(8),service:z.string().trim().min(2).max(120),price:z.coerce.number().min(0).max(100000).finite(),duration:z.coerce.number().int().min(15).max(1440),description:z.string().max(500).default(""),start:z.string().regex(/^\d\d:\d\d$/),end:z.string().regex(/^\d\d:\d\d$/),city:z.string().max(100).optional()});
+const fieldLabels:Record<string,string>={name:"nome do negócio",displayName:"nome profissional",phone:"WhatsApp",slug:"link exclusivo",categories:"categoria",service:"serviço inicial",price:"preço",duration:"duração",description:"descrição",start:"início do expediente",end:"fim do expediente",city:"cidade ou região"};
 
 export async function POST(request:Request){
  let input:unknown;try{input=await request.json()}catch{return NextResponse.json({error:"Confira as informações e tente novamente."},{status:400})}
- const parsed=schema.safeParse(input);if(!parsed.success||RESERVED_SLUGS.has(parsed.data?.slug??""))return NextResponse.json({error:"Revise os campos. Esse endereço pode estar reservado."},{status:400});
+ const parsed=schema.safeParse(input);
+ if(!parsed.success){const invalidFields=[...new Set(parsed.error.issues.map(issue=>fieldLabels[String(issue.path[0])]??"informações"))];return NextResponse.json({error:`Confira ${invalidFields.join(", ")} e tente novamente.`},{status:400})}
+ if(RESERVED_SLUGS.has(parsed.data.slug))return NextResponse.json({error:"Esse link está reservado pelo sistema. Escolha outro endereço."},{status:400});
  const supabase=await createClient();if(!supabase)return NextResponse.json({error:"A configuração do espaço ainda não está disponível."},{status:503});
  const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)return NextResponse.json({error:"Entre na sua conta para continuar."},{status:401});
  const value=parsed.data;
