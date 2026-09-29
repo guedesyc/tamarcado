@@ -1,6 +1,25 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. Ainda falta validar publicamente o domínio e configurar/confirmar os serviços de produção.
+Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O conjunto de melhorias descrito abaixo foi validado localmente e enviado para `main`; ainda falta validar publicamente o domínio e aplicar as migrations novas listadas aqui antes de testar as telas conectadas que dependem delas.
+
+## Revisão do painel conectado — 29/09/2026
+
+Foi identificada uma diferença importante entre o laboratório `/demo` (localStorage) e o painel `/app` (Supabase): recursos mostrados na demonstração — especialmente perguntas e dados completos do perfil — não tinham telas equivalentes de edição no painel conectado. Não houve evidência de uma remoção recente dessas tabelas/configurações; a demonstração local e o produto conectado eram implementações separadas. Os dados fictícios do laboratório não devem ser copiados automaticamente para contas reais.
+
+Alterações desta revisão (código versionado em `main`; confirmar a conclusão do deploy automático da Hostinger antes de considerar produção atualizada):
+
+- [x] Calendário profissional: dias anteriores ficam opacos; marcadores separados para atendimento confirmado, pedido/sinal pendente e bloqueio; detalhes do dia usam cores por estado.
+- [x] Clientes: tela com nome, telefone, ação “Ver detalhes”, histórico de pedidos/atendimentos, data, serviço, preço, observações e respostas arquivadas.
+- [x] Serviços: lista compacta com nome, foto associada, preço e estado; tocar/abrir mostra galeria, descrição, duração, modo, capacidade e ações de serviço.
+- [x] Perguntas para clientes: rota de painel `/app/perguntas` para editar perguntas, opções, obrigatoriedade, adicionais de preço e duração por serviço.
+- [x] Configurações: formulário ligado ao Supabase para negócio, nome profissional, e-mail da conta (leitura), WhatsApp, slug derivado, região pública, categorias e intervalos de expediente.
+- [x] Financeiro: visão por cliente/serviço, recebimentos e saldo pendente; o sinal confirmado é abatido do preço total. Registro de complemento é transacional e impede sinal não conferido, duplicidade de quitação e excesso sobre o total.
+- [x] Navegação privada: botão Voltar no layout do painel e transição com o vídeo fornecido; o conteúdo ao fundo desfoca. A preferência de movimento reduzido desativa a animação.
+- [x] Identidade visual: nova logo fornecida pelo usuário substitui o arquivo de marca compartilhado usado pelas páginas; favicon/ícone do app gerado da mesma arte com transparência.
+- [x] Nenhuma tabela é removida. Três novas migrations apenas adicionam função de edição de perguntas, função transacional de recebimento e uma política de leitura para o próprio portfólio ainda não publicado.
+- [ ] Aplicar em ordem as migrations novas `202609290003_service_question_editor.sql`, `202609290004_record_service_balance.sql` e `202609290005_portfolio_owner_read.sql` no Supabase. Não são migrations destrutivas nem removem tabelas, mas as funções e a prévia de fotos dependem delas. O usuário confirmou que as migrations anteriores foram executadas; estas três são novas.
+- [ ] Depois de aplicar migrations e concluir o deploy, validar o fluxo autenticado no domínio Hostinger com conta real: salvar configurações e expediente, editar e responder perguntas, visualizar imagens privadas do portfólio, ver calendário/clientes, conferir sinal e lançar o saldo.
+- [ ] Persistem limitações externas já conhecidas: `wa.me` abre texto para envio manual; o Asaas permanece fora do escopo desta revisão; teste real em vários celulares e validação de DNS/ambiente continuam necessários.
 
 ## O que existe
 
@@ -20,7 +39,7 @@ Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 
 - [x] Projeto Next.js/TypeScript, rotas de autenticação, APIs, integração Supabase/PostgreSQL, RLS e Asaas já presentes no repositório.
 - [x] Migration nova `supabase/migrations/202609230001_public_booking_signal.sql` adiciona configurações Pix, estado/prazo do sinal e tokens adicionais de acompanhamento com hash.
-- [x] `npm run typecheck`, `npm run build` e `git diff --check` passaram na última validação local.
+- [x] Validação desta revisão: `npm run test` (7 testes), `npm run typecheck`, `npm run lint` (0 erros; avisos não bloqueantes) e `npm run build` (Webpack) passaram; `git diff --check` passou.
 - [x] Build da Hostinger corrigido e implantado: `package.json` executa `next build --webpack`; `next.config.ts` foi convertido para `next.config.mjs` para evitar a falha ao carregar a configuração TypeScript no ambiente de build da hospedagem.
 - [x] Capacidade simultânea por serviço adicionada à configuração do serviço, com ajuste posterior por serviço e verificação de capacidade nos horários públicos.
 - [x] Confirmação explícita do WhatsApp adicionada ao fluxo da cliente antes de transmitir a solicitação; é uma confirmação visual do número digitado, não uma verificação por código/SMS.
@@ -39,6 +58,7 @@ Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] URL principal do Supabase Auth atualizada de `localhost` para `https://tamarcado.ygsystems.com.br`; callbacks de produção e desenvolvimento continuam na lista permitida.
 - [x] Página pública corrigida para mostrar o nome do negócio. Navegação móvel passa a incluir todas as seções; cartões de solicitações e botões receberam ajuste de leitura e toque.
 - [x] Navegação móvel compartilhada por todas as páginas do painel, inclusive Início, Serviços e Portfólio; removidas iniciais decorativas remanescentes dos cartões do painel.
+- [x] A logo principal tem fundo transparente e foi otimizada como WebP; o favicon Next.js está em `src/app/icon.png` e é vinculado também nos metadados.
 
 “Código preparado” não significa que o ambiente remoto esteja configurado: ainda é preciso aplicar e testar as migrations no projeto Supabase, conferir variáveis secretas, webhooks e permissões.
 

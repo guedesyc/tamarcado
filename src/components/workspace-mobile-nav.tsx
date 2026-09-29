@@ -9,6 +9,7 @@ const links = [
   ["Solicitações", "/app/solicitacoes"],
   ["Clientes", "/app/clientes"],
   ["Serviços", "/app/servicos"],
+  ["Perguntas", "/app/perguntas"],
   ["Financeiro", "/app/financeiro"],
   ["Portfólio", "/app/portfolio"],
   ["Minha página", "/app/minha-pagina"],
