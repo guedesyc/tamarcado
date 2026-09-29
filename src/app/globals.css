@@ -45,3 +45,11 @@
 @media(max-width:560px){.public-header{align-items:flex-start}.public-header .brand-logo{width:112px}.public-header>div{flex:1}.public-header .btn{font-size:12px;padding:9px 12px}.service-card{flex-wrap:wrap}.service-card .service-text{min-width:calc(100% - 95px)}.service-card .service-price{flex:1;text-align:left}.service-card>a.btn{flex:1;min-width:120px}.booking-month .month-day small{font-size:10px}.booking-month .month-day{min-height:58px}}
 @media(max-width:850px){.app-shell>.mobile-nav,.service-workspace>.mobile-nav{display:none}.workspace-mobile-nav{display:flex;justify-content:flex-start;overflow-x:auto;gap:0;scroll-snap-type:x proximity;padding:9px 10px calc(9px + env(safe-area-inset-bottom))}.workspace-mobile-nav a{flex:0 0 auto;min-width:92px;min-height:42px;display:flex;align-items:center;justify-content:center;padding:8px 10px;scroll-snap-align:start;font-size:12px;white-space:nowrap}.workspace-mobile-nav::-webkit-scrollbar{display:none}}
 .side-bottom .brand-mark,.appointment-row>.avatar{display:none}
+.appointment-actions{display:flex;flex:1 1 330px;justify-content:flex-end;align-items:center;align-content:flex-start;gap:8px;flex-wrap:wrap;min-width:0}
+.appointment-actions>.pill{min-height:40px;font-size:13px;line-height:1.2;white-space:normal;text-align:center}
+.appointment-actions>.form-error{flex:1 0 100%;font-size:13px;line-height:1.45;text-align:right}
+.appointment-proposal{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.appointment-proposal .form-field{min-width:0;margin:0}
+.appointment-proposal>.btn{grid-column:1/-1}
+@media(max-width:850px){.appointment-actions{justify-content:flex-start}.appointment-actions>.form-error{text-align:left}}
+@media(max-width:560px){.appointment-actions{flex-basis:100%;justify-content:stretch}.appointment-actions>.pill{flex:1 1 130px;justify-content:center}.appointment-proposal{grid-template-columns:1fr}}
