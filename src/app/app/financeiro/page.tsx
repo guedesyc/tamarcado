@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FinanceDashboard } from "@/components/finance-dashboard";
+import { BackButton } from "@/components/workspace-navigation";
 
 export default async function FinancePage() {
   const supabase = await createClient();
@@ -14,5 +15,5 @@ export default async function FinancePage() {
     supabase.from("financial_entries").select("id,appointment_id,kind,status,amount_cents,note,method,occurred_at,appointments(service_name_snapshot,clients(name))").eq("business_id", member.business_id).order("occurred_at", { ascending: false }).limit(150),
     supabase.from("businesses").select("timezone").eq("id", member.business_id).maybeSingle(),
   ]);
-  return <main className="wrap app-page-wrap"><span className="eyebrow">Controle do espaço</span><h1 className="serif app-page-title">Financeiro</h1><p className="app-page-description">Sinais, complementos e valores recebidos por atendimento.</p><FinanceDashboard appointments={(appointments ?? []) as never} entries={(entries ?? []) as never} timeZone={business?.timezone ?? "America/Sao_Paulo"}/></main>;
+  return <main className="wrap app-page-wrap"><div className="app-page-back"><BackButton/></div><span className="eyebrow">Controle do espaço</span><h1 className="serif app-page-title">Financeiro</h1><p className="app-page-description">Sinais, complementos e valores recebidos por atendimento.</p><FinanceDashboard appointments={(appointments ?? []) as never} entries={(entries ?? []) as never} timeZone={business?.timezone ?? "America/Sao_Paulo"}/></main>;
 }

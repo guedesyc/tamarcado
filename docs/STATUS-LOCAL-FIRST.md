@@ -1,6 +1,6 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O conjunto de melhorias descrito abaixo foi validado localmente e enviado para `main`; ainda falta validar publicamente o domínio e aplicar as migrations novas listadas aqui antes de testar as telas conectadas que dependem delas.
+Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as três migrations `202609290003` a `202609290005`; após publicar as correções mais recentes, validar as telas conectadas no domínio.
 
 ## Revisão do painel conectado — 29/09/2026
 
@@ -17,8 +17,9 @@ Alterações desta revisão (código versionado em `main`; confirmar a conclusã
 - [x] Navegação privada: botão Voltar no layout do painel e transição com o vídeo fornecido; o conteúdo ao fundo desfoca. A preferência de movimento reduzido desativa a animação.
 - [x] Identidade visual: nova logo fornecida pelo usuário substitui o arquivo de marca compartilhado usado pelas páginas; favicon/ícone do app gerado da mesma arte com transparência.
 - [x] Nenhuma tabela é removida. Três novas migrations apenas adicionam função de edição de perguntas, função transacional de recebimento e uma política de leitura para o próprio portfólio ainda não publicado.
-- [ ] Aplicar em ordem as migrations novas `202609290003_service_question_editor.sql`, `202609290004_record_service_balance.sql` e `202609290005_portfolio_owner_read.sql` no Supabase. Não são migrations destrutivas nem removem tabelas, mas as funções e a prévia de fotos dependem delas. O usuário confirmou que as migrations anteriores foram executadas; estas três são novas.
-- [ ] Depois de aplicar migrations e concluir o deploy, validar o fluxo autenticado no domínio Hostinger com conta real: salvar configurações e expediente, editar e responder perguntas, visualizar imagens privadas do portfólio, ver calendário/clientes, conferir sinal e lançar o saldo.
+- [x] Usuário confirmou que aplicou as migrations `202609290003_service_question_editor.sql`, `202609290004_record_service_balance.sql` e `202609290005_portfolio_owner_read.sql` no Supabase; elas são aditivas e não removem tabelas.
+- [ ] Depois de concluir o deploy das correções mais recentes, validar o fluxo autenticado no domínio Hostinger com conta real: salvar configurações e expediente, editar e responder perguntas, visualizar imagens privadas do portfólio, ver calendário/clientes, conferir sinal e lançar o saldo.
+- [ ] Correção solicitada em 29/09: loader de navegação disparava no clique antes da troca de rota, encerrava prematuramente e repetia quando a rota atualizava; agora inicia só após a mudança de pathname e não renderiza a página anterior como fallback. Clientes passou a consultar contatos, atendimentos e respostas separadamente, e expõe falhas em vez de exibir falso estado vazio. Financeiro e Clientes recebem botão Voltar visível dentro da página.
 - [ ] Persistem limitações externas já conhecidas: `wa.me` abre texto para envio manual; o Asaas permanece fora do escopo desta revisão; teste real em vários celulares e validação de DNS/ambiente continuam necessários.
 
 ## O que existe

@@ -58,6 +58,7 @@
 .workspace-back-bar{position:relative;z-index:5;display:flex;justify-content:flex-end;align-items:center;min-height:42px;padding:4px clamp(16px,3vw,36px);background:var(--paper)}
 .workspace-back-button{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);font-size:12px;font-weight:700}
 .workspace-back-button:hover{border-color:var(--green2);background:var(--cream)}
+.app-page-back{display:flex;justify-content:flex-start;margin:0 0 14px}.app-page-back .workspace-back-button{min-height:40px;padding:8px 15px;font-size:13px}
 .workspace-page-content{min-height:calc(100vh - 42px);transition:filter .18s ease,opacity .18s ease}
 .workspace-page-content.is-transitioning{filter:blur(5px);opacity:.62;pointer-events:none;user-select:none}
 .page-transition-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-content:center;justify-items:center;gap:8px;background:#fff9fae8;backdrop-filter:blur(9px);color:var(--green);font-size:13px;font-weight:700}
