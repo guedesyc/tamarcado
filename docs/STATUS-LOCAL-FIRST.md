@@ -2,6 +2,15 @@
 
 Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as migrations até `202609290005`; a migration `202609290006_cancellation_policy_reason.sql` desta revisão precisa ser aplicada antes de testar a nova política e cancelamento.
 
+## Correção de disponibilidade do calendário público — 29/09/2026
+
+- [x] Reproduzido no Supabase o erro que deixava todos os dias como “Sem vagas”: `calculate_service_quote` falhava com `column reference "option_id" is ambiguous` ao calcular respostas de escolha. A API escondia o erro e o calendário o interpretava como mês sem disponibilidade.
+- [x] Corrigida a função usando variável PL/pgSQL sem colisão e preservadas permissões `anon`/`authenticated`; substituição aplicada ao Supabase do projeto. Nenhuma tabela ou dado foi removido/alterado.
+- [x] Teste somente leitura após a correção: com respostas válidas, 05/10/2026 retornou 17 horários para “box” e 35 para “Unha em Gel”.
+- [x] Migration aditiva e reproduzível adicionada: `202609290007_fix_quote_option_id_ambiguity.sql`.
+- [x] API agora responde erro HTTP explícito se o RPC falhar ou se o cliente Supabase não estiver disponível; o calendário informa falha de consulta em vez de marcar silenciosamente todos os dias como indisponíveis.
+- [ ] Aguardar o deploy da `main` na Hostinger e validar no link público que os dias úteis aparecem disponíveis e que os horários carregam após responder às perguntas obrigatórias.
+
 ## Revisão de agenda, cancelamento e navegação — 29/09/2026
 
 - [x] Agenda e Solicitações recarregam os dados automaticamente a cada 30 minutos enquanto a página estiver visível.

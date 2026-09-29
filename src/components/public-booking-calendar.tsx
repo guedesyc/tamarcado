@@ -18,6 +18,7 @@ export function PublicBookingCalendar({ slug, serviceId, answers, minDate, maxDa
   const [month, setMonth] = useState(() => (value || minDate || todayKey()).slice(0, 7));
   const [days, setDays] = useState<Day[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const answersKey = useMemo(() => JSON.stringify(answers), [answers]);
   const minMonth = (minDate || todayKey()).slice(0, 7);
   // Until the booking window loads, keep the calendar in the current month.
@@ -29,10 +30,10 @@ export function PublicBookingCalendar({ slug, serviceId, answers, minDate, maxDa
     fetch(`/api/availability?${params}`, { cache: "no-store" })
       .then(async response => {
         const result = await response.json();
-        if (!response.ok) throw new Error("Não foi possível consultar este mês.");
+        if (!response.ok) throw new Error(result.error || "Não foi possível consultar este mês.");
         if (active) setDays(result.days ?? []);
       })
-      .catch(() => { if (active) setDays([]); })
+      .catch(error => { if (active) { setDays([]); setError(error instanceof Error ? error.message : "Não foi possível consultar este mês."); } })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [slug, serviceId, month, answersKey]);
@@ -49,7 +50,7 @@ export function PublicBookingCalendar({ slug, serviceId, answers, minDate, maxDa
   const title = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric", timeZone: "UTC" }).format(first);
   const previous = new Date(Date.UTC(year, monthNumber - 2, 1, 12)).toISOString().slice(0, 7);
   const next = new Date(Date.UTC(year, monthNumber, 1, 12)).toISOString().slice(0, 7);
-  const changeMonth = (nextMonth: string) => { setLoading(true); setDays([]); setMonth(nextMonth); };
+  const changeMonth = (nextMonth: string) => { setLoading(true); setDays([]); setError(""); setMonth(nextMonth); };
 
   return <section className="public-booking-calendar" aria-label="Calendário de agendamento">
     <div className="public-calendar-heading">
@@ -71,6 +72,6 @@ export function PublicBookingCalendar({ slug, serviceId, answers, minDate, maxDa
         </button>;
       })}
     </div>
-    <p className="public-calendar-help">{loading ? "Verificando os dias com horários livres…" : "Os dias opacos não têm horários disponíveis."}</p>
+    <p className="public-calendar-help" role={error ? "alert" : undefined}>{loading ? "Verificando os dias com horários livres…" : error || "Os dias opacos não têm horários disponíveis."}</p>
   </section>;
 }
