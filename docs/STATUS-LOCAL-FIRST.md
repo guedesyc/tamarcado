@@ -1,6 +1,6 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 24/09/2026. Este documento diferencia a demonstração local, a prévia estática do GitHub Pages e os recursos conectados que ainda dependem de infraestrutura.
+Atualizado em 28/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. Ainda falta validar publicamente o domínio e configurar/confirmar os serviços de produção.
 
 ## O que existe
 
@@ -21,22 +21,33 @@ Atualizado em 24/09/2026. Este documento diferencia a demonstração local, a pr
 - [x] Projeto Next.js/TypeScript, rotas de autenticação, APIs, integração Supabase/PostgreSQL, RLS e Asaas já presentes no repositório.
 - [x] Migration nova `supabase/migrations/202609230001_public_booking_signal.sql` adiciona configurações Pix, estado/prazo do sinal e tokens adicionais de acompanhamento com hash.
 - [x] `npm run typecheck`, `npm run build` e `git diff --check` passaram na última validação local.
+- [x] Build da Hostinger corrigido e implantado: `package.json` executa `next build --webpack`; `next.config.ts` foi convertido para `next.config.mjs` para evitar a falha ao carregar a configuração TypeScript no ambiente de build da hospedagem.
+- [x] Capacidade simultânea por serviço adicionada à configuração do serviço, com ajuste posterior por serviço e verificação de capacidade nos horários públicos.
+- [x] Confirmação explícita do WhatsApp adicionada ao fluxo da cliente antes de transmitir a solicitação; é uma confirmação visual do número digitado, não uma verificação por código/SMS.
+- [x] Configuração do horizonte público adicionada: mês atual ou até o fim do ano atual, conforme fuso horário do negócio.
+- [x] Migration `202609280001_shared_service_capacity_booking_window.sql` executada no Supabase conforme confirmação do usuário; inclui colunas, regras concorrentes, capacidade e janela de datas.
+- [x] Portfólio agora associa imagens a serviços, aceita foto de exemplo ao criar serviço e exibe a galeria de cada serviço na página pública; o usuário confirmou que aplicou `202609280002_portfolio_service_gallery.sql` no Supabase.
+- [x] Validação de origem das APIs atualizada para funcionar atrás do proxy da Hostinger; detalhes de erros do fluxo de agendamento agora são registrados no servidor e mensagens conhecidas ficam claras para a cliente.
 
 “Código preparado” não significa que o ambiente remoto esteja configurado: ainda é preciso aplicar e testar as migrations no projeto Supabase, conferir variáveis secretas, webhooks e permissões.
 
-## GitHub Pages
+## Hospedagem e GitHub Pages
 
-- [x] Prévia de apresentação estática em `index.html` na raiz do repositório; ela substitui o README como página inicial do GitHub Pages quando a origem atual é a branch `main`.
+- [x] Aplicação Next.js implantada com sucesso na Hostinger após usar Webpack e configuração `next.config.mjs`.
+- [ ] Abrir e validar o app implantado no domínio `tamarcado.ygsystems.com.br` (páginas, navegação, APIs e logs); sucesso no deploy não confirma que Supabase/Asaas já estejam configurados.
+- [ ] Confirmar DNS, HTTPS e variáveis de ambiente do domínio de produção.
+
+- [x] Prévia de apresentação estática em `index.html` na raiz do repositório; ela substituiu o README na página inicial do GitHub Pages.
 - [x] A prévia avisa que login, APIs, banco, WhatsApp e cobranças não funcionam nela.
-- [ ] Após o push, confirmar que a atualização da branch chegou ao Pages e abrir `https://guedesyc.github.io/tamarcado/` para validar o `index.html` (o navegador de verificação está sem sessão autenticada no GitHub para consultar o painel de Pages).
+- [x] Após o push, abrir `https://guedesyc.github.io/tamarcado/` e confirmar que o `index.html` está publicado.
 
-GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, APIs e lógica de servidor; por isso esta prévia não substitui a hospedagem do aplicativo. A documentação do Next.js lista recursos de servidor/API como incompatíveis com export estático. Para login, agenda conectada e links reais de acompanhamento será necessário um host com runtime Next.js, além de Supabase configurado.
+GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema completo usa `proxy.ts`, APIs e lógica de servidor. O app Next.js já foi implantado na Hostinger; login, agenda conectada e links reais dependem também da configuração e validação do Supabase e das variáveis de ambiente.
 
 ## Próximas etapas recomendadas
 
 ### Antes de usar com profissionais/clientes reais
 
-- [ ] Confirmar a publicação da prévia Pages e revisar o site em desktop e celular.
+- [ ] Revisar a prévia Pages em desktop e celular; ela não é o ambiente de produção.
 - [ ] Revisar e testar a jornada inteira: solicitação, proposta, aceite/recusa, sinal, expiração, cancelamento e confirmação.
 - [ ] Validar concorrência de horários, cancelamento durante sinal pendente, liberação após expiração e consistência entre agenda e clientes.
 - [ ] Definir política operacional para cancelamento pela profissional e devolução/uso do sinal; o pagamento Pix é direto entre as partes.
@@ -48,7 +59,10 @@ GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, A
 ### Para ativar o aplicativo conectado
 
 - [ ] Configurar Supabase, aplicar todas as migrations na ordem, testar RLS e isolamento entre negócios.
-- [ ] Configurar domínio e hospedagem com suporte a Next.js (a prévia GitHub Pages não executa o servidor).
+- [x] Migration `202609280001_shared_service_capacity_booking_window.sql` executada no Supabase conforme confirmação do usuário. Ainda falta testar concorrência real e limites de mês/ano de ponta a ponta.
+- [x] Migration `202609280002_portfolio_service_gallery.sql` executada no Supabase conforme confirmação do usuário.
+- [x] Hostinger aceitou e compilou o app Next.js com Node 22.x e `npm run build` (Webpack).
+- [ ] Confirmar DNS/HTTPS de `tamarcado.ygsystems.com.br` e variáveis do app com segurança.
 - [ ] Configurar variáveis de ambiente e autenticação/e-mail; nunca versionar chaves privadas.
 - [ ] Configurar Asaas em sandbox, validar checkout recorrente de R$ 49,99, webhooks idempotentes e cancelamento; só então habilitar produção.
 - [ ] Testar uploads, segurança, backups, logs, rate limiting e recuperação de falhas.
@@ -62,4 +76,6 @@ GitHub Pages só serve arquivos estáticos. O sistema completo usa `proxy.ts`, A
 ## Referências
 
 - Prompt para continuar o trabalho: `docs/PROMPT-CONTINUACAO-LOCAL-FIRST.md`.
-- Entrada do GitHub Pages: `index.html` na raiz do repositório.
+- Fonte versionada: repositório GitHub, branch `main`.
+- Prévia GitHub Pages: `index.html` na raiz do repositório.
+- Domínio planejado do app de produção: `tamarcado.ygsystems.com.br` na Hostinger.

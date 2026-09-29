@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const schema=z.object({status:z.enum(["under_review","proposed","confirmed","cancelled_by_professional","expired","completed","no_show"]),changes:z.object({start_at:z.string().datetime().optional(),end_at:z.string().datetime().optional(),requested_date:z.string().date().optional(),requested_time:z.string().regex(/^\d\d:\d\d$/).optional(),duration_minutes:z.number().int().min(1).max(1440).optional(),price_cents:z.number().int().min(0).optional()}).default({})});
 
 export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){
- const origin=request.headers.get("origin");if(origin&&origin!==new URL(request.url).origin)return NextResponse.json({error:"Não foi possível atualizar o atendimento."},{status:403});
+ if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível atualizar o atendimento deste endereço."},{status:403});
  const {id}=await params;if(!/^[0-9a-f-]{36}$/i.test(id))return NextResponse.json({error:"Atendimento não encontrado."},{status:404});
  let raw:unknown;try{raw=await request.json()}catch{return NextResponse.json({error:"Confira a ação e tente novamente."},{status:400})}
  const parsed=schema.safeParse(raw);if(!parsed.success)return NextResponse.json({error:"Confira a ação e tente novamente."},{status:400});

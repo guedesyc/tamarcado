@@ -2,11 +2,12 @@ import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const schema=z.object({action:z.enum(["accept","cancel","request_another_time","report_signal"]),date:z.string().date().optional(),time:z.string().regex(/^\d\d:\d\d$/).optional()});
 
 export async function POST(request:Request,{params}:{params:Promise<{token:string}>}){
- const origin=request.headers.get("origin");if(origin&&origin!==new URL(request.url).origin)return NextResponse.json({error:"Não foi possível atualizar o atendimento."},{status:403});
+ if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível atualizar o atendimento deste endereço."},{status:403});
  const {token}=await params;if(!/^[A-Za-z0-9_-]{40,60}$/.test(token))return NextResponse.json({error:"Link inválido ou expirado."},{status:404});
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Confira sua escolha e tente novamente."},{status:400})}
  const parsed=schema.safeParse(body);if(!parsed.success)return NextResponse.json({error:"Confira sua escolha e tente novamente."},{status:400});

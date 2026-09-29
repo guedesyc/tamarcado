@@ -41,4 +41,4 @@ A base cobre site institucional, cadastro/recuperação de acesso, onboarding, c
 
 ## Prévia no GitHub Pages
 
-`index.html` na raiz é uma prévia estática de apresentação publicada em `https://guedesyc.github.io/tamarcado/`. Ela não executa o painel completo, autenticação, APIs, Supabase, WhatsApp nem checkout; o aplicativo Next.js completo precisa de hospedagem com runtime de servidor.
+O repositório GitHub (`main`) é a fonte de versionamento. `index.html` na raiz publica uma prévia estática em `https://guedesyc.github.io/tamarcado/`; ela não executa o painel completo, autenticação, APIs, Supabase, WhatsApp nem checkout. O domínio planejado para o aplicativo completo é `tamarcado.ygsystems.com.br`, na Hostinger, com ambiente que suporte o runtime do Next.js.
