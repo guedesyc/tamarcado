@@ -55,6 +55,7 @@ GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema 
 - [ ] Revisar a prévia Pages em desktop e celular; ela não é o ambiente de produção.
 - [ ] Revisar e testar a jornada inteira: solicitação, proposta, aceite/recusa, sinal, expiração, cancelamento e confirmação.
 - [x] Chamada de solicitar sinal reproduzida no banco, corrigida e verificada com reversão de transação; nenhum atendimento real foi modificado pelo teste.
+- [x] Fluxo de banco completo testado com espaço técnico, sem persistir dados: solicitação pública → pedido de sinal → aviso de Pix da cliente → conferência pela profissional → registro financeiro. O retorno `QA_ROLLBACK_SUCCESS` confirmou todas as etapas; envio da mensagem no WhatsApp ainda depende de ação na interface.
 - [ ] Validar concorrência de horários, cancelamento durante sinal pendente, liberação após expiração e consistência entre agenda e clientes.
 - [ ] Definir política operacional para cancelamento pela profissional e devolução/uso do sinal; o pagamento Pix é direto entre as partes.
 - [ ] Revisar notificações: hoje as integrações `wa.me` preparam mensagens para envio; não são disparos automáticos.
