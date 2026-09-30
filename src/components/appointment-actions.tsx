@@ -29,6 +29,7 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [proposing, setProposing] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
 
   async function update(next: string, changes: Record<string, unknown> = {}, popup?: Window | null, whatsappMessage?: string) {
     setBusy(true);
@@ -42,11 +43,24 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o atendimento.");
       if (popup && clientPhone && whatsappMessage) popup.location.href = `https://wa.me/${whatsappPhone(clientPhone)}?text=${encodeURIComponent(whatsappMessage)}`;
       setProposing(false);
+      setRejecting(false);
       router.refresh();
     } catch (reason) {
       popup?.close();
       setError(reason instanceof Error ? reason.message : "Não foi possível atualizar.");
     } finally { setBusy(false); }
+  }
+
+  async function reject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    if (!clientPhone || whatsappPhone(clientPhone).length < 12) { setError("Esta solicitação não tem um WhatsApp válido para avisar a cliente."); return; }
+    const reason = String(new FormData(event.currentTarget).get("reason") ?? "").trim();
+    const popup = window.open("about:blank", "_blank");
+    if (!popup) { setError("O navegador bloqueou a janela do WhatsApp. Permita pop-ups e tente novamente."); return; }
+    const when = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(requestedAt)) : "a data solicitada";
+    const message = [`Olá, ${clientName || "tudo bem"}.`, `Sobre sua solicitação de ${serviceName ?? "atendimento"} para ${when}: não será possível confirmar esse horário.`, ...(reason ? ["", `Justificativa: ${reason}`] : []), "", "Por favor, me chame por aqui para conversarmos sobre outra possibilidade."].join("\n");
+    await update("cancelled_by_professional", { rejection_reason: reason }, popup, message);
   }
 
   async function signal(action: "request" | "verify" | "confirm") {
@@ -129,13 +143,13 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       {signalEnabled
         ? <button className="pill" disabled={busy} onClick={() => signal("request")}><Check size={14}/> Confirmar e pedir sinal</button>
         : <button className="pill" disabled={busy} onClick={() => signal("confirm")}><Check size={14}/> Confirmar atendimento</button>}
-      <button className="pill" disabled={busy} onClick={() => update("cancelled_by_professional")}><X size={14}/> Recusar</button>
+      <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setProposing(false); setError(""); }}><X size={14}/> Recusar</button>
       <button className="pill" disabled={busy} onClick={() => setProposing(!proposing)}><CalendarClock size={14}/> Sugerir horário</button>
       {status === "requested" && <button className="pill" disabled={busy} onClick={() => update("under_review")}><Clock3 size={14}/> Analisar</button>}
     </>}
     {status === "confirmed" && paymentStatus === "signal_requested" && <>
       <span className="pill">Aguardando sinal · 1h</span>
-      <button className="pill" disabled={busy} onClick={() => update("cancelled_by_professional")}><X size={14}/> Cancelar horário</button>
+      <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setError(""); }}><X size={14}/> Cancelar horário</button>
     </>}
     {status === "confirmed" && paymentStatus === "signal_reported" && <button className="pill" disabled={busy} onClick={() => signal("verify")}><Check size={14}/> Conferir sinal recebido</button>}
     {status === "confirmed" && (paymentStatus === "partial" || !paymentStatus) && <button className="pill" disabled={busy} onClick={() => update("completed")}>Concluir</button>}
@@ -147,6 +161,12 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <div className="form-field"><label htmlFor={`proposal-price-${id}`}>Novo valor (opcional, R$)</label><input id={`proposal-price-${id}`} name="price" type="number" min="0" step="0.01"/></div>
       <div className="form-field proposal-reason-field"><label htmlFor={`proposal-reason-${id}`}>Justificativa da mudança (opcional)</label><textarea id={`proposal-reason-${id}`} name="reason" rows={3} maxLength={500} placeholder="Explique brevemente para a cliente por que está sugerindo a mudança."/></div>
       <button className="btn" disabled={busy}>{busy ? "Enviando…" : "Enviar proposta"}</button>
+    </form>}
+    {rejecting && <form onSubmit={reject} className="panel appointment-proposal">
+      <p className="proposal-guidance">Antes de recusar, você pode explicar à cliente o motivo e conversar com ela pelo WhatsApp.</p>
+      <div className="form-field"><label htmlFor={`rejection-reason-${id}`}>Justificativa (opcional)</label><textarea id={`rejection-reason-${id}`} name="reason" rows={3} maxLength={500} placeholder="Ex.: não estarei disponível nesse dia. Podemos combinar outra data pelo WhatsApp."/></div>
+      <button className="btn" disabled={busy}>{busy ? "Preparando aviso…" : "Recusar e avisar pelo WhatsApp"}</button>
+      <button type="button" className="btn secondary" disabled={busy} onClick={() => setRejecting(false)}>Voltar</button>
     </form>}
     {error && <span className="form-error" role="alert">{error}</span>}
   </div>;

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
-const schema=z.object({status:z.enum(["under_review","proposed","confirmed","cancelled_by_professional","expired","completed","no_show"]),changes:z.object({start_at:z.string().datetime().optional(),end_at:z.string().datetime().optional(),requested_date:z.string().date().optional(),requested_time:z.string().regex(/^\d\d:\d\d$/).optional(),duration_minutes:z.number().int().min(1).max(1440).optional(),price_cents:z.number().int().min(0).optional(),proposal_reason:z.string().trim().max(500).optional()}).default({})});
+const schema=z.object({status:z.enum(["under_review","proposed","confirmed","cancelled_by_professional","expired","completed","no_show"]),changes:z.object({start_at:z.string().datetime().optional(),end_at:z.string().datetime().optional(),requested_date:z.string().date().optional(),requested_time:z.string().regex(/^\d\d:\d\d$/).optional(),duration_minutes:z.number().int().min(1).max(1440).optional(),price_cents:z.number().int().min(0).optional(),proposal_reason:z.string().trim().max(500).optional(),rejection_reason:z.string().trim().max(500).optional()}).default({})});
 
 export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){
  if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível atualizar o atendimento deste endereço."},{status:403});
