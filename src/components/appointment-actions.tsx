@@ -63,10 +63,12 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
     await update("cancelled_by_professional", { rejection_reason: reason }, popup, message);
   }
 
-  async function signal(action: "request" | "verify" | "confirm") {
+  async function signal(action: "request" | "verify" | "confirm" | "not_received") {
     setBusy(true);
     setError("");
+    if (action === "not_received" && (!clientPhone || whatsappPhone(clientPhone).length < 12)) { setError("Esta solicitação não tem um WhatsApp válido para avisar a cliente."); setBusy(false); return; }
     const popup = clientPhone ? window.open("about:blank", "_blank") : null;
+    if (action === "not_received" && !popup) { setError("O navegador bloqueou a janela do WhatsApp. Permita pop-ups e tente novamente."); setBusy(false); return; }
     try {
       const response = await fetch(`/api/appointments/${id}/signal`, {
         method: "POST", headers: { "content-type": "application/json" },
@@ -86,6 +88,10 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
         message = `Olá, ${clientName || "tudo bem"}!\n\nSeu atendimento de ${serviceName ?? "serviço"} está confirmado para ${when}.\n\nPIX DO SINAL\nValor: R$ ${amount}\nChave Pix: ${result.pix_key}\nTitular da chave: ${result.pix_holder}\nPrazo para pagamento: até ${deadline} (a vaga fica reservada por 1 hora).\n\nDepois de pagar, acesse o link abaixo e toque em “Já fiz o Pix” para me avisar. Vou conferir o recebimento no extrato.\n\nAcompanhe seu atendimento: ${trackingUrl}\n\nObrigada pela confiança!\nTá Marcado!`;
       } else if (action === "confirm") {
         message = `Olá, ${clientName || "tudo bem"}!\n\nSeu atendimento de ${serviceName ?? "serviço"} está confirmado para ${when}.\n\nObrigada pela confiança.\nTá Marcado!\n\nAcompanhe seu atendimento: ${trackingUrl}`;
+      } else if (action === "not_received") {
+        const deadline = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(String(result.signal_deadline)));
+        const amount = (Number(result.signal_amount_cents) / 100).toFixed(2).replace(".", ",");
+        message = `Olá, ${clientName || "tudo bem"}!\n\nA profissional ainda não identificou o recebimento do sinal do seu atendimento de ${serviceName ?? "serviço"}, marcado para ${when}. Se você já pagou, confira o comprovante e converse com ela por este WhatsApp.\n\nPIX DO SINAL\nValor: R$ ${amount}\nChave Pix: ${result.pix_key}\nTitular: ${result.pix_holder}\nPrazo renovado para pagamento/regularização: ${deadline}.\n\nAcesse o acompanhamento para conferir o status e avisar novamente após resolver: ${trackingUrl}`;
       } else {
         message = `Olá! Conferi seu Pix e confirmei seu atendimento de ${serviceName ?? "serviço"} para ${when}. Obrigada pela confiança. Tá Marcado! Acompanhe seu pedido por aqui: ${trackingUrl}`;
       }
@@ -151,7 +157,10 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <span className="pill">Aguardando sinal · 1h</span>
       <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setError(""); }}><X size={14}/> Cancelar horário</button>
     </>}
-    {status === "confirmed" && paymentStatus === "signal_reported" && <button className="pill" disabled={busy} onClick={() => signal("verify")}><Check size={14}/> Conferir sinal recebido</button>}
+    {status === "confirmed" && paymentStatus === "signal_reported" && <>
+      <button className="pill" disabled={busy} onClick={() => signal("verify")}><Check size={14}/> Conferir sinal recebido</button>
+      <button className="pill" disabled={busy} onClick={() => signal("not_received")}><X size={14}/> Não recebi o sinal do Pix</button>
+    </>}
     {status === "confirmed" && (paymentStatus === "partial" || !paymentStatus) && <button className="pill" disabled={busy} onClick={() => update("completed")}>Concluir</button>}
     {proposing && <form onSubmit={propose} className="panel appointment-proposal">
       <p className="proposal-guidance">Preencha somente o que precisa mudar. Se mudar apenas o dia, deixe o horário em branco para manter o horário atual. Se mudar apenas o horário, deixe o dia em branco para manter a data atual.</p>
