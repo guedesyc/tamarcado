@@ -69,7 +69,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 
   return <>
     <div className={active ? "workspace-page-content is-transitioning" : "workspace-page-content"}>
-      {pathname !== "/app/clientes" && pathname !== "/app/financeiro" && <div className="workspace-back-bar"><BackButton/></div>}
+      {pathname !== "/app" && pathname !== "/app/clientes" && pathname !== "/app/financeiro" && <div className="workspace-back-bar"><BackButton/></div>}
       {children}
     </div>
     <WorkspaceMobileNav />
