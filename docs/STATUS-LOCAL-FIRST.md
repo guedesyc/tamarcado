@@ -1,6 +1,14 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado com sucesso na Hostinger. O usuário confirmou que aplicou no Supabase as migrations até `202609290005`; a migration `202609290006_cancellation_policy_reason.sql` desta revisão precisa ser aplicada antes de testar a nova política e cancelamento.
+Atualizado em 01/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js foi implantado na Hostinger, mas o deploy do commit mais recente ainda precisa ser confirmado. O usuário aplicou `202610010001` e `202610010002` no Supabase. A tabela `supabase_migrations.schema_migrations` não existe nesse projeto, então o CLI não mantém aqui o histórico de execuções. Uma consulta de leitura confirmou que `cancel_public_booking`, `client_cancellation_reason`, `businesses.signal_enabled` e `appointments.proposal_reason` existem. Não reexecutar migrations apenas por falta de histórico.
+
+## Reconhecimento de cancelamento pela profissional — 01/10/2026
+
+- [x] Solicitações lista cancelamentos feitos pela cliente com justificativa.
+- [x] Código atual publicado no GitHub no commit `061c09e`, incluindo compatibilidade de RPCs restaurada após a migration `202610010001`.
+- [x] Typecheck passou após a alteração.
+- [ ] Nova migration `202610010003_mark_client_cancellation_seen.sql` adiciona marcação persistente de “visto”; aplicar no Supabase.
+- [ ] Confirmar deploy na Hostinger e testar: marcar cancelamento como visto deve removê-lo de Solicitações após atualizar a página.
 
 ## Ajustes de proposta, sinal opcional e catálogo — 29/09/2026
 
@@ -12,7 +20,7 @@ Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Configuração de Pix/sinal inclui Sim/Não. Ao desligar, não exige nem exibe dados Pix; confirmações futuras seguem sem sinal. Atendimentos já com sinal pendente não são convertidos por essa alteração.
 - [x] Página pública de serviços usa cartões com imagem quadrada em destaque, dados do serviço e CTA “Quero Marcar!”, encaminhando para a solicitação com o serviço pré-selecionado.
 - [x] Migration aditiva criada: `supabase/migrations/202609290008_optional_signal_partial_proposals.sql`. Acrescenta somente `businesses.signal_enabled` (padrão `true`) e `appointments.proposal_reason`, e atualiza RPCs. Não contém remoção de tabelas nem exclusão de registros.
-- [ ] Aplicar `202609290008_optional_signal_partial_proposals.sql` no Supabase antes de usar propostas parciais ou desligar sinal. A tentativa de execução pelo editor não foi verificada e, portanto, não está marcada como aplicada.
+- [x] Efeitos esperados de `202609290008_optional_signal_partial_proposals.sql` foram confirmados por consulta de leitura: `businesses.signal_enabled` e `appointments.proposal_reason` existem. O histórico CLI está indisponível nesse projeto.
 - [ ] Testar em produção proposta só com data, proposta só com horário, justificativa na página de acompanhamento, sinal Sim/Não, confirmação de sinal ligado, pagamentos já pendentes e recebimento financeiro após deploy.
 - [ ] Validar visualmente catálogo e loader em desktop e telefone real após deploy.
 
@@ -34,7 +42,7 @@ Atualizado em 29/09/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Cancelamento pelo link exige motivo (mínimo 10 caracteres), grava esse motivo e prepara conversa de WhatsApp com profissional, informando data, serviço, sinal e política cadastrada. A profissional e cliente combinam a devolução manualmente; o sistema não movimenta Pix nem reembolsa automaticamente.
 - [x] Configurações incluem política “não reembolsar” ou “permitir avaliar se cancelado com antecedência mínima” de 1 a 720 horas.
 - [x] Nova migration aditiva `202609290006_cancellation_policy_reason.sql`: acrescenta colunas de política e motivo, RPC segura para cancelar com token, evento de auditoria e gatilho para rejeitar cancelamento legado sem justificativa. Não remove tabela nem dados.
-- [ ] Aplicar a migration `202609290006_cancellation_policy_reason.sql` no Supabase depois do deploy e validar pedido/cancelamento com e sem sinal, mensagens WhatsApp, política de prazo e configurações.
+- [x] Efeitos esperados de `202609290006_cancellation_policy_reason.sql` foram confirmados por consulta de leitura: `cancel_public_booking` e `appointments.client_cancellation_reason` existem. Validar pedido/cancelamento com e sem sinal, mensagens WhatsApp, política de prazo e configurações.
 - [ ] Após deploy, conferir no telefone e desktop que menus e calendário continuam interativos, datas passadas/fora da disponibilidade aparecem desabilitadas e novos horários continuam selecionáveis.
 
 ## Revisão do painel conectado — 29/09/2026

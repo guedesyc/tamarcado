@@ -249,3 +249,4 @@
 @media(max-width:560px){.public-calendar-grid{gap:4px}.public-calendar-day{min-height:54px;padding:5px;font-size:12px;border-radius:8px}.public-calendar-day small{font-size:8px}.public-calendar-heading h2{min-width:130px;font-size:15px}}
 @media(max-width:560px){.page-transition-overlay{gap:10px;font-size:14px}.page-transition-overlay video{width:min(330px,82vw);height:min(330px,82vw)}.appointment-proposal{padding:13px}.public-service-card{padding:12px;border-radius:18px}}
 @media(max-width:560px){.branding-upload-grid{grid-template-columns:1fr}}
+.cancellation-seen-action{display:grid;justify-items:start;gap:6px}.cancellation-seen-action .form-error{font-size:12px}.spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
