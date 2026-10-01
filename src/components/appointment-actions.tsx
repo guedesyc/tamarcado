@@ -120,22 +120,49 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       setError("Preencha pelo menos uma informação que deseja alterar.");
       return;
     }
-    const popup = window.open("about:blank", "_blank");
-    if (!popup) { setError("O navegador bloqueou a janela do WhatsApp. Permita pop-ups e tente novamente."); return; }
     const original = requestedAt ? new Date(requestedAt) : new Date();
     const originalDate = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "America/Sao_Paulo" }).format(original);
-    const proposedDate = date || originalDate;
-    const proposedTime = time || (requestedAt ? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(original) : "horário combinado");
+    const originalTime = requestedAt ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: "America/Sao_Paulo" }).format(original) : "";
+    const dateChanged = Boolean(date && date !== originalDate);
+    const timeChanged = Boolean(time && time !== originalTime);
+    const proposedPriceCents = price ? Math.round(Number(price) * 100) : null;
+    const priceChanged = proposedPriceCents !== null && (priceEstimateCents == null || proposedPriceCents !== priceEstimateCents);
+    const durationChanged = duration !== null && duration !== durationMinutes;
+    if (!dateChanged && !timeChanged && !priceChanged && !durationChanged) {
+      setError("Nenhuma alteração foi identificada. Informe um valor diferente do atendimento atual.");
+      return;
+    }
+    const popup = window.open("about:blank", "_blank");
+    if (!popup) { setError("O navegador bloqueou a janela do WhatsApp. Permita pop-ups e tente novamente."); return; }
+    const proposedDate = dateChanged ? date : originalDate;
     const [year, month, day] = proposedDate.split("-").map(Number);
     const dateLabel = new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(Date.UTC(year, month - 1, day, 12)));
-    const durationLabel = duration !== null ? `${Math.floor(duration / 60)}h${duration % 60 ? ` ${duration % 60}min` : ""}` : durationMinutes ? `${Math.floor(durationMinutes / 60)}h${durationMinutes % 60 ? ` ${durationMinutes % 60}min` : ""}` : "a combinar";
-    const priceLabel = price ? `R$ ${Number(price).toFixed(2).replace(".", ",")}` : priceEstimateCents != null ? `R$ ${(priceEstimateCents / 100).toFixed(2).replace(".", ",")}` : "a combinar";
-    const whatsappMessage = [`Olá, ${clientName || "tudo bem"}!`, `Você solicitou ${serviceName ?? "este serviço"} para ${requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "America/Sao_Paulo" }).format(original) : "uma data combinada"}${requestedAt ? ` às ${new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(original)}` : ""}.`, "Precisamos ajustar alguns detalhes.", "", "PROPOSTA", `• Novo dia: ${dateLabel}`, `• Horário: ${proposedTime}`, `• Valor combinado: ${priceLabel}`, `• Duração acordada: ${durationLabel}`, ...(reason ? ["", `Justificativa: ${reason}`] : []), ...(answers.length ? ["", "Informações do pedido:", ...answers.map(answer => `• ${answer.question_label}: ${answerText(answer.answer)}`)] : []), "", "Confira a proposta e responda pelo link de acompanhamento enviado anteriormente."].join("\n");
+    const durationLabel = duration === null ? "" : `${String(Math.floor(duration / 60)).padStart(2, "0")}:${String(duration % 60).padStart(2, "0")}`;
+    const priceLabel = price ? `R$ ${Number(price).toFixed(2).replace(".", ",")}` : "";
+    const requestedDateLabel = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "America/Sao_Paulo" }).format(original) : "uma data combinada";
+    const requestedTimeLabel = requestedAt ? new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Sao_Paulo" }).format(original) : "";
+    const proposalItems = [
+      ...(dateChanged ? [`• Novo dia: ${dateLabel}`] : []),
+      ...(timeChanged ? [`• Horário: ${time}`] : []),
+      ...(priceChanged ? [`• Valor: ${priceLabel}`] : []),
+      ...(durationChanged ? [`• Duração: ${durationLabel}`] : []),
+    ];
+    const whatsappMessage = [
+      `Olá, ${clientName || "tudo bem"}!`,
+      `Você solicitou ${serviceName ?? "este serviço"} para ${requestedDateLabel}${requestedTimeLabel ? ` às ${requestedTimeLabel}` : ""}. Precisamos ajustar alguns detalhes.`,
+      "",
+      "NOVA PROPOSTA:",
+      ...proposalItems,
+      ...(reason ? ["", `Justificativa da profissional: ${reason}`] : []),
+      ...(answers.length ? ["", "Informações do pedido:", ...answers.map(answer => `• ${answer.question_label}: ${answerText(answer.answer)}`)] : []),
+      "",
+      "Confira a proposta e responda pelo link de acompanhamento enviado anteriormente.",
+    ].join("\n");
     await update("proposed", {
-      ...(date ? { requested_date: date } : {}),
-      ...(time ? { requested_time: time } : {}),
-      ...(duration !== null ? { duration_minutes: duration } : {}),
-      ...(price ? { price_cents: Math.round(Number(price) * 100) } : {}),
+      ...(dateChanged ? { requested_date: date } : {}),
+      ...(timeChanged ? { requested_time: time } : {}),
+      ...(durationChanged && duration !== null ? { duration_minutes: duration } : {}),
+      ...(priceChanged && proposedPriceCents !== null ? { price_cents: proposedPriceCents } : {}),
       ...(reason ? { proposal_reason: reason } : {}),
     }, popup, whatsappMessage);
   }
@@ -150,9 +177,10 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
         ? <button className="pill" disabled={busy} onClick={() => signal("request")}><Check size={14}/> Confirmar e pedir sinal</button>
         : <button className="pill" disabled={busy} onClick={() => signal("confirm")}><Check size={14}/> Confirmar atendimento</button>}
       <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setProposing(false); setError(""); }}><X size={14}/> Recusar</button>
-      <button className="pill" disabled={busy} onClick={() => setProposing(!proposing)}><CalendarClock size={14}/> Sugerir horário</button>
-      {status === "requested" && <button className="pill" disabled={busy} onClick={() => update("under_review")}><Clock3 size={14}/> Analisar</button>}
+      <button className="pill" disabled={busy} onClick={() => { setProposing(value => !value); setRejecting(false); setError(""); }}><CalendarClock size={14}/> Sugerir horário</button>
+      {status === "requested" && <button className="pill" disabled={busy} onClick={() => update("under_review")}><Clock3 size={14}/> {busy ? "Analisando…" : "Analisar"}</button>}
     </>}
+    {status === "under_review" && <span className="pill" role="status"><Clock3 size={14}/> Em análise</span>}
     {status === "confirmed" && paymentStatus === "signal_requested" && <>
       <span className="pill">Aguardando sinal · 1h</span>
       <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setError(""); }}><X size={14}/> Cancelar horário</button>

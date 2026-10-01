@@ -94,10 +94,10 @@
 .calendar-day-markers{display:flex;align-items:center;gap:4px;margin-top:auto}
 .professional-calendar-day .calendar-day-markers i,.calendar-legend i{display:block;width:9px;height:9px;margin:0;border-radius:50%;background:var(--green2)}
 .professional-calendar-day .calendar-marker-confirmed,.calendar-legend .calendar-legend-event{background:#2e9861}
-.professional-calendar-day .calendar-marker-pending,.calendar-legend .calendar-legend-pending{background:#d56e55}
-.professional-calendar-day .calendar-marker-block,.calendar-legend .calendar-legend-block{background:#7767b0}
+.professional-calendar-day .calendar-marker-pending,.calendar-legend .calendar-legend-pending{background:#e88936}
+.professional-calendar-day .calendar-marker-block,.calendar-legend .calendar-legend-block{background:#c2414b}
 .calendar-entry.calendar-confirmed{border-left:4px solid #2e9861;background:#f2fbf5}
-.calendar-entry.calendar-request-pending{border-left:4px solid #d56e55;background:#fff6f2}
+.calendar-entry.calendar-request-pending{border-left:4px solid #e88936;background:#fff7ed}
 .calendar-entry.calendar-signal-pending{border-left:4px solid #d89b29;background:#fffbef}
 .calendar-entry.calendar-signal-reported{border-left:4px solid #7767b0;background:#f7f4ff}
 .calendar-entry .status.calendar-confirmed{background:#e9f6ee;color:#237445}
@@ -224,7 +224,7 @@
 .professional-calendar-day i,.calendar-legend i{width:9px;height:9px;border-radius:50%;background:var(--coral);display:block;margin-top:auto}
 .calendar-legend{display:flex;gap:18px;margin-top:13px;color:var(--muted);font-size:12px}
 .calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .calendar-legend-event{background:var(--green2)}
-.calendar-legend .calendar-legend-block{background:var(--coral)}
+.calendar-legend .calendar-legend-block{background:#c2414b}
 .calendar-day-detail .panel-title{font-size:16px;text-transform:capitalize}
 .calendar-entry{position:relative;display:grid;gap:5px;padding:12px 100px 12px 12px;border:1px solid var(--line);border-radius:12px;margin-top:9px;min-width:0}
 .calendar-entry small{color:var(--muted);overflow-wrap:anywhere}
