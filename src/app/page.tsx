@@ -38,8 +38,21 @@ function FloralArtwork({ variant = "rose" }: { variant?: "rose" | "nail" | "brai
   </div>;
 }
 
-function QuoteCard() {
-  return <div className="mh-quote-card"><div className="mh-quote-stars" aria-label="5 de 5 estrelas"><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/></div><blockquote>“Agora minhas clientes escolhem o horário com calma. E eu paro de responder mensagem no meio do atendimento.”</blockquote><div className="mh-person"><span className="mh-person-avatar">A</span><span><b>Ana Martins</b><small>Trancista · Salvador, BA</small></span><CheckCheck size={17}/></div></div>;
+const testimonials = [
+  { quote: "Agora minhas clientes escolhem o horário com calma. E eu paro de responder mensagem no meio do atendimento.", initial: "A", name: "Ana Martins", role: "Trancista · Salvador, BA" },
+  { quote: "Ficou muito mais fácil apresentar meus serviços e explicar o que cada atendimento inclui.", initial: "L", name: "Larissa Rocha", role: "Nail designer · Campinas, SP" },
+  { quote: "Consigo ver meus pedidos e organizar os horários sem me perder nas conversas.", initial: "B", name: "Bruna Lima", role: "Lash designer · Recife, PE" },
+  { quote: "Minhas clientes encontram as informações e pedem um horário no tempo delas.", initial: "C", name: "Camila Alves", role: "Maquiadora · Rio de Janeiro, RJ" },
+  { quote: "Ter os detalhes do serviço junto com a solicitação deixa tudo mais tranquilo.", initial: "J", name: "Jéssica Santos", role: "Trancista · Belo Horizonte, MG" },
+  { quote: "Minha rotina ficou mais clara. Abro a agenda e sei o que tenho para fazer.", initial: "P", name: "Paula Nunes", role: "Designer de sobrancelhas · Goiânia, GO" },
+];
+
+function QuoteCard({ quote, initial, name, role, duplicate = false }: typeof testimonials[number] & { duplicate?: boolean }) {
+  return <article className="mh-quote-card" aria-hidden={duplicate || undefined}><div className="mh-quote-stars" aria-label="5 de 5 estrelas"><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/><Star fill="currentColor"/></div><blockquote>“{quote}”</blockquote><div className="mh-person"><span className="mh-person-avatar">{initial}</span><span><b>{name}</b><small>{role}</small></span><CheckCheck size={17}/></div></article>;
+}
+
+function QuoteRail() {
+  return <section className="mh-testimonials" data-scroll-reveal aria-label="Comentários de profissionais"><div className="mh-testimonial-rail" tabIndex={0} aria-label="Comentários em movimento horizontal"><div className="mh-testimonial-track"><div className="mh-testimonial-group">{testimonials.map(testimonial => <QuoteCard key={testimonial.name} {...testimonial}/>)}</div><div className="mh-testimonial-group" aria-hidden="true">{testimonials.map(testimonial => <QuoteCard key={testimonial.name} {...testimonial} duplicate/>)}</div></div></div></section>;
 }
 
 export default function Home() {
@@ -78,11 +91,11 @@ export default function Home() {
 
       <section className="mh-link-section" data-scroll-reveal><div className="mh-wrap mh-link-grid"><div className="mh-link-visual"><div className="mh-share-card"><div className="mh-share-cover"><FloralArtwork variant="rose"/></div><div className="mh-share-avatar">A</div><div className="mh-share-info"><b>Ana Martins</b><small>Trancista · Rio Vermelho, Salvador</small><p>Tranças feitas com cuidado, no seu tempo. Vamos encontrar o estilo ideal para você?</p><div className="mh-share-buttons"><span>Ver serviços</span><span>Agendar horário <ArrowUpRight size={13}/></span></div></div></div><div className="mh-share-tag"><span><Scissors size={15}/></span>Seu link para compartilhar<small>tamarcado.com.br/ana-trancas</small></div></div><div className="mh-link-copy"><SectionKicker>Seu trabalho, bem apresentado</SectionKicker><h2>Uma página bonita e simples de <em>compartilhar.</em></h2><p>Coloque seu link na bio, envie no WhatsApp ou imprima um QR Code. Sua cliente conhece seu trabalho e encontra o caminho para pedir um horário.</p><div className="mh-link-points"><span><CheckCheck size={17}/> Serviços com valores e detalhes</span><span><CheckCheck size={17}/> Fotos para mostrar seu trabalho</span><span><CheckCheck size={17}/> Um link para usar em todo lugar</span></div><Link href="/cadastro" className="mh-text-link">Quero criar minha página <ArrowRight size={15}/></Link></div></div></section>
 
-      <section className="mh-portfolio" data-scroll-reveal><div className="mh-wrap"><div className="mh-portfolio-head"><div><SectionKicker>Seu portfólio em destaque</SectionKicker><h2>Deixe seu trabalho <em>falar.</em></h2></div><p>Um olhar, um detalhe, um resultado. Mostre o que suas mãos sabem fazer e inspire sua próxima cliente.</p></div><div className="mh-portfolio-grid"><div className="mh-portfolio-tile mh-tile-tall"><FloralArtwork variant="braid"/><span>Tranças que contam histórias</span></div><div className="mh-portfolio-tile"><FloralArtwork variant="nail"/><span>Um detalhe de cada vez</span></div><div className="mh-portfolio-tile mh-tile-wide"><FloralArtwork variant="lash"/><span>Realce do seu jeito</span></div><div className="mh-portfolio-tile"><FloralArtwork variant="skin"/><span>Seu momento de cuidado</span></div><div className="mh-portfolio-statement"><Sparkles size={18}/><b>Seu estilo.<br/>Sua assinatura.</b><small>Vincule suas fotos aos serviços e deixe seu portfólio com a sua cara.</small></div></div><div className="mh-portfolio-caption"><span>Ilustrações demonstrativas — substitua facilmente pelas fotos dos seus trabalhos.</span><Link href="/cadastro" className="mh-text-link">Monte seu portfólio <ArrowRight size={15}/></Link></div></div></section>
 
 
 
-      <section className="mh-quote" data-scroll-reveal><div className="mh-wrap mh-quote-grid"><div><SectionKicker>Feito para a sua realidade</SectionKicker><h2>Você cuida de tantas coisas.<br/><em>Deixe a agenda ajudar.</em></h2></div><QuoteCard/></div></section>
+
+
 
 
 
@@ -96,9 +109,11 @@ export default function Home() {
 
       <section className="mh-faq" data-scroll-reveal id="duvidas"><div className="mh-wrap mh-faq-grid"><div><SectionKicker>Quer saber mais?</SectionKicker><h2>Dúvidas que podem <em>aparecer.</em></h2><p>Se ficou alguma pergunta, talvez encontre a resposta por aqui.</p><Link href="/ajuda" className="mh-text-link">Acessar a central de ajuda <ArrowRight size={15}/></Link></div><div className="mh-faq-list">{faqs.map(([question,answer])=><details key={question}><summary>{question}<ChevronDown size={17}/></summary><p>{answer}</p></details>)}</div></div></section>
 
-      <section className="mh-final" data-scroll-reveal><div className="mh-final-flower"><FloralArtwork variant="rose"/></div><div className="mh-final-content"><SectionKicker>Seu próximo passo</SectionKicker><h2>Seu trabalho merece um espaço <em>só seu.</em></h2><p>Comece sem pressa. Organize a agenda no seu ritmo.</p><Link className="mh-button mh-button-light" href="/cadastro">Criar meu Tá Marcado <ArrowRight size={17}/></Link><span>10 atendimentos grátis · Sem cartão</span></div><div className="mh-final-mark" aria-hidden="true">tm</div></section>
+      <QuoteRail />
+
+      <section className="mh-final" data-scroll-reveal><div className="mh-final-flower"><FloralArtwork variant="rose"/></div><a className="mh-final-social" href="https://instagram.com" aria-label="Instagram"><Instagram size={21}/></a><div className="mh-final-content"><SectionKicker>Seu próximo passo</SectionKicker><h2>Seu trabalho merece um espaço <em>só seu.</em></h2><p>Comece sem pressa. Organize a agenda no seu ritmo.</p><Link className="mh-button mh-button-light" href="/cadastro">Criar meu Tá Marcado <ArrowRight size={17}/></Link><span>10 atendimentos grátis · Sem cartão</span></div><div className="mh-final-mark" aria-hidden="true">tm</div></section>
     </main>
-    <footer className="mh-footer"><div className="mh-wrap mh-footer-main"><div className="mh-footer-brand"><Link href="/" aria-label="Tá Marcado, início"><BrandLogo/></Link><p>Seu trabalho. Seus horários.<br/>Seu Tá Marcado.</p></div><div className="mh-footer-nav"><div><b>Conheça</b><a href="#demonstracao">Demonstração</a><a href="#especialidades">Especialidades</a><a href="#preco">Planos</a></div><div><b>Comece</b><Link href="/cadastro">Criar conta</Link><Link href="/entrar">Entrar</Link><Link href="/demo">Ver demonstração</Link></div><div><b>Ajuda</b><Link href="/ajuda">Central de ajuda</Link><Link href="/termos">Termos de uso</Link><Link href="/privacidade">Privacidade</Link></div></div></div><div className="mh-wrap mh-footer-bottom"><span>© {new Date().getFullYear()} Tá Marcado</span><span>Feito para deixar mais espaço para o que você ama.</span><a href="https://instagram.com" aria-label="Instagram"><Instagram size={18}/></a></div></footer>
+
   </div></ScrollReveal>;
 }
 
