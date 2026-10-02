@@ -24,3 +24,25 @@
 .mh-story-phone-wrap{position:sticky;top:145px;display:flex;justify-content:center;margin-top:20px}.mh-story-phone-wrap .mh-phone{transform:scale(.82) rotate(2deg);transform-origin:top center}.mh-story-phone-wrap .mh-phone-dots{margin-top:-54px}
 @media(max-width:760px){.mh-story-phone-wrap{position:static;display:flex;margin-top:25px}.mh-story-phone-wrap .mh-phone{transform:scale(.78) rotate(2deg);transform-origin:top center}.mh-story-phone-wrap .mh-phone-dots{margin-top:-75px}}
 .mh-menu-toggle{min-width:44px;min-height:44px}.mh-widget-days button{min-height:48px}.mh-widget-times button{min-height:44px}.mh-widget-submit{min-height:48px}
+
+/* Reveal sections gently as they enter the viewport. */
+.mh-scroll-reveal-root{display:contents}
+.mh-scroll-reveal-root.mh-reveal-ready [data-scroll-reveal]{opacity:0;transform:translate3d(0,22px,0);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+.mh-scroll-reveal-root.mh-reveal-ready [data-scroll-reveal].is-visible{opacity:1;transform:translate3d(0,0,0)}
+.mh-hero-logo{position:relative;z-index:2;width:clamp(300px,40vw,500px);height:auto;filter:drop-shadow(0 18px 30px #68445118)}
+.mh-story-card{animation:mh-story-card-in .42s ease both}
+.mh-phone-screen{animation:mh-story-screen-in .42s ease both}
+@keyframes mh-story-card-in{from{opacity:.45;transform:translateX(13px)}to{opacity:1;transform:translateX(0)}}
+@keyframes mh-story-screen-in{from{opacity:.55;transform:translateX(9px)}to{opacity:1;transform:translateX(0)}}
+.mh-story-progress{display:flex;align-items:center;gap:5px;margin-top:17px}
+.mh-story-progress button{width:36px;height:30px;padding:13px 8px;border:0;border-radius:99px;background:transparent;cursor:pointer}
+.mh-story-progress button:before{display:block;width:100%;height:4px;border-radius:99px;background:#eaded9;content:"";transition:background-color .2s,width .2s}
+.mh-story-progress button.active:before{background:var(--mh-plum)}
+.mh-story-progress button:focus-visible{outline:2px solid var(--mh-plum);outline-offset:1px}
+@media(max-width:760px){.mh-hero-visual{min-height:310px}.mh-hero-logo{width:min(83vw,430px)}.mh-hero-sun{inset:8% 12% 7%}.mh-story-intro{display:grid;grid-template-columns:1fr;grid-template-areas:"kicker" "heading" "copy" "link" "phone"}.mh-story-phone-wrap{grid-area:phone}.mh-story-card{min-height:0}.mh-story-progress{margin-top:13px}}
+@media(max-width:400px){.mh-hero-visual{min-height:275px}.mh-hero-logo{width:min(86vw,360px)}}
+@media(prefers-reduced-motion:reduce){.mh-scroll-reveal-root.mh-reveal-ready [data-scroll-reveal],.mh-scroll-reveal-root.mh-reveal-ready [data-scroll-reveal].is-visible{opacity:1;transform:none;transition:none}.mh-story-card,.mh-phone-screen{animation:none}}
+@media(max-width:760px){.mh-story-intro{display:block;grid-template-areas:none}.mh-story-phone-wrap{grid-area:auto}}
+.mh-story-progress button.active:before{transform-origin:left center;animation:mh-story-progress 3s linear both}
+@keyframes mh-story-progress{from{transform:scaleX(.12)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.mh-story-progress button.active:before{animation:none;transform:none}}
