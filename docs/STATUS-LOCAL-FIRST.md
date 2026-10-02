@@ -1,17 +1,19 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 02/10/2026. Último commit sincronizado antes do trabalho local: `b0b3ddf` (cores da Agenda); esta atualização da landing ainda está sem commit e não foi enviada ao GitHub. O GitHub é a fonte de versionamento; GitHub Pages mantém uma prévia estática e o app Next.js usa a Hostinger, cujo deploy deve ser confirmado após publicar. O usuário confirmou `202610010001` e `202610010002` no Supabase. A migration `202610010003_mark_client_cancellation_seen.sql` estava indicada como pendente para habilitar “já visualizada”; confirmar o estado quando voltar ao recurso. A tabela `supabase_migrations.schema_migrations` não existe, então não há histórico pelo CLI. Não reexecutar migrations apenas por falta de histórico.
+Atualizado em 02/10/2026. Código sincronizado com `origin/main` no commit `79e021c` antes desta atualização documental. GitHub (`main`) é a fonte de versionamento; GitHub Pages mantém uma prévia estática e o app Next.js usa a Hostinger. O deploy mais recente da landing não foi conferido no domínio. O usuário confirmou `202610010001` e `202610010002` no Supabase. A migration `202610010003_mark_client_cancellation_seen.sql` continua indicada como pendente para habilitar “já visualizada”; confirmar o estado quando voltar ao recurso. A tabela `supabase_migrations.schema_migrations` não existe, então não há histórico pelo CLI. Não reexecutar migrations apenas por falta de histórico.
 
 ## Landing institucional — 02/10/2026
 
-- [x] Página inicial refeita em módulos React/CSS dedicados, com hero, narrativa de rolagem em mockup de celular, problema/transformação, prévia local de agendamento, página e portfólio, painel, especialidades, detalhes do fluxo, oferta de 10 atendimentos, preço atual, ideia futura de marketplace, FAQ e rodapé.
-- [x] Cabeçalho móvel acessível, navegação por âncoras, SEO específico da página inicial e estilo responsivo com suporte a `prefers-reduced-motion`.
-- [x] Demonstração de agendamento permanece só no cliente: sem conta, gravação, pedido real ou envio de dados.
-- [x] Não foram instaladas dependências nem alteradas integrações, cobrança, autenticação, APIs ou páginas do app. Ilustrações vetoriais/CSS no portfólio são placeholders identificados, aguardando fotos reais aprovadas.
-- [x] `npm run typecheck`, `npm run test` (7 aprovados), `npm run build` e lint direcionado a `src/app/page.tsx` + `src/components/marketing-home.tsx` passaram.
-- [ ] `npm run lint` no repositório todo ainda falha por erro `react-hooks/purity` em `src/components/local-booking-demo.tsx`; os outros 23 avisos são legados. Essa página não foi alterada nesta entrega.
-- [ ] Revisão visual desktop completa pendente: o navegador de revisão disponível só ofereceu viewport estreito; a landing e o calendário foram conferidos nesse viewport.
-- [ ] Ainda não foi feito commit/push nem validado deploy.
+- [x] Landing responsiva com hero de marca, faixa de especialidades logo após o destaque inicial, narrativa em cinco etapas com celular que avança a cada 3 segundos e seleção manual, demonstração local de agendamento, apresentação do painel/fluxo, preço, FAQ e chamada final.
+- [x] A seção de portfólio promocional, o bloco “Feito para a sua realidade” e o footer foram removidos da landing. O recurso de portfólio do produto/painel continua existindo.
+- [x] A faixa final de comentários se move horizontalmente e pausa com foco/hover; respeita `prefers-reduced-motion`. Há cinco comentários de exemplo além do texto anterior. Substituir ou validar com profissionais reais antes de apresentar os exemplos como depoimentos autênticos.
+- [x] O cartão de apresentação usa `public/tamarcado-share-preview.png`, imagem fornecida pelo usuário. O ícone do Instagram aponta para `https://instagram.com/tamarcado_app`.
+- [x] “Experimente por aqui” é uma demonstração client-side: sem conta, gravação, pedido real ou envio de dados. Inclui aviso de prévia local.
+- [x] SEO da página inicial, cabeçalho móvel e suporte a `prefers-reduced-motion`. Alterações restritas à landing e sua imagem; sem mudança de auth, Supabase, APIs, cobrança ou páginas internas.
+- [x] Commits de código enviados à `main`: redesign e animações `f13d9d5`; ordem, tipografia e proporções `0dad165`; remoção do portfólio/rodapé e comentários deslizantes `add8c68`; imagem e link Instagram `79e021c`.
+- [ ] Conferir o deploy Hostinger no domínio e a prévia GitHub Pages após estes commits; não foi verificado se o deploy automático terminou.
+- [ ] Fazer revisão visual da landing em desktop e celular. As verificações de typecheck/test/build listadas em registros antigos eram de uma revisão inicial, antes dos últimos ajustes visuais; elas não foram repetidas para o estado atual.
+- [ ] Conferir após o deploy se a imagem fornecida aparece com bom corte e legibilidade em desktop/celular; confirmar também os cinco textos de exemplo antes de apresentá-los como depoimentos reais.
 
 ## Atualização: solicitações, agenda e registros de teste — 02/10/2026
 

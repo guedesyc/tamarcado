@@ -33,6 +33,12 @@ O checkout hospedado aceita cartão, cria recorrência mensal e mantém dados de
 
 A base cobre site institucional, cadastro/recuperação de acesso, onboarding, criação de serviços com perguntas e modificadores, perfil público, estimativa de preço/duração calculada no servidor, disponibilidade e pedidos, negociação por link, agenda, trial, assinatura Asaas e portfólio. Antes de operar com clientes reais ainda é necessário configurar Supabase e Asaas, aplicar e validar as migrations, e concluir itens de produto/operação: edição de serviços/perfil, exceções e bloqueios na interface do calendário, lançamentos financeiros, mensagens/notificações da negociação, rate limiting distribuído/antiabuso, compressão de imagens e revisão jurídica dos termos/privacidade. Painéis de algumas dessas áreas ainda são estruturas iniciais, não fluxos completos.
 
+### Landing atual
+
+A página institucional do app está em `src/app/page.tsx`, com estilos em `src/app/marketing.css` e interações em `src/components/marketing-home.tsx`. Ela inclui uma demonstração local de agendamento, apresentação dos recursos e uma faixa horizontal de comentários. O bloco de portfólio promocional e o footer foram retirados da landing; o recurso de portfólio do painel permanece disponível. `public/tamarcado-share-preview.png` é a imagem de prévia fornecida pelo usuário, e o Instagram da marca é `https://instagram.com/tamarcado_app`.
+
+Há cinco comentários de exemplo na faixa, além do texto anterior. Troque ou valide esses textos com profissionais reais antes de apresentá-los como depoimentos autênticos. As alterações mais recentes de UI foram enviadas à `main` no commit `79e021c`; ainda é necessário confirmar o deploy da Hostinger. Consulte `docs/STATUS-LOCAL-FIRST.md` para o estado completo e as próximas validações.
+
 ## Comandos
 
 - `npm run dev` — desenvolvimento.
