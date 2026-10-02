@@ -167,3 +167,14 @@
 @media(max-width:760px){.mh-testimonials{padding:27px 0}.mh-testimonial-group{gap:12px;padding-right:12px}.mh-quote-card{width:min(330px,calc(100vw - 36px));min-height:205px;padding:20px}.mh-quote-card blockquote{font-size:16px}.mh-final-social{top:18px;right:18px;width:44px;height:44px}}
 @media(prefers-reduced-motion:reduce){.mh-testimonial-track{animation:none;will-change:auto}}
 @media(prefers-reduced-motion:reduce){.mh-testimonial-rail{overflow-x:auto;scrollbar-width:thin}.mh-testimonial-track{animation:none;will-change:auto}}
+
+/* Use the supplied service-page screenshot and keep the hero mark unobstructed. */
+.mh-hero:after{display:none}
+.mh-hero-visual{min-height:410px;background:transparent}
+.mh-hero-logo{width:clamp(320px,42vw,520px);filter:none}
+.mh-share-card{width:min(390px,90%);aspect-ratio:784/931;overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none;transform:none}
+.mh-share-screen{object-fit:contain;border-radius:18px;box-shadow:0 25px 55px #503d3333}
+.mh-link-visual{min-height:500px}
+.mh-final-social{background:#fff1}
+@media(max-width:760px){.mh-hero-visual{min-height:300px}.mh-hero-logo{width:min(84vw,430px)}.mh-share-card{width:min(315px,90%)}.mh-link-visual{min-height:390px}}
+@media(max-width:400px){.mh-hero-visual{min-height:280px}.mh-hero-logo{width:min(86vw,360px)}}
