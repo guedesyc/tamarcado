@@ -46,3 +46,106 @@
 .mh-story-progress button.active:before{transform-origin:left center;animation:mh-story-progress 3s linear both}
 @keyframes mh-story-progress{from{transform:scaleX(.12)}to{transform:scaleX(1)}}
 @media(prefers-reduced-motion:reduce){.mh-story-progress button.active:before{animation:none;transform:none}}
+
+/* Homepage spacing, hierarchy and section order refinements. */
+.mh-story{padding:82px 0 76px}
+.mh-story-grid{align-items:center;gap:54px}
+.mh-story-intro{position:relative;top:auto;min-height:0;padding-top:0}
+.mh-story-content{display:block;align-self:center;width:100%;max-width:530px;justify-self:center}
+.mh-story-card{width:100%;max-width:520px;min-height:0;margin-inline:auto;padding:25px 28px}
+.mh-story-card h3{font-size:30px}
+.mh-story-card p{font-size:16px}
+.mh-story-num{font-size:13px}
+.mh-story-num span{font-size:12px}
+.mh-story-pill{font-size:11px}
+.mh-booking{padding:78px 0}
+.mh-booking-grid{grid-template-columns:.9fr 1.1fr;gap:54px}
+.mh-booking-widget{max-width:510px;justify-self:center;padding:20px 21px 15px}
+.mh-booking-copy>p,.mh-control-copy>p,.mh-product-copy>p,.mh-problem-grid>div:first-child>p{font-size:17px;line-height:1.75}
+.mh-booking-copy ul{font-size:14px;gap:12px}
+.mh-problem{background:#fffdfa}
+.mh-problem-list{font-size:14px;gap:14px}
+.mh-control-items span,.mh-product-checks span{font-size:13px}
+.mh-story-intro h2,.mh-problem h2,.mh-transformation h2,.mh-booking h2,.mh-link-copy h2,.mh-portfolio h2,.mh-control h2,.mh-quote h2,.mh-specialties h2,.mh-product h2,.mh-offer h2,.mh-price h2,.mh-faq h2{font-size:clamp(38px,4.2vw,56px)}
+.mh-widget-heading b{font-size:13px}
+.mh-widget-heading small{font-size:11px}
+.mh-widget-step>span{font-size:11px}
+.mh-widget-step b{font-size:12px}
+.mh-widget-step small{font-size:10px}
+.mh-widget-services button{min-height:53px}
+.mh-widget-services b{font-size:12px}
+.mh-widget-services small{font-size:10px}
+.mh-widget-days button{min-height:51px}
+.mh-widget-days small{font-size:9px}
+.mh-widget-days b{font-size:13px}
+.mh-widget-times button{font-size:10px}
+.mh-widget-placeholder{font-size:10px}
+.mh-widget-submit{font-size:12px}
+.mh-widget-disclaimer,.mh-widget-success small{font-size:10px}
+.mh-widget-success p{font-size:14px}
+.mh-widget-success button{font-size:12px}
+@media(max-width:1000px){.mh-story-grid{gap:35px}.mh-booking-grid{gap:35px}}
+@media(max-width:760px){
+  .mh-story{padding:66px 0 58px}
+  .mh-story-grid{align-items:start;gap:24px}
+  .mh-story-intro{position:static;min-height:0;padding:0}
+  .mh-story-content{max-width:100%}
+  .mh-story-card{max-width:none;padding:21px}
+  .mh-story-card h3{font-size:25px}
+  .mh-story-card p{font-size:15px}
+  .mh-story-intro h2,.mh-problem h2,.mh-transformation h2,.mh-booking h2,.mh-link-copy h2,.mh-portfolio h2,.mh-control h2,.mh-quote h2,.mh-specialties h2,.mh-product h2,.mh-offer h2,.mh-price h2,.mh-faq h2{font-size:clamp(35px,8.5vw,46px)}
+  .mh-booking{padding:65px 0}
+  .mh-booking-grid{grid-template-columns:1fr;gap:25px}
+  .mh-booking-widget{max-width:560px;justify-self:stretch;padding:18px 16px 14px}
+  .mh-booking-copy>p,.mh-control-copy>p,.mh-product-copy>p,.mh-problem-grid>div:first-child>p{font-size:16px}
+  .mh-booking-copy ul{font-size:14px}
+  .mh-widget-days small{font-size:9px}
+  .mh-widget-days b{font-size:12px}
+  .mh-problem-list{font-size:14px}
+}
+.mh-booking{padding:58px 0}
+.mh-kicker{font-size:11px}
+.mh-text-link,.mh-button{font-size:14px}
+.mh-trust{font-size:11px}
+.mh-hero-copy>p,.mh-link-copy>p,.mh-offer-copy>p,.mh-faq-grid>div>p{font-size:17px;line-height:1.75}
+.mh-link-points span,.mh-offer-includes{font-size:13px}
+.mh-transform-before>p,.mh-transform-after>p{font-size:13px}
+.mh-organized-list b{font-size:12px}
+.mh-organized-list small{font-size:11px}
+.mh-portfolio-caption{font-size:11px}
+.mh-portfolio-tile>span{font-size:12px}
+.mh-portfolio-statement>small{font-size:12px}
+.mh-share-info>small,.mh-share-info p,.mh-share-buttons span{font-size:11px}
+.mh-share-tag{font-size:11px}
+.mh-share-tag small{font-size:10px}
+.mh-dash-greeting,.mh-dash-button{font-size:11px}
+.mh-dash-title small{font-size:9px}
+.mh-dash-stats small,.mh-dash-stats i,.mh-dash-week small{font-size:9px}
+.mh-dash-week b{font-size:10px}
+.mh-dash-appointment b{font-size:11px}
+.mh-dash-appointment small{font-size:9px}
+.mh-confirmed,.mh-pending{font-size:9px}
+.mh-dash-foot{font-size:10px}
+.mh-request-tabs{font-size:10px}
+.mh-request-main b{font-size:12px}
+.mh-request-main small{font-size:10px}
+.mh-answer{font-size:10px}
+.mh-faq-list summary{font-size:14px}
+.mh-faq-list details p{font-size:14px}
+.mh-price-inner>div:first-child>p{font-size:14px}
+.mh-price-card>span:first-child{font-size:11px}
+.mh-price-card>span:nth-of-type(2){font-size:10px}
+.mh-market-copy p{font-size:14px}
+.mh-market-note{font-size:10px}
+@media(max-width:760px){
+  .mh-booking{padding:52px 0}
+  .mh-kicker{font-size:10px}
+  .mh-text-link,.mh-button{font-size:13px}
+  .mh-link-copy>p,.mh-offer-copy>p,.mh-faq-grid>div>p,.mh-market-copy p{font-size:16px}
+  .mh-faq-list summary{font-size:13px}
+  .mh-faq-list details p{font-size:13px}
+  .mh-market-note{font-size:9px}
+}
+.mh-specialties{padding:56px 0 45px}
+.mh-specialty-rail{margin-top:23px}
+@media(max-width:760px){.mh-specialties{padding:43px 0 35px}}
