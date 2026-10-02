@@ -223,7 +223,7 @@
 .professional-calendar-day small{font-size:10px;color:var(--rose-dark)}
 .professional-calendar-day i,.calendar-legend i{width:9px;height:9px;border-radius:50%;background:var(--coral);display:block;margin-top:auto}
 .calendar-legend{display:flex;gap:18px;margin-top:13px;color:var(--muted);font-size:12px}
-.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .calendar-legend-event{background:var(--green2)}
+.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .calendar-legend-event{background:#2e9861}
 .calendar-legend .calendar-legend-block{background:#c2414b}
 .calendar-day-detail .panel-title{font-size:16px;text-transform:capitalize}
 .calendar-entry{position:relative;display:grid;gap:5px;padding:12px 100px 12px 12px;border:1px solid var(--line);border-radius:12px;margin-top:9px;min-width:0}
