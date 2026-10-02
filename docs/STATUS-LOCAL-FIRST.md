@@ -1,8 +1,8 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 01/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém apenas uma prévia estática; o aplicativo Next.js usa a Hostinger e ainda requer validação do deploy remoto. O usuário confirmou `202610010001` e `202610010002` no Supabase; uma verificação anterior confirmou suas colunas/RPCs. A migration `202610010003_mark_client_cancellation_seen.sql` está pendente para habilitar o estado persistente “já visualizada”; a listagem de Solicitações funciona sem ela. A tabela `supabase_migrations.schema_migrations` não existe, então não há histórico pelo CLI. Não reexecutar migrations apenas por falta de histórico.
+Atualizado em 02/10/2026. O código recebido de `origin/main` está no commit `adb7a45` (fast-forward). O GitHub é a fonte de versionamento; GitHub Pages mantém uma prévia estática e o app Next.js usa a Hostinger, cujo deploy desse commit ainda precisa ser confirmado. O usuário confirmou `202610010001` e `202610010002` no Supabase. A migration `202610010003_mark_client_cancellation_seen.sql` está pendente para habilitar a marcação persistente “já visualizada”; as listas funcionam sem ela. A tabela `supabase_migrations.schema_migrations` não existe, então não há histórico pelo CLI. Não reexecutar migrations apenas por falta de histórico.
 
-## Atualização: solicitações, agenda e registros de teste — 01/10/2026
+## Atualização: solicitações, agenda e registros de teste — 02/10/2026
 
 - [x] Solicitações tem três abas exclusivas pelo estado atual: `requested`/`under_review`/`proposed` em andamento; `confirmed`/`completed`/`no_show` aprovadas; `cancelled_by_client`/`cancelled_by_professional`/`expired` canceladas. Cada página consulta até 10 registros.
 - [x] Cancelamentos já vistos continuam no histórico de Canceladas como “Já visualizada”; os registros permanecem no banco. Um cancelamento não aparece na Agenda.
@@ -11,12 +11,15 @@ Atualizado em 01/10/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Consulta de leitura compartilhada pela usuária mostrou os registros de Otaviana e Raquel no mesmo `business_id`, todos com `source=public`, sem evidência de mistura entre negócios. Os eventos registram apenas ator `client`/`professional`, não a identidade individual.
 - [ ] Confirmar no app atualizado que o pedido público de Otaviana para 05/10 (estado `requested` no resultado SQL) aparece somente em Em andamento; ao aprovar deve mudar para Aprovadas e ao cancelar para Canceladas.
 - [ ] Usuária autorizou deixar os registros de teste atuais como estão e limpá-los mais tarde; não apagar nem arquivar agora.
-- [ ] Validar deploy Hostinger da `main` no commit `f371985` e testar mudança exclusiva entre abas, Agenda e paginação acima de 10 registros.
+- [ ] Validar deploy Hostinger da `main` no commit `adb7a45` e testar mudança exclusiva entre abas, Agenda e paginação acima de 10 registros.
+- [x] Commit recebido do GitHub `adb7a45` melhora os detalhes das solicitações: mostra quando o pedido foi solicitado e o horário solicitado; valida que uma proposta tenha mudança real e só informa no WhatsApp os campos alterados; mostra “Em análise” depois de iniciar a análise.
+- [x] Cores do calendário ajustadas para distinguir melhor pendências (âmbar) e bloqueios (vermelho).
+- [x] `npm run typecheck` passou localmente no commit `adb7a45`.
 
 ## Reconhecimento de cancelamento pela profissional — 01/10/2026
 
 - [x] Solicitações lista cancelamentos feitos pela cliente com justificativa.
-- [x] O commit histórico `061c09e` restaurou compatibilidade de RPCs após a migration `202610010001`; a `main` avançou desde então até `f371985`.
+- [x] O commit histórico `061c09e` restaurou compatibilidade de RPCs após a migration `202610010001`; a `main` avançou desde então até `adb7a45`.
 - [x] Typecheck passou após a alteração.
 - [ ] Migration `202610010003_mark_client_cancellation_seen.sql` adiciona marcação persistente de “visto”; aplicar no Supabase para habilitar o botão e o indicador.
 - [ ] Após aplicar, confirmar deploy e testar: marcar cancelamento como visto mantém o registro na aba Canceladas com o indicador “Já visualizada”.
