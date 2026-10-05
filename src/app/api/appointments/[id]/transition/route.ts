@@ -20,7 +20,8 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
    :error.message.includes("Invalid appointment status transition")?"Esta solicitação já mudou de estado. Atualize a página e confira a situação atual."
    :error.message.includes("SIGNAL_REQUIRED")?"Este espaço exige sinal. Use “Confirmar e pedir sinal” para concluir a confirmação."
    :"Não foi possível atualizar o atendimento. Confira a solicitação e tente novamente.";
-  return NextResponse.json({error:message},{status:error.message.includes("SLOT_UNAVAILABLE")?409:400});
+  const capacityConflict=error.message.includes("SLOT_UNAVAILABLE");
+  return NextResponse.json({error:message,...(capacityConflict?{code:"SLOT_UNAVAILABLE"}:{})},{status:capacityConflict?409:400});
  }
  return NextResponse.json({ok:true},{headers:{"Cache-Control":"no-store"}});
 }

@@ -260,3 +260,17 @@
 .cancellation-seen-action{display:grid;justify-items:start;gap:6px}.cancellation-seen-action .form-error{font-size:12px}.spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 
 .request-tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;margin:0 0 4px;scrollbar-width:thin}.request-tab{flex:0 0 auto;padding:11px 16px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--muted);font-size:13px;text-decoration:none;white-space:nowrap}.request-tab.active{background:var(--green);border-color:var(--green);color:white}.request-empty{text-align:center;padding:36px 20px}.request-empty h2{font-size:25px;margin:0 0 8px}.request-empty p{margin:0;color:var(--muted);font-size:13px}.request-pagination{display:flex;justify-content:center;align-items:center;gap:5px;max-width:100%;overflow-x:auto;padding:14px 4px;margin:0 auto;scrollbar-width:thin}.request-page-group{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto}.request-page,.request-page-arrow{width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:50%;background:var(--white);color:var(--ink);text-decoration:none;font-size:13px}.request-page.active{background:var(--green);border-color:var(--green);color:#fff}.request-page-arrow.disabled{opacity:.4;pointer-events:none}.request-page-ellipsis{padding:0 4px;color:var(--muted)}@media(max-width:560px){.request-tabs{margin-right:-16px;padding-right:16px}.request-pagination{justify-content:flex-start}.request-tab{font-size:12px;padding:10px 13px}}
+
+/* Public service options: keep native radio/checkbox inputs compact inside the cards. */
+.form-card .form-field>label.service-card{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;justify-content:initial;gap:12px;width:100%;min-height:66px;box-sizing:border-box;padding:13px 16px;margin:8px 0 0!important;cursor:pointer}
+.form-card .form-field>label.service-card input[type=radio],.form-card .form-field>label.service-card input[type=checkbox]{appearance:auto;width:18px!important;min-width:18px;height:18px;padding:0;margin:0;accent-color:var(--green2)}
+.form-card .form-field>label.service-card .service-text{display:block;width:100%;min-width:0;flex:initial;text-align:left;overflow-wrap:anywhere}
+.form-card .form-field>label.service-card .service-text b{display:block;font-size:14px;line-height:1.35}
+.form-card .form-field>label.service-card .service-text small{display:block;margin-top:5px;font-size:12px;line-height:1.4}
+@media(max-width:560px){.form-card .form-field>label.service-card{grid-template-columns:18px minmax(0,1fr);gap:10px;min-height:62px;padding:12px 13px}}
+.capacity-conflict-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:#24151dcc;backdrop-filter:blur(3px)}
+.capacity-conflict-dialog{width:min(100%,440px);padding:27px;border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:0 24px 80px #24151d40}
+.capacity-conflict-dialog h2{margin:10px 0;font:30px Georgia,serif;color:var(--ink)}
+.capacity-conflict-dialog p{margin:0 0 20px;color:var(--muted);font-size:14px;line-height:1.65}
+@media(max-width:560px){.capacity-conflict-dialog{padding:21px}.capacity-conflict-dialog h2{font-size:26px}}
+.booking-conflict-notice{display:grid;gap:6px;margin:16px 0;padding:14px 16px;border:1px solid #e5bd8d;border-radius:13px;background:#fff8ee;color:#734315;font-size:13px;line-height:1.55}

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { WaitlistList } from "@/components/waitlist-list";
 
 const links = [["Início", "/app"], ["Agenda", "/app/agenda"], ["Solicitações", "/app/solicitacoes"], ["Clientes", "/app/clientes"], ["Lista de espera", "/app/espera"], ["Serviços", "/app/servicos"], ["Perguntas para clientes", "/app/perguntas"], ["Financeiro", "/app/financeiro"], ["Portfólio", "/app/portfolio"], ["Minha página", "/app/minha-pagina"], ["Configurações", "/app/configuracoes"], ["Assinatura", "/app/assinatura"]];
-type Entry = { id: string; status: string; customer_name: string; customer_phone: string; preferred_date: string | null; note: string | null; created_at: string; services: { name: string } | { name: string }[] | null };
+type Entry = { id: string; status: string; customer_name: string; customer_phone: string; preferred_date: string | null; preferred_time: string | null; note: string | null; created_at: string; services: { name: string } | { name: string }[] | null };
 
 export default async function WaitlistPage() {
   const supabase = await createClient();
@@ -16,7 +16,7 @@ export default async function WaitlistPage() {
   if (!member) redirect("/app/onboarding");
   const [{ data: business }, { data, error }] = await Promise.all([
     supabase.from("businesses").select("name,timezone").eq("id", member.business_id).maybeSingle(),
-    supabase.from("waitlist_entries").select("id,status,customer_name,customer_phone,preferred_date,note,created_at,services(name)").eq("business_id", member.business_id).order("created_at", { ascending: false }).limit(100),
+    supabase.from("waitlist_entries").select("id,status,customer_name,customer_phone,preferred_date,preferred_time,note,created_at,services(name)").eq("business_id", member.business_id).order("created_at", { ascending: false }).limit(100),
   ]);
   const entries = (data ?? []) as unknown as Entry[];
   const timeZone = business?.timezone || "America/Sao_Paulo";

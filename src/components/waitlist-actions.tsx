@@ -9,15 +9,15 @@ function digits(phone: string) {
   return value.length === 10 || value.length === 11 ? `55${value}` : value;
 }
 
-export function WaitlistActions({ id, status, name, phone, service, businessName, preferredDate }: {
-  id: string; status: string; name: string; phone: string; service: string; businessName: string; preferredDate?: string | null;
+export function WaitlistActions({ id, status, name, phone, service, businessName, preferredDate, preferredTime }: {
+  id: string; status: string; name: string; phone: string; service: string; businessName: string; preferredDate?: string | null; preferredTime?: string | null;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const active = status === "waiting" || status === "contacted";
   const dateText = preferredDate ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${preferredDate}T12:00:00Z`)) : "sem data específica";
-  const message = `Olá, ${name}! Aqui é ${businessName}. Surgiu uma possibilidade para o serviço ${service}${preferredDate ? ` na data de preferência ${dateText}` : ""}. Quer conversar para combinarmos?`;
+  const message = `Olá, ${name}! Aqui é ${businessName}. Surgiu uma possibilidade para o serviço ${service}${preferredDate ? ` na data de preferência ${dateText}` : ""}${preferredTime ? ` às ${preferredTime.slice(0,5)}` : ""}. Quer conversar para combinarmos?`;
   const whatsapp = `https://wa.me/${digits(phone)}?text=${encodeURIComponent(message)}`;
 
   async function update(next: "contacted" | "booked" | "withdrawn") {

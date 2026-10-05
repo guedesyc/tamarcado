@@ -1,6 +1,6 @@
 import { WaitlistActions } from "@/components/waitlist-actions";
 
-type Entry = { id: string; status: string; customer_name: string; customer_phone: string; preferred_date: string | null; note: string | null; created_at: string; services: { name: string } | { name: string }[] | null };
+type Entry = { id: string; status: string; customer_name: string; customer_phone: string; preferred_date: string | null; preferred_time: string | null; note: string | null; created_at: string; services: { name: string } | { name: string }[] | null };
 
 export function WaitlistList({ entries, businessName, timeZone }: { entries: Entry[]; businessName: string; timeZone: string }) {
   return <section className="panel">{entries.map(entry => {
@@ -8,8 +8,8 @@ export function WaitlistList({ entries, businessName, timeZone }: { entries: Ent
     const preferredDate = entry.preferred_date ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(`${entry.preferred_date}T12:00:00Z`)) : "Sem data específica";
     const created = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short", timeZone }).format(new Date(entry.created_at));
     return <article className="appointment-row waitlist-row" key={entry.id}>
-      <div className="row-main"><b>{entry.customer_name}</b><small>{entry.customer_phone} · {service ?? "Serviço removido"} · Preferência: {preferredDate}</small>{entry.note && <small>{entry.note}</small>}<small>Entrou em {created}</small></div>
-      <WaitlistActions id={entry.id} status={entry.status} name={entry.customer_name} phone={entry.customer_phone} service={service ?? "serviço"} businessName={businessName} preferredDate={entry.preferred_date}/>
+      <div className="row-main"><b>{entry.customer_name}</b><small>{entry.customer_phone} · {service ?? "Serviço removido"} · Preferência: {preferredDate}{entry.preferred_time?` às ${entry.preferred_time.slice(0,5)}`:""}</small>{entry.note && <small>{entry.note}</small>}<small>Entrou em {created}</small></div>
+      <WaitlistActions id={entry.id} status={entry.status} name={entry.customer_name} phone={entry.customer_phone} service={service ?? "serviço"} businessName={businessName} preferredDate={entry.preferred_date} preferredTime={entry.preferred_time}/>
     </article>;
   })}</section>;
 }

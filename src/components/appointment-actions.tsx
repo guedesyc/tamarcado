@@ -17,6 +17,7 @@ type Props = {
   endAt?: string;
   timeZone?: string;
   priceEstimateCents?: number | null;
+  serviceCapacity?: number;
   answers?: { question_label: string; answer: unknown; price_delta_cents: number; duration_delta_minutes: number }[];
 };
 
@@ -25,13 +26,14 @@ function whatsappPhone(value: string): string {
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
 
-export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, timeZone = "America/Sao_Paulo", priceEstimateCents, answers = [] }: Props) {
+export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, timeZone = "America/Sao_Paulo", priceEstimateCents, serviceCapacity = 1, answers = [] }: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [proposing, setProposing] = useState(false);
   const [rejecting, setRejecting] = useState(false);
   const [clock, setClock] = useState(0);
+  const [capacityConflict, setCapacityConflict] = useState(false);
 
   useEffect(() => {
     const initial = window.setTimeout(() => setClock(Date.now()), 0);
@@ -48,6 +50,7 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
         body: JSON.stringify({ status: next, changes }),
       });
       const result = await response.json();
+      if (next === "confirmed" && response.status === 409 && result.code === "SLOT_UNAVAILABLE") { setCapacityConflict(true); return; }
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o atendimento.");
       if (popup && clientPhone && whatsappMessage) popup.location.href = `https://wa.me/${whatsappPhone(clientPhone)}?text=${encodeURIComponent(whatsappMessage)}`;
       setProposing(false);
@@ -83,6 +86,7 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
         body: JSON.stringify({ action }),
       });
       const result = await response.json();
+      if (response.status === 409 && result.code === "SLOT_UNAVAILABLE") { popup?.close(); setCapacityConflict(true); return; }
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o atendimento.");
       if (typeof result.tracking_token !== "string" || !/^[A-Za-z0-9_-]{40,50}$/.test(result.tracking_token)) {
         throw new Error("O atendimento foi atualizado, mas não recebemos um link de acompanhamento válido. Atualize a página antes de avisar a cliente.");
@@ -184,6 +188,7 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
   const reminderUrl = hasValidPhone ? `https://wa.me/${whatsappPhone(clientPhone!)}?text=${encodeURIComponent(reminderText)}` : "";
   const answerText = (value: unknown): string => value == null || value === "" ? "—" : Array.isArray(value) ? value.map(answerText).join(", ") : typeof value === "object" ? Object.values(value as Record<string, unknown>).map(answerText).join(", ") : typeof value === "boolean" ? value ? "Sim" : "Não" : String(value);
   return <div className="appointment-actions">
+    {capacityConflict && <div className="capacity-conflict-backdrop"><section className="capacity-conflict-dialog" role="alertdialog" aria-modal="true" aria-labelledby={`capacity-conflict-title-${id}`} aria-describedby={`capacity-conflict-description-${id}`}><span className="eyebrow">Disponibilidade atualizada</span><h2 id={`capacity-conflict-title-${id}`}>Não foi possível confirmar</h2><p id={`capacity-conflict-description-${id}`}>Este serviço permite até {serviceCapacity} {serviceCapacity===1?"atendimento simultâneo":"atendimentos simultâneos"}. Outra confirmação já ocupou a última vaga nesse horário. Esta solicitação continua em andamento; combine outra data ou horário com a cliente.</p><button className="btn" type="button" onClick={()=>setCapacityConflict(false)}>Entendi</button></section></div>}
     {(priceEstimateCents != null || answers.length > 0) && <details className="request-estimate-details"><summary>Ver respostas e valor calculado</summary><div><b>Estimativa do serviço com as opções: {priceEstimateCents == null ? "A combinar" : `R$ ${(priceEstimateCents / 100).toFixed(2).replace(".", ",")}`}</b>{durationMinutes > 0 && <small>Duração calculada: {Math.floor(durationMinutes / 60)}h {durationMinutes % 60}min</small>}{answers.map((answer, index) => <p key={`${answer.question_label}-${index}`}><span>{answer.question_label}:</span> {answerText(answer.answer)}{answer.price_delta_cents ? ` · adicional ${answer.price_delta_cents > 0 ? "+" : "−"}R$ ${(Math.abs(answer.price_delta_cents) / 100).toFixed(2).replace(".", ",")}` : ""}{answer.duration_delta_minutes ? ` · ${answer.duration_delta_minutes > 0 ? "+" : "−"}${Math.floor(Math.abs(answer.duration_delta_minutes) / 60)}h ${Math.abs(answer.duration_delta_minutes) % 60}min` : ""}</p>)}</div></details>}
     {pending && <>
       {signalEnabled

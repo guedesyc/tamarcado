@@ -10,6 +10,7 @@ const schema = z.object({
   name: z.string().trim().min(2).max(100),
   phone: z.string().trim().min(10).max(30),
   preferredDate: z.union([z.string().date(), z.literal("")]).optional(),
+  preferredTime: z.union([z.string().regex(/^\d{2}:\d{2}$/), z.literal("")]).optional(),
   note: z.string().trim().max(500).optional(),
 });
 
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
     p_phone: parsed.data.phone,
     p_preferred_date: parsed.data.preferredDate || null,
     p_note: parsed.data.note || null,
+    p_preferred_time: parsed.data.preferredTime || null,
   });
   if (error) {
     console.error("[public-waitlist] submission rejected", { code: error.code });

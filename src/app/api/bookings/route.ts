@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       : error.message.includes("INVALID_BOOKING") ? "Confira seu nome e WhatsApp e tente novamente."
       : "Não foi possível registrar sua solicitação agora. Recarregue a página e tente novamente.";
     const status = error.message.includes("TM_TRIAL_PAUSED") ? 402 : error.message.includes("SLOT_UNAVAILABLE") ? 409 : 400;
-    return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message, ...(error.message.includes("SLOT_UNAVAILABLE") ? { code: "SLOT_UNAVAILABLE" } : {}) }, { status });
   }
   return NextResponse.json({ ok: true, trackingUrl: `/r/${token}` }, { status: 201, headers: { "Cache-Control": "no-store" } });
 }
