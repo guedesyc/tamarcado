@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Clock3 } from "lucide-react";
+import { AppointmentActions } from "@/components/appointment-actions";
 
 type Appointment = {
   id: string; status: string; payment_status: string; start_at: string; end_at: string;
-  service_name_snapshot: string; client_name_snapshot?: string | null; clients: { name: string; phone: string } | { name: string; phone: string }[] | null;
+  service_name_snapshot: string; client_name_snapshot?: string | null; price_estimate_cents?: number | null;
+  clients: { name: string; phone: string } | { name: string; phone: string }[] | null;
+  services?: { simultaneous_capacity?: number } | { simultaneous_capacity?: number }[] | null;
+  appointment_answers?: { question_label: string; answer: unknown; price_delta_cents: number; duration_delta_minutes: number }[];
 };
 type Block = { id: string; starts_at: string; ends_at: string; kind: string; label: string | null };
 
@@ -17,8 +21,8 @@ function clientName(appointment: Appointment) {
   return appointment.client_name_snapshot || (Array.isArray(appointment.clients) ? appointment.clients[0]?.name : appointment.clients?.name);
 }
 
-export function ProfessionalCalendar({ month, today, selectedDay, timeZone, appointments, blocks }: {
-  month: string; today: string; selectedDay?: string; timeZone: string; appointments: Appointment[]; blocks: Block[];
+export function ProfessionalCalendar({ month, today, selectedDay, timeZone, appointments, blocks, signalEnabled = true }: {
+  month: string; today: string; selectedDay?: string; timeZone: string; appointments: Appointment[]; blocks: Block[]; signalEnabled?: boolean;
 }) {
   const [year, monthNumber] = month.split("-").map(Number);
   const first = new Date(Date.UTC(year, monthNumber - 1, 1, 12));
@@ -39,9 +43,9 @@ export function ProfessionalCalendar({ month, today, selectedDay, timeZone, appo
   return <div className="professional-calendar">
     <section className="panel">
       <div className="calendar-month-heading">
-        <Link className="pill" aria-label="Mês anterior" href={`/app/agenda?mes=${previous}`}><ChevronLeft size={16}/></Link>
+        <Link prefetch className="pill" aria-label="Mês anterior" href={`/app/agenda?mes=${previous}`}><ChevronLeft size={16}/></Link>
         <h2>{title}</h2>
-        <Link className="pill" aria-label="Próximo mês" href={`/app/agenda?mes=${next}`}><ChevronRight size={16}/></Link>
+        <Link prefetch className="pill" aria-label="Próximo mês" href={`/app/agenda?mes=${next}`}><ChevronRight size={16}/></Link>
       </div>
       <div className="professional-calendar-grid" role="grid" aria-label={`Agenda de ${title}`}>
         {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map(label => <span className="calendar-weekday" key={label}>{label}</span>)}
@@ -64,10 +68,11 @@ export function ProfessionalCalendar({ month, today, selectedDay, timeZone, appo
     <section className="panel calendar-day-detail">
       <div className="panel-title">{new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeZone: "UTC" }).format(new Date(`${selectedDate}T12:00:00Z`))}</div>
       {selectedBlocks.map(block => <div className="calendar-entry blocked-entry" key={block.id}><b>{block.label || "Horário bloqueado"}</b><small>{new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone }).format(new Date(block.starts_at))}–{new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone }).format(new Date(block.ends_at))}</small></div>)}
-      {visibleAppointments.map(item => { const pendingSignal = ["signal_requested", "signal_reported"].includes(item.payment_status); const className = item.status === "no_show" ? "calendar-no-show" : item.status === "completed" ? "calendar-confirmed" : item.status !== "confirmed" ? "calendar-request-pending" : pendingSignal ? (item.payment_status === "signal_reported" ? "calendar-signal-reported" : "calendar-signal-pending") : "calendar-confirmed"; return <article className={`calendar-entry ${className}`} key={item.id}>
-        <b>{new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone }).format(new Date(item.start_at))} · {clientName(item) || "Cliente"}</b>
+      {visibleAppointments.map(item => { const pendingSignal = ["signal_requested", "signal_reported"].includes(item.payment_status); const clientName = item.client_name_snapshot || (Array.isArray(item.clients) ? item.clients[0]?.name : item.clients?.name); const clientPhone = Array.isArray(item.clients) ? item.clients[0]?.phone : item.clients?.phone; const serviceCapacity = Array.isArray(item.services) ? item.services[0]?.simultaneous_capacity : item.services?.simultaneous_capacity; const className = item.status === "no_show" ? "calendar-no-show" : item.status === "completed" ? "calendar-confirmed" : item.status !== "confirmed" ? "calendar-request-pending" : pendingSignal ? (item.payment_status === "signal_reported" ? "calendar-signal-reported" : "calendar-signal-pending") : "calendar-confirmed"; return <article className={`calendar-entry ${className}`} key={item.id}>
+        <b>{new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone }).format(new Date(item.start_at))} · {clientName || "Cliente"}</b>
         <small>{item.service_name_snapshot} · {item.status === "no_show" ? "Cliente não compareceu" : item.status === "completed" ? "Concluído" : item.payment_status === "signal_requested" ? "Aguardando sinal" : item.payment_status === "signal_reported" ? "Sinal informado · falta conferir" : item.status === "confirmed" ? "Confirmado" : "Aguardando confirmação"}</small>
         <span className={`status ${className}`}>{item.status === "no_show" ? "Falta" : item.status === "completed" ? "Concluído" : item.payment_status === "signal_requested" ? "Aguardando sinal" : item.payment_status === "signal_reported" ? "Conferir sinal" : item.status === "confirmed" ? "Confirmado" : "Pendente"}</span>
+        {["requested", "under_review", "proposed", "confirmed"].includes(item.status) && <AppointmentActions id={item.id} status={item.status} paymentStatus={item.payment_status} signalEnabled={signalEnabled} clientPhone={clientPhone} clientName={clientName} serviceName={item.service_name_snapshot} requestedAt={item.start_at} endAt={item.end_at} timeZone={timeZone} serviceCapacity={serviceCapacity} priceEstimateCents={item.price_estimate_cents} answers={item.appointment_answers}/>}
       </article>;})}
       {!selectedBlocks.length && !visibleAppointments.length && <p className="calendar-empty"><Clock3 size={16}/> Nenhum atendimento ou bloqueio neste dia.</p>}
     </section>
