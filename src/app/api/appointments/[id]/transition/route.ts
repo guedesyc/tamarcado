@@ -16,6 +16,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
  if(error){
   console.error("[appointment-transition] RPC failed",{code:error.code,message:error.message,appointmentId:id,nextStatus:parsed.data.status});
   const message=error.message.includes("SLOT_UNAVAILABLE")?"O horário proposto está fora do expediente, bloqueado ou sem capacidade. Confira a data, a duração e o horário de atendimento da profissional."
+   :error.message.includes("NO_SHOW_TOO_EARLY")?"A falta só pode ser registrada depois do término do horário marcado."
    :error.message.includes("Invalid appointment status transition")?"Esta solicitação já mudou de estado. Atualize a página e confira a situação atual."
    :error.message.includes("SIGNAL_REQUIRED")?"Este espaço exige sinal. Use “Confirmar e pedir sinal” para concluir a confirmação."
    :"Não foi possível atualizar o atendimento. Confira a solicitação e tente novamente.";

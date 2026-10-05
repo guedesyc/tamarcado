@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimitRequest } from "@/lib/rate-limit";
 
 const answerSchema=z.object({question_id:z.string().uuid(),option_ids:z.array(z.string().uuid()).max(20).default([]),value:z.union([z.string().max(1000),z.number(),z.boolean()]).optional()});
 const querySchema=z.object({slug:z.string().regex(/^[a-z0-9-]{3,40}$/),serviceId:z.string().uuid().optional(),date:z.string().date().optional(),month:z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/).optional(),answers:z.string().max(8000).optional(),window:z.enum(["1"]).optional()});
 
 export async function GET(request:Request){
+ const limit=rateLimitRequest(request,"public-availability",120,60_000);if(!limit.allowed)return NextResponse.json({error:"Muitas consultas de agenda. Aguarde um instante."},{status:429,headers:{"Retry-After":String(limit.retryAfterSeconds),"Cache-Control":"no-store"}});
  const url=new URL(request.url);const parsed=querySchema.safeParse({slug:url.searchParams.get("slug"),serviceId:url.searchParams.get("serviceId")??undefined,date:url.searchParams.get("date")??undefined,month:url.searchParams.get("month")??undefined,answers:url.searchParams.get("answers")??undefined,window:url.searchParams.get("window")??undefined});
  if(!parsed.success)return NextResponse.json({slots:[]},{status:400,headers:{"Cache-Control":"no-store"}});
  const supabase=await createClient();if(!supabase)return NextResponse.json({error:"Serviço de agenda temporariamente indisponível."},{status:503,headers:{"Cache-Control":"no-store"}});

@@ -10,31 +10,32 @@ export function isSameSiteOrigin(request: Request): boolean {
     return false;
   }
 
-  const candidates = new Set<string>();
-  candidates.add("https://tamarcado.ygsystems.com.br");
+  const candidates = new Set<string>(["https://tamarcado.ygsystems.com.br"]);
+  const productionHosts = new Set(["tamarcado.ygsystems.com.br"]);
   try {
-    candidates.add(new URL(request.url).origin.toLowerCase());
+    const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+    if (configuredSiteUrl) {
+      const configuredOrigin = new URL(configuredSiteUrl);
+      if (configuredOrigin.protocol === "https:") {
+        candidates.add(configuredOrigin.origin.toLowerCase());
+        productionHosts.add(configuredOrigin.hostname.toLowerCase());
+      }
+    }
   } catch {
-    // A malformed request URL must not disable the forwarded-host checks.
+    // Ignore malformed optional configuration; keep the canonical production origin.
   }
 
   const forwardedHost = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
   const host = forwardedHost || request.headers.get("host")?.trim();
   if (host) {
-    const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
-    if (forwardedProto) candidates.add(`${forwardedProto}://${host}`.toLowerCase());
-    else candidates.add(`${parsedOrigin.protocol}//${host}`.toLowerCase());
-  }
-
-  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configuredSiteUrl) {
-    try {
-      const configuredOrigin = new URL(configuredSiteUrl);
-      if (process.env.NODE_ENV !== "production" || !["localhost", "127.0.0.1", "::1"].includes(configuredOrigin.hostname)) {
-        candidates.add(configuredOrigin.origin.toLowerCase());
-      }
-    } catch {
-      // Ignore invalid optional configuration; compare against the request hosts.
+    const normalizedHost = host.toLowerCase();
+    const localHost = ["localhost", "127.0.0.1", "[::1]"].some(local => normalizedHost.startsWith(local));
+    if (process.env.NODE_ENV !== "production" && localHost) {
+      const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || parsedOrigin.protocol.replace(":", "");
+      if (["http", "https"].includes(forwardedProto)) candidates.add(`${forwardedProto}://${host}`.toLowerCase());
+    } else if (productionHosts.has(normalizedHost.split(":")[0])) {
+      const proto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim().toLowerCase() || "https";
+      if (proto === "https") candidates.add(`https://${normalizedHost}`);
     }
   }
 

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimitRequest } from "@/lib/rate-limit";
 
 const answer=z.object({question_id:z.string().uuid(),option_ids:z.array(z.string().uuid()).max(20).default([]),value:z.union([z.string().max(1000),z.number(),z.boolean()]).optional()});
 const schema=z.object({slug:z.string().regex(/^[a-z0-9-]{3,40}$/),serviceId:z.string().uuid(),answers:z.array(answer).max(20)});
 export async function POST(request:Request){
+ const limit=rateLimitRequest(request,"public-quote",60,60_000);if(!limit.allowed)return NextResponse.json({error:"Muitas consultas em sequência. Aguarde um instante."},{status:429,headers:{"Retry-After":String(limit.retryAfterSeconds),"Cache-Control":"no-store"}});
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Dados inválidos."},{status:400})}
  const parsed=schema.safeParse(body);if(!parsed.success)return NextResponse.json({error:"Dados inválidos."},{status:400});
  const supabase=await createClient();if(!supabase)return NextResponse.json({error:"Serviço indisponível."},{status:503});

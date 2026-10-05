@@ -8,6 +8,7 @@ const errorMessages:Record<string,string>={
   invalid:"Confira seu nome, e-mail e senha. A senha precisa ter pelo menos 10 caracteres.",
   config:"O cadastro está temporariamente indisponível. Tente novamente mais tarde.",
   signup:"Não foi possível criar seu acesso. Verifique se esse e-mail já está cadastrado e tente entrar ou recuperar a senha.",
+  limite:"Muitas tentativas de cadastro. Aguarde alguns minutos e tente novamente.",
   confirmacao:"As senhas não coincidem. Confira os dois campos e tente novamente."
 };
 

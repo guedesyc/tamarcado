@@ -1,6 +1,15 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 02/10/2026. Código sincronizado com `origin/main` no commit `79e021c` antes desta atualização documental. GitHub (`main`) é a fonte de versionamento; GitHub Pages mantém uma prévia estática e o app Next.js usa a Hostinger. O deploy mais recente da landing não foi conferido no domínio. O usuário confirmou `202610010001` e `202610010002` no Supabase. A migration `202610010003_mark_client_cancellation_seen.sql` continua indicada como pendente para habilitar “já visualizada”; confirmar o estado quando voltar ao recurso. A tabela `supabase_migrations.schema_migrations` não existe, então não há histórico pelo CLI. Não reexecutar migrations apenas por falta de histórico.
+Atualizado em 04/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; o deploy das últimas alterações ainda precisa ser conferido. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
+
+## Revisão dos passos 1, 2 e 4 — 04/10/2026
+
+- [x] Passo 1 — lembrete manual: atendimentos confirmados futuros podem abrir o WhatsApp com texto pré-preenchido com nome, serviço, data e horário. A profissional ainda precisa conferir e tocar em Enviar; não há disparo automático.
+- [x] Passo 2 — falta e lista de espera: a profissional só pode marcar falta depois do término do atendimento; a agenda e as solicitações distinguem esse estado. A página pública permite à cliente pedir voluntariamente para entrar na lista, e o painel lista, prepara contato manual pelo WhatsApp, atualiza estado ou apaga o registro com confirmação.
+- [x] Passo 4 — segurança/readiness: validação de origem nas rotas mutáveis, limites de tentativas nas rotas públicas/de autenticação, origem pública canônica mais restrita, logs de erro reduzidos e aviso honesto na política de privacidade sobre dados/retensão pendentes.
+- [x] Testes locais desta revisão: `npm run typecheck`, `npm test` (11/11), build Webpack (`npm run build`) e lint isolado dos arquivos alterados passaram. `npm run lint` global segue falhando por uma chamada impura a `Date.now()` preexistente em `src/components/local-booking-demo.tsx`; os demais apontamentos são warnings não bloqueantes e estão fora do escopo desta revisão.
+- [x] Usuário confirmou a aplicação de `supabase/migrations/202610040001_waitlist.sql` no Supabase.
+- [ ] Antes de produção com múltiplas instâncias, substituir o limitador process-local por armazenamento compartilhado (Redis/KV) e concluir prazo de retenção, canal de privacidade e revisão jurídica.
 
 ## Landing institucional — 02/10/2026
 

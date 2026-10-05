@@ -3,7 +3,13 @@
  */
 export function getSiteUrl(requestUrl?: string): URL {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configured) return new URL(configured);
+  if (configured) {
+    const parsed = new URL(configured);
+    if (parsed.username || parsed.password) throw new Error("NEXT_PUBLIC_SITE_URL must not contain credentials.");
+    if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") throw new Error("NEXT_PUBLIC_SITE_URL must use HTTPS in production.");
+    return new URL(parsed.origin);
+  }
+  if (process.env.NODE_ENV === "production") return new URL("https://tamarcado.ygsystems.com.br");
   return new URL(requestUrl ?? "http://localhost:3000");
 }
 

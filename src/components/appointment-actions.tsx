@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Clock3, CalendarClock } from "lucide-react";
 import { durationToMinutes } from "@/lib/duration";
@@ -15,6 +15,7 @@ type Props = {
   serviceName?: string;
   requestedAt?: string;
   endAt?: string;
+  timeZone?: string;
   priceEstimateCents?: number | null;
   answers?: { question_label: string; answer: unknown; price_delta_cents: number; duration_delta_minutes: number }[];
 };
@@ -24,12 +25,19 @@ function whatsappPhone(value: string): string {
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
 
-export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, priceEstimateCents, answers = [] }: Props) {
+export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, timeZone = "America/Sao_Paulo", priceEstimateCents, answers = [] }: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [proposing, setProposing] = useState(false);
   const [rejecting, setRejecting] = useState(false);
+  const [clock, setClock] = useState(0);
+
+  useEffect(() => {
+    const initial = window.setTimeout(() => setClock(Date.now()), 0);
+    const interval = window.setInterval(() => setClock(Date.now()), 60_000);
+    return () => { window.clearTimeout(initial); window.clearInterval(interval); };
+  }, []);
 
   async function update(next: string, changes: Record<string, unknown> = {}, popup?: Window | null, whatsappMessage?: string) {
     setBusy(true);
@@ -169,6 +177,11 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
 
   const pending = ["requested", "under_review", "proposed"].includes(status);
   const durationMinutes = requestedAt && endAt ? Math.max(0, Math.round((new Date(endAt).getTime() - new Date(requestedAt).getTime()) / 60000)) : 0;
+  const hasValidPhone = Boolean(clientPhone && whatsappPhone(clientPhone).length >= 12);
+  const appointmentHasEnded = Boolean(endAt && clock && new Date(endAt).getTime() <= clock);
+  const reminderWhen = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(requestedAt)) : "";
+  const reminderText = `Olá, ${clientName || "tudo bem"}! Passando para lembrar do seu atendimento de ${serviceName ?? "serviço"}, marcado para ${reminderWhen}. Se precisar falar comigo sobre o horário, pode responder por aqui.`;
+  const reminderUrl = hasValidPhone ? `https://wa.me/${whatsappPhone(clientPhone!)}?text=${encodeURIComponent(reminderText)}` : "";
   const answerText = (value: unknown): string => value == null || value === "" ? "—" : Array.isArray(value) ? value.map(answerText).join(", ") : typeof value === "object" ? Object.values(value as Record<string, unknown>).map(answerText).join(", ") : typeof value === "boolean" ? value ? "Sim" : "Não" : String(value);
   return <div className="appointment-actions">
     {(priceEstimateCents != null || answers.length > 0) && <details className="request-estimate-details"><summary>Ver respostas e valor calculado</summary><div><b>Estimativa do serviço com as opções: {priceEstimateCents == null ? "A combinar" : `R$ ${(priceEstimateCents / 100).toFixed(2).replace(".", ",")}`}</b>{durationMinutes > 0 && <small>Duração calculada: {Math.floor(durationMinutes / 60)}h {durationMinutes % 60}min</small>}{answers.map((answer, index) => <p key={`${answer.question_label}-${index}`}><span>{answer.question_label}:</span> {answerText(answer.answer)}{answer.price_delta_cents ? ` · adicional ${answer.price_delta_cents > 0 ? "+" : "−"}R$ ${(Math.abs(answer.price_delta_cents) / 100).toFixed(2).replace(".", ",")}` : ""}{answer.duration_delta_minutes ? ` · ${answer.duration_delta_minutes > 0 ? "+" : "−"}${Math.floor(Math.abs(answer.duration_delta_minutes) / 60)}h ${Math.abs(answer.duration_delta_minutes) % 60}min` : ""}</p>)}</div></details>}
@@ -190,6 +203,12 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <button className="pill" disabled={busy} onClick={() => signal("not_received")}><X size={14}/> Não recebi o sinal do Pix</button>
     </>}
     {status === "confirmed" && (paymentStatus === "partial" || !paymentStatus) && <button className="pill" disabled={busy} onClick={() => update("completed")}>Concluir</button>}
+    {status === "confirmed" && <>
+      {reminderUrl && requestedAt && clock > 0 && new Date(requestedAt).getTime() > clock && <a className="pill" href={reminderUrl} target="_blank" rel="noreferrer">Preparar lembrete no WhatsApp</a>}
+      <button className="pill" disabled={busy || !appointmentHasEnded} title={!appointmentHasEnded ? "Disponível após o término do horário marcado" : undefined} onClick={() => { if (window.confirm("Confirmar que a cliente não compareceu? O atendimento ficará registrado como falta.")) void update("no_show"); }}><X size={14}/> {busy ? "Atualizando…" : "Marcar falta"}</button>
+    </>}
+    {status === "completed" && <span className="pill"><Check size={14}/> Concluído</span>}
+    {status === "no_show" && <span className="pill" role="status"><X size={14}/> Não compareceu</span>}
     {proposing && <form onSubmit={propose} className="panel appointment-proposal">
       <p className="proposal-guidance">Preencha somente o que precisa mudar. Se mudar apenas o dia, deixe o horário em branco para manter o horário atual. Se mudar apenas o horário, deixe o dia em branco para manter a data atual.</p>
       <div className="form-field"><label htmlFor={`proposal-date-${id}`}>Novo dia (opcional)</label><input id={`proposal-date-${id}`} name="date" type="date"/></div>

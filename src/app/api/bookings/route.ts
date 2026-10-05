@@ -4,12 +4,15 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { RESERVED_SLUGS, bookingSchema } from "@/lib/domain";
 import { isSameSiteOrigin } from "@/lib/request-origin";
+import { rateLimitRequest } from "@/lib/rate-limit";
 
 const answerSchema=z.object({question_id:z.string().uuid(),option_ids:z.array(z.string().uuid()).max(20).default([]),value:z.union([z.string().max(1000),z.number(),z.boolean()]).optional()});
 const requestSchema = bookingSchema.extend({ slug: z.string().regex(/^[a-z0-9-]{3,40}$/), answers: z.array(answerSchema).max(20).default([]) });
 
 export async function POST(request: Request) {
   if (!isSameSiteOrigin(request)) return NextResponse.json({ error: "Não foi possível enviar sua solicitação deste endereço. Recarregue a página e tente novamente." }, { status: 403 });
+  const limit = rateLimitRequest(request, "public-booking", 8, 15 * 60 * 1000);
+  if (!limit.allowed) return NextResponse.json({ error: "Você enviou várias solicitações em pouco tempo. Aguarde e tente novamente." }, { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds), "Cache-Control": "no-store" } });
   let body: unknown;
   try { body = await request.json(); } catch { return NextResponse.json({ error: "Confira os dados e tente de novo." }, { status: 400 }); }
   const parsed = requestSchema.safeParse(body);
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
     p_token_hash: tokenHash
   });
   if (error) {
-    console.error("[public-booking] request_public_booking failed", { code: error.code, message: error.message, details: error.details, hint: error.hint });
+    console.error("[public-booking] request_public_booking failed", { code: error.code });
     const message = error.message.includes("TM_TRIAL_PAUSED") ? "Os agendamentos online estão pausados no momento."
       : error.message.includes("SLOT_UNAVAILABLE") ? "Esse horário acabou de ficar indisponível. Volte ao calendário e escolha outro."
       : error.message.includes("SERVICE_NEEDS_REVIEW") ? "A profissional ainda precisa configurar a duração deste serviço. Escolha outro serviço ou fale com ela."

@@ -96,10 +96,12 @@
 .professional-calendar-day .calendar-marker-confirmed,.calendar-legend .calendar-legend-event{background:#2e9861}
 .professional-calendar-day .calendar-marker-pending,.calendar-legend .calendar-legend-pending{background:#e88936}
 .professional-calendar-day .calendar-marker-block,.calendar-legend .calendar-legend-block{background:#c2414b}
+.professional-calendar-day .calendar-marker-no-show,.calendar-legend .calendar-legend-no-show{background:#7a6a72}
 .calendar-entry.calendar-confirmed{border-left:4px solid #2e9861;background:#f2fbf5}
 .calendar-entry.calendar-request-pending{border-left:4px solid #e88936;background:#fff7ed}
 .calendar-entry.calendar-signal-pending{border-left:4px solid #d89b29;background:#fffbef}
 .calendar-entry.calendar-signal-reported{border-left:4px solid #7767b0;background:#f7f4ff}
+.calendar-entry.calendar-no-show{border-left:4px solid #7a6a72;background:#f4f1f2}
 .calendar-entry .status.calendar-confirmed{background:#e9f6ee;color:#237445}
 .calendar-entry .status.calendar-request-pending{background:#fff0e9;color:#aa523b}
 .calendar-entry .status.calendar-signal-pending{background:#fff4df;color:#95621a}
@@ -225,11 +227,17 @@
 .calendar-legend{display:flex;gap:18px;margin-top:13px;color:var(--muted);font-size:12px}
 .calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .calendar-legend-event{background:#2e9861}
 .calendar-legend .calendar-legend-block{background:#c2414b}
+.calendar-legend .calendar-legend-no-show{background:#7a6a72}
 .calendar-day-detail .panel-title{font-size:16px;text-transform:capitalize}
 .calendar-entry{position:relative;display:grid;gap:5px;padding:12px 100px 12px 12px;border:1px solid var(--line);border-radius:12px;margin-top:9px;min-width:0}
 .calendar-entry small{color:var(--muted);overflow-wrap:anywhere}
 .calendar-entry .status{position:absolute;right:9px;top:12px}
 .blocked-entry{background:#fff5f4;border-color:#edc7c4}
+.public-waitlist{display:grid;gap:11px;margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#fffafb}
+.public-waitlist h3,.public-waitlist p{margin:0}.public-waitlist p,.public-waitlist>small{font-size:13px;line-height:1.6;color:var(--muted)}
+.public-waitlist>small a{text-decoration:underline}.public-waitlist .form-field{margin:0}.waitlist-actions{display:flex;gap:8px;flex-wrap:wrap}.waitlist-success{padding:13px 15px;border:1px solid #b6ddc5;border-radius:12px;background:#effaf3;color:#22633d;font-size:13px;line-height:1.6}
+.waitlist-row{align-items:flex-start}.waitlist-row .row-main{gap:5px}.waitlist-admin-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:7px;min-width:min(100%,280px)}.waitlist-admin-actions .form-error{flex-basis:100%}.waitlist-status-waiting{background:#fff0df;color:#8c4c12}.waitlist-status-contacted{background:#e8f2fb;color:#285d87}.waitlist-status-booked{background:#e9f6ee;color:#237445}.waitlist-status-withdrawn{background:#f4ecee;color:#76535d}
+@media(max-width:700px){.waitlist-row{align-items:stretch}.waitlist-admin-actions{justify-content:flex-start;min-width:0}.waitlist-actions>.btn{flex:1 1 135px}.public-waitlist{padding:13px}}
 .calendar-empty{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
 @media(max-width:850px){.professional-calendar{grid-template-columns:1fr}}
 @media(max-width:560px){.professional-calendar-grid{gap:4px}.professional-calendar-day{min-height:58px;padding:6px;border-radius:9px;font-size:12px}.professional-calendar-day small{font-size:9px}.calendar-entry{padding-right:12px}.calendar-entry .status{position:static;justify-self:start}.calendar-month-heading h2{min-width:140px;font-size:16px}}
