@@ -301,6 +301,11 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.62;transform:none!impo
 .appointment-row:has(.request-summary)>.appointment-actions{grid-column:2;justify-content:flex-end}
 .appointment-row:has(.request-summary)>.cancellation-reason{display:block;grid-column:1/-1;margin-top:-2px;padding:10px 13px;border-radius:10px;background:#fbf2f4;line-height:1.5;overflow-wrap:anywhere}
 .appointment-row:has(.request-summary)>.pill{justify-self:end}
+.appointment-tracking-link{grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fffbfc}
+.appointment-tracking-link>a{display:inline-flex;align-items:center;gap:7px;min-width:0;color:var(--green);font-size:12px;overflow-wrap:anywhere}
+.appointment-tracking-link>a svg{flex:0 0 auto}
+.appointment-tracking-link>small{flex-basis:100%;color:var(--muted);font-size:11px}
+.appointment-tracking-link>.pill{min-height:36px}
 .appointment-row:has(.request-summary) .request-estimate-details{background:#fffbfc}
 .appointment-row:has(.request-summary) .request-estimate-details summary{font-size:13px}
 .appointment-actions>.pill:hover{background:#ecd5df}
@@ -308,7 +313,7 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.62;transform:none!impo
 .calendar-entry>.appointment-actions>.pill{white-space:normal;line-height:1.35;padding:10px}
 .form-card .form-field>label.service-card:hover{border-color:#b87e94;background:#fffbfc}
 .form-card .form-field>label.service-card:has(input:checked){border-color:var(--green2);background:#faf0f3;box-shadow:inset 0 0 0 1px var(--green2)}
-@media(max-width:760px){.appointment-row:has(.request-summary){grid-template-columns:1fr;gap:10px}.appointment-row:has(.request-summary)>.appointment-actions{grid-column:1;justify-content:flex-start}.appointment-row:has(.request-summary)>.pill{justify-self:start}.appointment-row:has(.request-summary)>.cancellation-reason{grid-column:1}.app-content{padding:20px 16px 100px}.stat-card{min-height:126px}}
+@media(max-width:760px){.appointment-row:has(.request-summary){grid-template-columns:1fr;gap:10px}.appointment-row:has(.request-summary)>.appointment-actions{grid-column:1;justify-content:flex-start}.appointment-row:has(.request-summary)>.pill{justify-self:start}.appointment-row:has(.request-summary)>.cancellation-reason{grid-column:1}.appointment-tracking-link{grid-column:1}.appointment-tracking-link>a{flex:1 1 100%}.app-content{padding:20px 16px 100px}.stat-card{min-height:126px}}
 @media(max-width:480px){.stats{gap:9px}.stat-card{padding:14px}.stat-value{font-size:27px}.calendar-entry>.appointment-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.request-tabs{margin-right:-16px}.form-card{padding:23px 18px}}
 
 /* Optional customer area, visually related to the professional workspace. */
