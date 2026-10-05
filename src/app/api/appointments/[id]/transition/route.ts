@@ -1,3 +1,4 @@
+import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,16 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
    :"Não foi possível atualizar o atendimento. Confira a solicitação e tente novamente.";
   const capacityConflict=error.message.includes("SLOT_UNAVAILABLE");
   return NextResponse.json({error:message,...(capacityConflict?{code:"SLOT_UNAVAILABLE"}:{})},{status:capacityConflict?409:400});
+ }
+ if(parsed.data.status==="proposed"){
+  const trackingToken=randomBytes(32).toString("base64url");
+  const tokenHash=createHash("sha256").update(trackingToken).digest("hex");
+  const {error:linkError}=await supabase.rpc("set_appointment_proposal_tracking_token",{p_appointment_id:id,p_token_hash:tokenHash});
+  if(linkError){
+   console.error("[appointment-transition] Could not issue proposal tracking link",{code:linkError.code,appointmentId:id});
+   return NextResponse.json({error:"A proposta foi salva, mas não foi possível gerar o link de acompanhamento. Tente enviar novamente."},{status:500});
+  }
+  return NextResponse.json({ok:true,tracking_token:trackingToken},{headers:{"Cache-Control":"no-store"}});
  }
  return NextResponse.json({ok:true},{headers:{"Cache-Control":"no-store"}});
 }

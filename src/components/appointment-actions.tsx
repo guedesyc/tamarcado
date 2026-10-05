@@ -52,7 +52,16 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       const result = await response.json();
       if (next === "confirmed" && response.status === 409 && result.code === "SLOT_UNAVAILABLE") { setCapacityConflict(true); return; }
       if (!response.ok) throw new Error(result.error ?? "Não foi possível atualizar o atendimento.");
-      if (popup && clientPhone && whatsappMessage) popup.location.href = `https://wa.me/${whatsappPhone(clientPhone)}?text=${encodeURIComponent(whatsappMessage)}`;
+      if (popup && clientPhone && whatsappMessage) {
+        let message = whatsappMessage;
+        if (next === "proposed") {
+          if (typeof result.tracking_token !== "string" || !/^[A-Za-z0-9_-]{40,50}$/.test(result.tracking_token)) {
+            throw new Error("A proposta foi salva, mas não recebemos um link de acompanhamento válido. Tente enviar novamente.");
+          }
+          message = message.replace("__TRACKING_LINK__", `${window.location.origin}/r/${result.tracking_token}`);
+        }
+        popup.location.href = `https://wa.me/${whatsappPhone(clientPhone)}?text=${encodeURIComponent(message)}`;
+      }
       setProposing(false);
       setRejecting(false);
       router.refresh();
@@ -168,7 +177,8 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       ...(reason ? ["", `Justificativa da profissional: ${reason}`] : []),
       ...(answers.length ? ["", "Informações do pedido:", ...answers.map(answer => `• ${answer.question_label}: ${answerText(answer.answer)}`)] : []),
       "",
-      "Confira a proposta e responda pelo link de acompanhamento enviado anteriormente.",
+      "Confira a proposta e responda pelo link de acompanhamento:",
+      "__TRACKING_LINK__",
     ].join("\n");
     await update("proposed", {
       ...(dateChanged ? { requested_date: date } : {}),
