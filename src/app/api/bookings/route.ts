@@ -35,13 +35,16 @@ export async function POST(request: Request) {
   if (error) {
     console.error("[public-booking] request_public_booking failed", { code: error.code });
     const message = error.message.includes("TM_TRIAL_PAUSED") ? "Os agendamentos online estão pausados no momento."
+      : error.message.includes("WAITLIST_CHOICE") ? "Outra cliente já pediu esse horário. Você pode entrar na lista de espera ou escolher outro horário."
       : error.message.includes("SLOT_UNAVAILABLE") ? "Esse horário acabou de ficar indisponível. Volte ao calendário e escolha outro."
       : error.message.includes("SERVICE_NEEDS_REVIEW") ? "A profissional ainda precisa configurar a duração deste serviço. Escolha outro serviço ou fale com ela."
       : error.message.includes("SERVICE_NOT_FOUND") || error.message.includes("PROFILE_NOT_FOUND") ? "Esta página ou serviço não está disponível para agendamentos agora."
       : error.message.includes("INVALID_BOOKING") ? "Confira seu nome e WhatsApp e tente novamente."
       : "Não foi possível registrar sua solicitação agora. Recarregue a página e tente novamente.";
-    const status = error.message.includes("TM_TRIAL_PAUSED") ? 402 : error.message.includes("SLOT_UNAVAILABLE") ? 409 : 400;
-    return NextResponse.json({ error: message, ...(error.message.includes("SLOT_UNAVAILABLE") ? { code: "SLOT_UNAVAILABLE" } : {}) }, { status });
+    const waitlistChoice = error.message.includes("WAITLIST_CHOICE");
+    const slotUnavailable = error.message.includes("SLOT_UNAVAILABLE");
+    const status = error.message.includes("TM_TRIAL_PAUSED") ? 402 : waitlistChoice || slotUnavailable ? 409 : 400;
+    return NextResponse.json({ error: message, ...(waitlistChoice ? { code: "WAITLIST_CHOICE" } : slotUnavailable ? { code: "SLOT_UNAVAILABLE" } : {}) }, { status });
   }
   return NextResponse.json({ ok: true, trackingUrl: `/r/${token}` }, { status: 201, headers: { "Cache-Control": "no-store" } });
 }

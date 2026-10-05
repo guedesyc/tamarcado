@@ -31,7 +31,9 @@ export default async function WorkspaceSection({params,searchParams}:{params:Pro
  if(section==="agenda"||section==="solicitacoes"){
   if(section==="solicitacoes")await supabase.rpc("expire_stale_public_bookings",{p_business_id:member.business_id});
   const appointmentFields=section==="solicitacoes"?"id,status,payment_status,signal_amount_cents,start_at,end_at,created_at,closed_at,service_name_snapshot,client_name_snapshot,price_estimate_cents,client_cancellation_reason,clients(name,phone),services(simultaneous_capacity)":"id,status,payment_status,signal_amount_cents,start_at,end_at,created_at,closed_at,service_name_snapshot,client_name_snapshot,price_estimate_cents,clients(name,phone),services(simultaneous_capacity)";
-  let query=supabase.from("appointments").select(appointmentFields,{count:section==="solicitacoes"?"exact":undefined}).eq("business_id",member.business_id).order(section==="solicitacoes"&&requestTab==="canceladas"?"closed_at":"start_at",{ascending:section==="agenda"||section==="solicitacoes"&&requestTab!=="canceladas"});
+  const orderField=section==="agenda"||requestTab==="aprovadas"?"start_at":requestTab==="canceladas"?"closed_at":"created_at";
+  const ascending=section==="agenda"||section==="solicitacoes"&&requestTab==="aprovadas";
+  let query=supabase.from("appointments").select(appointmentFields,{count:section==="solicitacoes"?"exact":undefined}).eq("business_id",member.business_id).order(orderField,{ascending});
   if(section==="solicitacoes"){
    if(requestTab==="andamento")query=query.in("status",["requested","under_review","proposed","confirmed"]);
    else if(requestTab==="aprovadas")query=query.in("status",["completed","no_show"]);
