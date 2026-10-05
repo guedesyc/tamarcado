@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Clock3, History } from "lucide-react";
 
 type Answer = { question_label: string; answer: unknown; price_delta_cents: number; duration_delta_minutes: number };
-type Appointment = { id: string; status: string; payment_status: string; signal_amount_cents: number | null; start_at: string; end_at: string; service_name_snapshot: string; price_estimate_cents: number | null; agreed_price_cents: number | null; final_price_cents: number | null; customer_note: string | null; appointment_answers: Answer[] };
+type Appointment = { id: string; status: string; payment_status: string; signal_amount_cents: number | null; start_at: string; end_at: string; service_name_snapshot: string; client_name_snapshot: string | null; price_estimate_cents: number | null; agreed_price_cents: number | null; final_price_cents: number | null; customer_note: string | null; appointment_answers: Answer[] };
 type Client = { id: string; name: string; phone: string; created_at: string; appointments: Appointment[] };
 
 const statusLabels: Record<string, string> = { requested: "Aguardando resposta", under_review: "Em análise", proposed: "Proposta enviada", confirmed: "Confirmado", completed: "Concluído", cancelled_by_client: "Cancelado pela cliente", cancelled_by_professional: "Cancelado pela profissional", expired: "Expirado" };
@@ -22,6 +22,7 @@ function AppointmentHistory({ appointment, timeZone }: { appointment: Appointmen
   return <article className="client-history-card">
     <div className="client-history-top"><div><b>{appointment.service_name_snapshot}</b><small><Clock3 size={13}/> {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short", timeZone }).format(new Date(appointment.start_at))}</small></div><span className={`status client-status client-status-${appointment.status}`}>{statusLabels[appointment.status] ?? appointment.status}</span></div>
     <p><b>Valor combinado:</b> {money(amount)}</p>
+    {appointment.client_name_snapshot && <p><b>Nome informado neste pedido:</b> {appointment.client_name_snapshot}</p>}
     {appointment.payment_status === "signal_requested" && <p className="client-payment client-payment-pending">Aguardando pagamento do sinal de {money(appointment.signal_amount_cents)}</p>}
     {appointment.payment_status === "signal_reported" && <p className="client-payment client-payment-pending">A cliente informou o pagamento do sinal; falta conferir.</p>}
     {appointment.payment_status === "partial" && <p className="client-payment">Sinal confirmado: {money(appointment.signal_amount_cents)} · o saldo restante aparece em Financeiro.</p>}

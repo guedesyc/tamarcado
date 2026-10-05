@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Clock3 } from "lucide-react";
 
 type Appointment = {
   id: string; status: string; payment_status: string; start_at: string; end_at: string;
-  service_name_snapshot: string; clients: { name: string; phone: string } | { name: string; phone: string }[] | null;
+  service_name_snapshot: string; client_name_snapshot?: string | null; clients: { name: string; phone: string } | { name: string; phone: string }[] | null;
 };
 type Block = { id: string; starts_at: string; ends_at: string; kind: string; label: string | null };
 
@@ -14,7 +14,7 @@ function dateKey(date: Date, timeZone: string) {
 }
 
 function clientName(appointment: Appointment) {
-  return Array.isArray(appointment.clients) ? appointment.clients[0]?.name : appointment.clients?.name;
+  return appointment.client_name_snapshot || (Array.isArray(appointment.clients) ? appointment.clients[0]?.name : appointment.clients?.name);
 }
 
 export function ProfessionalCalendar({ month, today, selectedDay, timeZone, appointments, blocks }: {

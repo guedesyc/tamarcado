@@ -12,7 +12,7 @@ export default async function ClientsPage() {
   if (!member) redirect("/app/onboarding");
   const [{ data: clients, error: clientsError }, { data: appointments, error: appointmentsError }, { data: business }] = await Promise.all([
     supabase.from("clients").select("id,name,phone,created_at").eq("business_id", member.business_id).order("name").limit(500),
-    supabase.from("appointments").select("id,client_id,status,payment_status,signal_amount_cents,start_at,end_at,service_name_snapshot,price_estimate_cents,agreed_price_cents,final_price_cents,customer_note").eq("business_id", member.business_id).order("start_at", { ascending: false }).limit(1000),
+    supabase.from("appointments").select("id,client_id,status,payment_status,signal_amount_cents,start_at,end_at,service_name_snapshot,client_name_snapshot,price_estimate_cents,agreed_price_cents,final_price_cents,customer_note").eq("business_id", member.business_id).order("start_at", { ascending: false }).limit(1000),
     supabase.from("businesses").select("timezone").eq("id", member.business_id).maybeSingle(),
   ]);
   if (clientsError || appointmentsError) {
