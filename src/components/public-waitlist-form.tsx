@@ -17,11 +17,14 @@ export function PublicWaitlistForm({ slug, serviceId, selectedDate, selectedTime
 
   useEffect(() => {
     if (!startOpen) return;
-    setPreferredDate(selectedDate ?? "");
-    setPreferredTime(selectedTime ?? "");
-    if (initialName) setName(initialName);
-    if (initialPhone) setPhone(initialPhone);
-    setOpen(true);
+    const timer = window.setTimeout(() => {
+      setPreferredDate(selectedDate ?? "");
+      setPreferredTime(selectedTime ?? "");
+      if (initialName) setName(initialName);
+      if (initialPhone) setPhone(initialPhone);
+      setOpen(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [startOpen, selectedDate, selectedTime, initialName, initialPhone]);
 
   async function submit() {

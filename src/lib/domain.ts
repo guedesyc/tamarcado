@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const RESERVED_SLUGS = new Set([
-  "admin", "app", "api", "login", "logout", "cadastro", "entrar", "esqueci-senha", "senha", "auth", "precos", "ajuda", "suporte", "termos", "privacidade", "configuracoes", "financeiro", "agenda", "r"
+  "admin", "app", "api", "login", "logout", "cadastro", "entrar", "esqueci-senha", "senha", "auth", "precos", "ajuda", "suporte", "termos", "privacidade", "configuracoes", "financeiro", "agenda", "r", "minha-agenda"
 ]);
 
 export const bookingSchema = z.object({

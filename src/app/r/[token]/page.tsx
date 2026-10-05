@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { CalendarDays, Clock3, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { BookingControls } from "@/components/booking-controls";
+import { CustomerClaim } from "@/components/customer-claim";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default async function BookingStatus({ params }: { params: Promise<{ toke
   const { data, error } = await supabase.rpc("get_public_booking", { p_token_hash: tokenHash });
   if (error || !data) notFound();
   const booking = data as Booking;
+  const { data: { user } } = await supabase.auth.getUser();
   const timeZone = booking.timezone || "America/Sao_Paulo";
   const labels: Record<string, string> = {
     requested: "Aguardando resposta", under_review: "Em análise", proposed: "A profissional fez uma proposta",
@@ -63,6 +65,7 @@ export default async function BookingStatus({ params }: { params: Promise<{ toke
       service={booking.service_name}
       professionalPhone={booking.professional_phone ?? ""} requestedAt={booking.requested_at}
       signalDeadline={booking.signal_deadline} timeZone={timeZone}/>
+    <CustomerClaim token={token} signedIn={!!user}/>
     <div style={{ marginTop: 22 }}><Link className="btn secondary" href={`/${booking.slug}`}><MessageCircle size={15}/> Voltar à página</Link></div>
     <p style={{ fontSize: 12, color: "var(--muted)" }}><Clock3 size={13}/> Guarde este link para consultar alterações.</p>
   </section></main>;

@@ -1,6 +1,15 @@
 # Tá Marcado — andamento e próximos passos
 
-Atualizado em 04/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; o deploy das últimas alterações ainda precisa ser conferido. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
+## Interface do app e contas opcionais — 05/10/2026
+
+- [x] Interações e foco visual padronizados nas abas internas, com estados de clique, navegação mais leve, cartões responsivos e respeito a movimento reduzido. Solicitações ganhou resumo visual separado por atendimento, serviço e recebimento.
+- [x] Convite à conta somente após o pedido, login Google/e-mail pelo Supabase Auth, `/minha-agenda`, perfil simples, vínculo de pedidos por token e permanência do fluxo anônimo.
+- [x] Migration incremental `202610050007_optional_customer_accounts.sql` criada; não foi aplicada no Supabase nesta tarefa.
+- [x] Instruções de ativação e roteiro manual em `docs/CUSTOMER-AUTH-SETUP.md`.
+- [ ] Aplicar a migration no projeto Supabase correto, configurar Google e o template de link por e-mail, e executar o roteiro com contas reais. O build local não valida serviços externos sem essas configurações.
+- [ ] Conferir a interface em desktop e celular após o deploy Hostinger, inclusive a nova área da cliente.
+
+Atualizado em 05/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; o deploy das últimas alterações ainda precisa ser conferido. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
 
 ## Revisão dos passos 1, 2 e 4 — 04/10/2026
 

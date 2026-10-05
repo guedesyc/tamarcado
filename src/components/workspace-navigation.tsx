@@ -50,7 +50,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       safetyTimer.current = window.setTimeout(() => {
         pendingRoute.current = null;
         setActive(false);
-      }, 15000);
+      }, 3000);
     }
     document.addEventListener("click", onClick, true);
     return () => {
@@ -73,9 +73,6 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       {children}
     </div>
     <WorkspaceMobileNav />
-    {active && <div className="page-transition-overlay" role="status" aria-label="Carregando página">
-      <video src="/page-transition.mp4" autoPlay loop muted playsInline aria-hidden="true"/>
-      <span>Carregando…</span>
-    </div>}
+    {active && <div className="page-transition-overlay" role="status" aria-label="Carregando página"><span className="page-transition-bar"/><span className="sr-only">Carregando página…</span></div>}
   </>;
 }

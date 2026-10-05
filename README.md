@@ -1,5 +1,9 @@
 # Tá Marcado
 
+## Conta opcional da cliente
+
+O agendamento público continua disponível sem conta. Depois de enviar o pedido, a cliente pode usar Google ou link por e-mail para reunir atendimentos em `/minha-agenda`. A implantação dessa função exige a migration `202610050007_optional_customer_accounts.sql` e a configuração dos provedores no Supabase. Consulte [docs/CUSTOMER-AUTH-SETUP.md](docs/CUSTOMER-AUTH-SETUP.md) para arquitetura, ativação e verificação manual.
+
 Plataforma de agendamento para profissionais autônomas. Stack: Next.js 16 App Router, React, TypeScript strict, Tailwind 4, Supabase/PostgreSQL, Supabase Auth e Storage.
 
 ## Rodar localmente

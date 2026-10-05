@@ -273,6 +273,94 @@
 .form-card .form-field>label.service-card .service-text b{display:block;font-size:14px;line-height:1.35}
 .form-card .form-field>label.service-card .service-text small{display:block;margin-top:5px;font-size:12px;line-height:1.4}
 @media(max-width:560px){.form-card .form-field>label.service-card{grid-template-columns:18px minmax(0,1fr);gap:10px;min-height:62px;padding:12px 13px}}
+
+/* Shared interaction language for every workspace section. Transform and color
+   changes keep the interface responsive without layout or expensive filters. */
+:where(button,a,input,select,textarea,summary):focus-visible{outline:3px solid #ae6685;outline-offset:3px}
+:where(.btn,.side-link,.workspace-mobile-nav a,.request-tab,.request-page,.request-page-arrow,.quick-action,.workspace-back-button,.appointment-actions .pill,.professional-calendar-day,.form-card .service-card){transition:transform .16s ease,background-color .16s ease,border-color .16s ease,box-shadow .16s ease,color .16s ease}
+:where(.btn,.side-link,.workspace-mobile-nav a,.request-tab,.request-page,.request-page-arrow,.quick-action,.workspace-back-button,.appointment-actions button):active{transform:scale(.97)}
+:where(.btn,.request-tab,.quick-action,.request-page,.request-page-arrow):hover{box-shadow:0 8px 22px #74405718}
+button:disabled,.btn:disabled{cursor:not-allowed;opacity:.62;transform:none!important;box-shadow:none!important}
+.app-shell{background:#fbf7f8}
+.app-content{width:min(100%,1260px);max-width:none;padding:clamp(20px,3vw,42px)}
+.sidebar{gap:2px}
+.side-link{min-height:43px}
+.side-link:hover{transform:translateX(2px)}
+.stat-card,.panel{box-shadow:0 5px 22px #4b2b3808}
+.stat-card{position:relative;overflow:hidden}
+.stat-card:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:#b45e7b;opacity:.75}
+.stat-value{line-height:1.08}
+.quick-action:hover{border-color:#ba8b9c;transform:translateY(-2px)}
+.request-tabs{gap:10px;padding-block:4px 16px}
+.request-tab{min-height:44px;display:inline-flex;align-items:center;font-weight:600}
+.request-tab:not(.active):hover{background:#faedf1;border-color:#d2aab8;color:var(--green)}
+.appointment-row:has(.request-summary){display:grid;grid-template-columns:minmax(210px,.78fr) minmax(0,1.22fr);gap:14px 24px;align-items:start;padding:20px 2px}
+.request-summary{min-width:0;display:grid;gap:5px}
+.request-summary b{font-size:16px;color:var(--ink)}
+.request-summary .request-created-at{color:#87747f;font-size:12px}
+.appointment-row:has(.request-summary)>.appointment-actions{grid-column:2;justify-content:flex-end}
+.appointment-row:has(.request-summary)>.cancellation-reason{display:block;grid-column:1/-1;margin-top:-2px;padding:10px 13px;border-radius:10px;background:#fbf2f4;line-height:1.5;overflow-wrap:anywhere}
+.appointment-row:has(.request-summary)>.pill{justify-self:end}
+.appointment-row:has(.request-summary) .request-estimate-details{background:#fffbfc}
+.appointment-row:has(.request-summary) .request-estimate-details summary{font-size:13px}
+.appointment-actions>.pill:hover{background:#ecd5df}
+.calendar-entry>.appointment-actions{grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%}
+.calendar-entry>.appointment-actions>.pill{white-space:normal;line-height:1.35;padding:10px}
+.form-card .form-field>label.service-card:hover{border-color:#b87e94;background:#fffbfc}
+.form-card .form-field>label.service-card:has(input:checked){border-color:var(--green2);background:#faf0f3;box-shadow:inset 0 0 0 1px var(--green2)}
+@media(max-width:760px){.appointment-row:has(.request-summary){grid-template-columns:1fr;gap:10px}.appointment-row:has(.request-summary)>.appointment-actions{grid-column:1;justify-content:flex-start}.appointment-row:has(.request-summary)>.pill{justify-self:start}.appointment-row:has(.request-summary)>.cancellation-reason{grid-column:1}.app-content{padding:20px 16px 100px}.stat-card{min-height:126px}}
+@media(max-width:480px){.stats{gap:9px}.stat-card{padding:14px}.stat-value{font-size:27px}.calendar-entry>.appointment-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.request-tabs{margin-right:-16px}.form-card{padding:23px 18px}}
+
+/* Optional customer area, visually related to the professional workspace. */
+.customer-agenda{min-height:100vh;background:linear-gradient(180deg,#f8eef1 0,#fcf9fa 290px);color:var(--ink)}
+.customer-agenda-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(18px,5vw,70px);border-bottom:1px solid var(--line);background:#fff9fb}
+.customer-agenda-header nav{display:flex;align-items:center;gap:18px;font-size:13px;font-weight:700}
+.customer-agenda-header nav button{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--green);font-weight:700}
+.customer-agenda-content{width:min(1020px,calc(100% - 36px));margin:0 auto;padding:clamp(30px,5vw,60px) 0 90px}
+.customer-agenda h1{font:clamp(38px,5vw,58px) Georgia,serif;letter-spacing:-.045em;margin:8px 0}
+.customer-agenda-intro{color:var(--muted);font-size:16px;line-height:1.6;margin-bottom:32px}
+.customer-agenda-section{margin:34px 0}
+.customer-agenda-section h2,.customer-access h2{font:clamp(24px,3vw,32px) Georgia,serif;letter-spacing:-.035em;margin:0 0 15px}
+.customer-booking-list{display:grid;gap:12px}
+.customer-booking-card{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 24px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 8px 28px #4b2b3809}
+.customer-booking-card h3{font-size:19px;margin:6px 0 8px}
+.customer-booking-card p{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px;margin:0 0 13px;line-height:1.45}
+.customer-booking-meta{display:grid;justify-items:end;gap:14px;white-space:nowrap;font-weight:700;font-size:14px}
+.customer-booking-meta a{display:inline-flex;align-items:center;gap:4px;color:var(--green2)}
+.customer-status{display:inline-flex;border-radius:999px;padding:7px 11px;background:#f6e7ed;color:var(--green);font-size:12px;font-weight:700}
+.customer-status.status-confirmed,.customer-status.status-completed{background:#e9f5ed;color:#247746}
+.customer-status.status-cancelled_by_client,.customer-status.status-cancelled_by_professional,.customer-status.status-expired{background:#f9e7e8;color:#ac434d}
+.customer-empty{padding:27px;border:1px dashed #d6bfc8;border-radius:18px;background:#fff9fb;color:var(--muted)}
+.customer-empty p{margin:9px 0}.customer-empty small{line-height:1.5}
+.customer-profile,.customer-access{padding:26px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:0 8px 28px #4b2b3809}
+.customer-profile>p,.customer-access>p{color:var(--muted);line-height:1.6}
+.customer-profile-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:690px}
+.customer-profile-form .form-field{margin:0}.customer-profile-form .btn{justify-self:start;grid-column:1/-1}.customer-profile-form>p{grid-column:1/-1;margin:0;font-size:13px}
+.customer-access{max-width:640px}.customer-access-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#f5e5eb;color:var(--green);margin-bottom:16px}
+.customer-google{min-width:220px;margin:10px 0 18px}.customer-google span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#4285f4;font-weight:800}
+.customer-email-form{display:grid;gap:8px}.customer-email-form label{font-size:13px;font-weight:700}.customer-email-form>div{display:flex;gap:9px}.customer-email-form input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff;color:var(--ink)}
+.customer-access-success{padding:10px 13px;border-radius:10px;background:#edf8f1;color:#20613c!important}.customer-guest-note{font-size:13px;color:var(--muted)}
+.customer-post-booking{margin:22px 0 8px;text-align:left}.customer-access.is-compact{padding:21px;box-shadow:none;background:#fff9fb}.customer-access.is-compact h2{font-size:23px}.customer-skip{display:inline-block;margin:12px 0;color:var(--green);font-size:13px;text-decoration:underline}.customer-claim{margin-top:20px;padding:18px;border-radius:14px;background:#fff9fb;color:var(--muted);font-size:13px}.customer-claim a{color:var(--green);font-weight:700}
+.customer-detail{width:min(760px,calc(100% - 36px));margin:0 auto;padding:42px 0 80px}.customer-back{display:inline-block;margin-bottom:28px;color:var(--green);font-size:13px;font-weight:700}.customer-detail-grid{display:grid;gap:14px;margin:25px 0}.customer-detail-grid section{padding:22px;border:1px solid var(--line);border-radius:18px;background:#fff}.customer-detail-grid h2{font:25px Georgia;margin:0 0 16px}.customer-detail-grid dl{display:grid;grid-template-columns:125px 1fr;gap:12px;margin:0;font-size:14px}.customer-detail-grid dt{color:var(--muted)}.customer-detail-grid dd{margin:0;font-weight:700}.customer-detail>p{color:var(--muted);line-height:1.6}
+@media(max-width:640px){.customer-agenda-header{padding:14px 18px}.customer-booking-card{align-items:flex-start;flex-direction:column;padding:18px}.customer-booking-meta{display:flex;justify-content:space-between;justify-items:initial;width:100%;white-space:normal}.customer-profile-form{grid-template-columns:1fr}.customer-email-form>div{flex-direction:column}.customer-email-form .btn{width:100%}.customer-detail-grid dl{grid-template-columns:1fr;gap:4px}.customer-detail-grid dd{margin-bottom:9px}}
+@media(prefers-reduced-motion:reduce){:where(.btn,.side-link,.workspace-mobile-nav a,.request-tab,.request-page,.request-page-arrow,.quick-action,.workspace-back-button,.appointment-actions .pill,.professional-calendar-day,.form-card .service-card){transition:none!important}html{scroll-behavior:auto}}
+.workspace-page-content.is-transitioning{filter:none;opacity:.94;pointer-events:auto}
+.page-transition-overlay{position:fixed;top:0;left:0;right:0;bottom:auto;z-index:1000;display:block;height:3px;padding:0;background:transparent;pointer-events:none}
+.page-transition-bar{display:block;width:42%;height:3px;background:var(--green2);border-radius:0 99px 99px 0;animation:workspace-route-progress 1.5s ease-in-out infinite alternate}
+@keyframes workspace-route-progress{from{transform:translateX(-70%)}to{transform:translateX(240%)}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){.page-transition-bar{animation:none;width:100%}}
+.request-summary{gap:10px!important}
+.request-summary>b{font-size:17px!important}
+.request-summary-facts{display:flex;flex-wrap:wrap;gap:8px 16px}
+.request-summary-facts>span{display:inline-flex;align-items:flex-start;gap:7px;min-width:140px;color:var(--ink);font-size:13px;line-height:1.35}
+.request-summary-facts>span svg{flex:0 0 auto;margin-top:2px;color:var(--green2)}
+.request-summary-facts>span>span{display:grid;gap:2px}
+.request-summary-facts small{display:block;color:var(--muted);font-size:11px!important;line-height:1.2!important}
+.request-summary-note{display:inline-flex;justify-self:start;padding:6px 9px;border-radius:999px;background:#fff1df;color:#89501f;font-size:12px;font-weight:700}
+.appointment-row:has(.request-summary){grid-template-columns:minmax(250px,.95fr) minmax(0,1.05fr)}
+@media(max-width:760px){.appointment-row:has(.request-summary){grid-template-columns:1fr}.request-summary-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.request-summary-facts>span{min-width:0}}
+@media(max-width:420px){.request-summary-facts{grid-template-columns:1fr}}
 .capacity-conflict-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:#24151dcc;backdrop-filter:blur(3px)}
 .capacity-conflict-dialog{width:min(100%,440px);padding:27px;border:1px solid var(--line);border-radius:20px;background:var(--white);box-shadow:0 24px 80px #24151d40}
 .capacity-conflict-dialog h2{margin:10px 0;font:30px Georgia,serif;color:var(--ink)}

@@ -46,5 +46,21 @@ export async function POST(request: Request) {
     const status = error.message.includes("TM_TRIAL_PAUSED") ? 402 : waitlistChoice || slotUnavailable ? 409 : 400;
     return NextResponse.json({ error: message, ...(waitlistChoice ? { code: "WAITLIST_CHOICE" } : slotUnavailable ? { code: "SLOT_UNAVAILABLE" } : {}) }, { status });
   }
-  return NextResponse.json({ ok: true, trackingUrl: `/r/${token}` }, { status: 201, headers: { "Cache-Control": "no-store" } });
+  // The short lived, httpOnly proof lets a customer attach this booking after
+  // signing in, without sending the tracking token through the OAuth provider.
+  const { data: { user } } = await supabase.auth.getUser();
+  let claimed = false;
+  if (user) {
+    const { data: claimResult, error: claimError } = await supabase.rpc("claim_customer_appointment", { p_token_hash: tokenHash });
+    claimed = !claimError && claimResult === true;
+  }
+  const response = NextResponse.json({ ok: true, trackingUrl: `/r/${token}` }, { status: 201, headers: { "Cache-Control": "no-store" } });
+  if (claimed) response.cookies.delete("tm_pending_customer_claim");
+  else {
+    response.cookies.set("tm_pending_customer_claim", tokenHash, {
+      httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production",
+      path: "/", maxAge: 60 * 60 * 24
+    });
+  }
+  return response;
 }

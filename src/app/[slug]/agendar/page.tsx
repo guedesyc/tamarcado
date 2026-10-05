@@ -10,5 +10,7 @@ const blocked=new Set(["admin","app","api","login","logout","cadastro","entrar",
 export default async function PublicBooking({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{servico?:string}>}){
  const [{slug},{servico}]=await Promise.all([params,searchParams]);if(blocked.has(slug))notFound();const supabase=await createClient();if(!supabase)notFound();
  const {data}=await supabase.rpc("get_public_profile",{p_slug:slug});if(!data)notFound();const profile=data as Profile;const service=profile.services.find(item=>item.name===servico)??profile.services[0];if(!service)notFound();
- return <main className="form-wrap"><div style={{width:"min(100%,550px)"}}><Link className="brand" href={`/${slug}`} style={{margin:"0 0 18px 4px"}}><BrandLogo /></Link><BookingForm key={service.id} selectedService={service.name} serviceId={service.id} slug={slug} basePriceCents={service.price} baseDurationMinutes={service.duration} questions={service.questions??[]}/></div></main>;
+ const {data:{user}}=await supabase.auth.getUser();
+ const customer=user?(await supabase.from("customer_profiles").select("name,phone").eq("user_id",user.id).maybeSingle()).data:null;
+ return <main className="form-wrap"><div style={{width:"min(100%,550px)"}}><Link className="brand" href={`/${slug}`} style={{margin:"0 0 18px 4px"}}><BrandLogo /></Link><BookingForm key={service.id} selectedService={service.name} serviceId={service.id} slug={slug} basePriceCents={service.price} baseDurationMinutes={service.duration} questions={service.questions??[]} customerName={customer?.name??""} customerPhone={customer?.phone??""} customerSignedIn={!!user}/></div></main>;
 }
