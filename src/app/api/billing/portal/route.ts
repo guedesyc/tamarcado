@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createStripeClient } from "@/lib/stripe";
+import { createStripeClient, stripeIsLiveMode } from "@/lib/stripe";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
 export const runtime = "nodejs";
@@ -17,8 +17,8 @@ export async function POST(request: Request) {
   const stripe = createStripeClient();
   const admin = createAdminClient();
   if (!stripe || !admin) return NextResponse.json({ error: "A assinatura ainda não foi configurada para este ambiente." }, { status: 503 });
-  const { data: record } = await admin.from("subscription_records").select("provider,provider_customer_id").eq("business_id", member.business_id).maybeSingle();
-  if (record?.provider !== "stripe" || !record.provider_customer_id) return NextResponse.json({ error: "Não encontramos uma assinatura Stripe para este espaço." }, { status: 404 });
+  const { data: record } = await admin.from("subscription_records").select("provider,provider_customer_id,provider_livemode").eq("business_id", member.business_id).maybeSingle();
+  if (record?.provider !== "stripe" || !record.provider_customer_id || record.provider_livemode !== stripeIsLiveMode()) return NextResponse.json({ error: "Não encontramos uma assinatura neste ambiente. Escolha realizar assinatura para criar seu plano atual." }, { status: 404 });
   try {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
     const session = await stripe.billingPortal.sessions.create({ customer: record.provider_customer_id, return_url: `${siteUrl}/app/assinatura`, locale: "pt-BR" });

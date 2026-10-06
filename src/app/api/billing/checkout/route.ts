@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createStripeClient } from "@/lib/stripe";
+import { createStripeClient, stripeIsLiveMode } from "@/lib/stripe";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
 export const runtime = "nodejs";
@@ -23,15 +23,16 @@ export async function POST(request: Request) {
 
   const { data: business } = await supabase.from("businesses").select("id,name,contact_phone,billing_email").eq("id", member.business_id).single();
   if (!business) return NextResponse.json({ error: "Seu espaço não foi encontrado." }, { status: 404 });
-  const { data: existing } = await admin.from("subscription_records").select("provider,provider_customer_id").eq("business_id", business.id).maybeSingle();
+  const { data: existing } = await admin.from("subscription_records").select("provider,provider_customer_id,provider_livemode").eq("business_id", business.id).maybeSingle();
   const billingEmail = business.billing_email?.trim() || user.email;
+  const livemode = stripeIsLiveMode();
 
   try {
-    let customerId = existing?.provider === "stripe" ? existing.provider_customer_id : null;
+    let customerId = existing?.provider === "stripe" && existing.provider_livemode === livemode ? existing.provider_customer_id : null;
     if (!customerId) {
       const customer = await stripe.customers.create({ name: business.name, email: billingEmail, phone: business.contact_phone || undefined });
       customerId = customer.id;
-      const { error } = await admin.from("subscription_records").upsert({ business_id: business.id, provider: "stripe", provider_customer_id: customerId, provider_price_id: priceId, status: "incomplete", price_cents: 4999, updated_at: new Date().toISOString() }, { onConflict: "business_id" });
+      const { error } = await admin.from("subscription_records").upsert({ business_id: business.id, provider: "stripe", provider_livemode: livemode, provider_customer_id: customerId, provider_subscription_id: null, provider_checkout_id: null, provider_price_id: priceId, status: "incomplete", price_cents: 4999, current_period_end: null, cancel_at: null, updated_at: new Date().toISOString() }, { onConflict: "business_id" });
       if (error) throw new Error("Não foi possível preparar sua assinatura.");
     } else {
       await stripe.customers.update(customerId, { name: business.name, email: billingEmail, phone: business.contact_phone || undefined });
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
       integration_identifier: `tamarcado-${randomBytes(4).toString("hex")}`,
     });
     if (!session.url) throw new Error("Não foi possível abrir o checkout.");
-    const { error } = await admin.from("subscription_records").upsert({ business_id: business.id, provider: "stripe", provider_customer_id: customerId, provider_checkout_id: session.id, provider_price_id: priceId, status: "incomplete", price_cents: 4999, updated_at: new Date().toISOString() }, { onConflict: "business_id" });
+    const { error } = await admin.from("subscription_records").upsert({ business_id: business.id, provider: "stripe", provider_livemode: livemode, provider_customer_id: customerId, provider_checkout_id: session.id, provider_price_id: priceId, status: "incomplete", price_cents: 4999, updated_at: new Date().toISOString() }, { onConflict: "business_id" });
     if (error) throw new Error("O checkout foi criado, mas não conseguimos registrar sua tentativa.");
     return NextResponse.json({ url: session.url }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

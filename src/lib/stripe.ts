@@ -6,6 +6,10 @@ export function createStripeClient() {
   return new Stripe(apiKey, { apiVersion: "2026-08-26.dahlia" });
 }
 
+export function stripeIsLiveMode() {
+  return process.env.STRIPE_SECRET_KEY?.includes("_live_") ?? false;
+}
+
 export function stripeId(value: string | { id: string } | null | undefined) {
   return typeof value === "string" ? value : value?.id ?? null;
 }

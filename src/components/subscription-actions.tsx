@@ -17,10 +17,10 @@ export function StartSubscription() {
     setError(""); setLoading(true);
     try { await openBilling("/api/billing/checkout"); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível iniciar a assinatura."); } finally { setLoading(false); }
   }
-  return <div><button className="btn" onClick={start} disabled={loading}><CreditCard size={16} />{loading ? "Abrindo checkout…" : "Ativar por R$ 49,99/mês"}<ExternalLink size={14} /></button>{error && <p className="form-error" role="alert">{error}</p>}</div>;
+  return <div><button className="btn" onClick={start} disabled={loading}><CreditCard size={16} />{loading ? "Abrindo checkout…" : "Realizar assinatura"}<ExternalLink size={14} /></button><p style={{ fontSize: 11, color: "var(--muted)", marginTop: 8 }}>R$ 49,99 por mês. Você confirma os dados de pagamento no checkout seguro da Stripe.</p>{error && <p className="form-error" role="alert">{error}</p>}</div>;
 }
 
-export function CancelSubscription({ active }: { active: boolean }) {
+export function CancelSubscription({ active, scheduledCancellation = false }: { active: boolean; scheduledCancellation?: boolean }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   if (!active) return null;
@@ -28,5 +28,5 @@ export function CancelSubscription({ active }: { active: boolean }) {
     setError(""); setLoading(true);
     try { await openBilling("/api/billing/portal"); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível abrir o gerenciamento da assinatura."); } finally { setLoading(false); }
   }
-  return <div style={{ marginTop: 22 }}><button className="btn secondary small" onClick={manage} disabled={loading}><Settings2 size={14} />{loading ? "Abrindo…" : "Gerenciar assinatura"}</button><p style={{ fontSize: 11, color: "var(--muted)" }}>Atualize o cartão, veja faturas ou cancele pelo portal seguro do Stripe.</p>{error && <p className="form-error">{error}</p>}</div>;
+  return <div style={{ marginTop: 22 }}><button className="btn secondary small" onClick={manage} disabled={loading}><Settings2 size={14} />{loading ? "Abrindo…" : scheduledCancellation ? "Reativar ou gerenciar plano" : "Gerenciar assinatura"}</button><p style={{ fontSize: 11, color: "var(--muted)" }}>{scheduledCancellation ? "Você ainda pode consultar faturas ou reativar o plano pelo portal seguro da Stripe." : "Atualize o cartão, veja faturas ou cancele pelo portal seguro da Stripe."}</p>{error && <p className="form-error">{error}</p>}</div>;
 }
