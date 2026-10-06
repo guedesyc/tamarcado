@@ -20,9 +20,11 @@ A landing page abre sem credenciais. Cadastro, painel, publicação, portfólio,
 
 ## Assinatura
 
-O provedor integrado é o Asaas Checkout. Para sandbox, configure `ASAAS_API_KEY`, `ASAAS_API_BASE_URL=https://api-sandbox.asaas.com/v3`, `SUPABASE_SERVICE_ROLE_KEY` e `ASAAS_WEBHOOK_TOKEN`. Cadastre no Asaas o endpoint `/api/billing/asaas-webhook` e use o mesmo segredo no header `asaas-access-token`. Em produção, use a URL e a chave de produção e defina `NEXT_PUBLIC_SITE_URL` para o domínio HTTPS definitivo.
+O provedor integrado é o Stripe Billing. Configure `STRIPE_SECRET_KEY` (preferencialmente uma chave restrita), `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY` e `NEXT_PUBLIC_SITE_URL`. Crie no Stripe um produto “Tá Marcado · Plano mensal” com preço recorrente de R$ 49,99/mês e informe o identificador do preço em `STRIPE_PRICE_ID`.
 
-O checkout hospedado aceita cartão, cria recorrência mensal e mantém dados de cartão no Asaas. A assinatura só fica ativa após webhook verificado; a URL de retorno do checkout não concede acesso. Eventos são idempotentes por ID.
+Cadastre o endpoint `/api/billing/stripe-webhook` no Stripe e assine, no mínimo, `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` e `customer.subscription.deleted`. A assinatura só fica ativa após webhook assinado e validado; a URL de retorno do Checkout não concede acesso. Eventos são idempotentes por ID. O Customer Portal hospeda atualização de cartão, faturas e cancelamento.
+
+Veja o roteiro de configuração e teste em [docs/STRIPE-SETUP.md](docs/STRIPE-SETUP.md).
 
 ## Regras sensíveis
 
@@ -35,7 +37,7 @@ O checkout hospedado aceita cartão, cria recorrência mensal e mantém dados de
 
 ## Situação do produto
 
-A base cobre site institucional, cadastro/recuperação de acesso, onboarding, criação de serviços com perguntas e modificadores, perfil público, estimativa de preço/duração calculada no servidor, disponibilidade e pedidos, negociação por link, agenda, trial, assinatura Asaas e portfólio. Antes de operar com clientes reais ainda é necessário configurar Supabase e Asaas, aplicar e validar as migrations, e concluir itens de produto/operação: edição de serviços/perfil, exceções e bloqueios na interface do calendário, lançamentos financeiros, mensagens/notificações da negociação, rate limiting distribuído/antiabuso, compressão de imagens e revisão jurídica dos termos/privacidade. Painéis de algumas dessas áreas ainda são estruturas iniciais, não fluxos completos.
+A base cobre site institucional, cadastro/recuperação de acesso, onboarding, criação de serviços com perguntas e modificadores, perfil público, estimativa de preço/duração calculada no servidor, disponibilidade e pedidos, negociação por link, agenda, trial, assinatura Stripe e portfólio. Antes de operar com clientes reais ainda é necessário configurar Supabase e Stripe, aplicar e validar as migrations, e concluir itens de produto/operação: edição de serviços/perfil, exceções e bloqueios na interface do calendário, lançamentos financeiros, mensagens/notificações da negociação, rate limiting distribuído/antiabuso, compressão de imagens e revisão jurídica dos termos/privacidade. Painéis de algumas dessas áreas ainda são estruturas iniciais, não fluxos completos.
 
 ### Landing atual
 

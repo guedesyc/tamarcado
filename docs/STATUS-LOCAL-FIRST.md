@@ -1,5 +1,14 @@
 # Tá Marcado — andamento e próximos passos
 
+## Stripe Billing — 06/10/2026
+
+- [x] Integração Asaas substituída no código por Stripe Checkout hospedado, Stripe Billing, Customer Portal e webhook com verificação de assinatura.
+- [x] Produto e preço recorrente mensal de R$ 49,99 criados no ambiente de testes do Stripe; o identificador do preço não foi versionado e deve ficar em `STRIPE_PRICE_ID` na hospedagem.
+- [x] Customer Portal de testes configurado para faturas, atualização de forma de pagamento e cancelamento ao fim do período.
+- [x] Migration aditiva `202610060001_stripe_billing.sql` criada para guardar eventos Stripe com idempotência, registrar o preço e atualizar o valor padrão do plano. Não remove dados ou tabelas do Asaas.
+- [ ] Aplicar a migration no Supabase, configurar `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID` e `STRIPE_WEBHOOK_SECRET` na Hostinger e cadastrar o endpoint `/api/billing/stripe-webhook` com os eventos descritos em `docs/STRIPE-SETUP.md`.
+- [ ] Exercitar o checkout e cartão de teste, renovação/falha de cobrança, Customer Portal e cancelamento no ambiente Stripe de testes antes de criar equivalentes em produção.
+
 ## Interface do app e contas opcionais — 05/10/2026
 
 - [x] Interações e foco visual padronizados nas abas internas, com estados de clique, navegação mais leve, cartões responsivos e respeito a movimento reduzido. Solicitações ganhou resumo visual separado por atendimento, serviço e recebimento.
