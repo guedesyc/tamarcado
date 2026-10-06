@@ -4,7 +4,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
-const schema=z.object({action:z.enum(["accept","cancel","request_another_time","report_signal"]),date:z.string().date().optional(),time:z.string().regex(/^\d\d:\d\d$/).optional(),reason:z.string().trim().min(10).max(500).optional()});
+const schema=z.object({action:z.enum(["accept","cancel","request_another_time","report_signal"]),date:z.string().date().optional(),time:z.string().regex(/^\d\d:\d\d$/).optional(),reason:z.string().trim().min(3).max(500).optional()});
 
 export async function POST(request:Request,{params}:{params:Promise<{token:string}>}){
  if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível atualizar o atendimento deste endereço."},{status:403});
@@ -12,7 +12,7 @@ export async function POST(request:Request,{params}:{params:Promise<{token:strin
  let body:unknown;try{body=await request.json()}catch{return NextResponse.json({error:"Confira sua escolha e tente novamente."},{status:400})}
  const parsed=schema.safeParse(body);if(!parsed.success)return NextResponse.json({error:"Confira sua escolha e tente novamente."},{status:400});
  if(parsed.data.action==="request_another_time"&&(!parsed.data.date||!parsed.data.time))return NextResponse.json({error:"Escolha outro dia e horário."},{status:400});
- if(parsed.data.action==="cancel"&&(!parsed.data.reason||parsed.data.reason.trim().length<10))return NextResponse.json({error:"Conte em pelo menos 10 caracteres por que precisa cancelar."},{status:400});
+ if(parsed.data.action==="cancel"&&(!parsed.data.reason||parsed.data.reason.trim().length<3))return NextResponse.json({error:"Informe brevemente por que precisa cancelar."},{status:400});
  const supabase=await createClient();if(!supabase)return NextResponse.json({error:"O acompanhamento está temporariamente indisponível."},{status:503});
  const tokenHash=createHash("sha256").update(token).digest("hex");
  const {data,error}=parsed.data.action==="cancel"

@@ -209,7 +209,6 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <button className="pill" disabled={busy} onClick={() => { setProposing(value => !value); setRejecting(false); setError(""); }}><CalendarClock size={14}/> Sugerir horário</button>
     </>}
     {awaitingClientProposal && <span className="pill" role="status"><Clock3 size={14}/> Aguardando resposta da cliente</span>}
-    {status === "under_review" && <span className="pill" role="status"><Clock3 size={14}/> Em análise</span>}
     {status === "confirmed" && paymentStatus === "signal_requested" && <>
       <span className="pill">Aguardando sinal · 1h</span>
       <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setError(""); }}><X size={14}/> Cancelar horário</button>

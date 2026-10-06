@@ -80,7 +80,7 @@ export function BookingControls({ token, status, paymentStatus, service, profess
     } finally { setBusy(false); }
   }
 
-  const canCancel = ["requested", "under_review", "proposed", "confirmed"].includes(status) && paymentStatus !== "signal_reported";
+  const canCancel = ["requested", "under_review", "proposed", "confirmed"].includes(status);
   return <div className="booking-controls">
     {paymentStatus === "signal_requested" && <div className="trial-box">
       <b>O horário está reservado por 1 hora</b>
@@ -101,7 +101,7 @@ export function BookingControls({ token, status, paymentStatus, service, profess
       </div>}
     </>}
     {canCancel && !canceling && <button className="btn secondary" style={{ width: "100%", marginTop: 9 }} disabled={busy} onClick={() => { setCancelReason(""); setCanceling(true); }}><X size={15}/> Cancelar solicitação</button>}
-    {canceling && <div className="trial-box" style={{ marginTop: 12 }}><div className="form-field"><label htmlFor="booking-cancel-reason">Por que você precisa cancelar?</label><textarea id="booking-cancel-reason" rows={4} maxLength={500} minLength={10} required value={cancelReason} onChange={event => setCancelReason(event.target.value)} placeholder="Conte brevemente o motivo. Essa informação será enviada à profissional pelo WhatsApp."/></div><button className="btn" style={{ width: "100%" }} disabled={busy || cancelReason.trim().length < 10} onClick={() => act("cancel", cancelReason)}>{busy ? "Cancelando…" : "Confirmar cancelamento e conversar no WhatsApp"}</button><button className="btn secondary" style={{ width: "100%", marginTop: 8 }} disabled={busy} onClick={() => setCanceling(false)}>Voltar sem cancelar</button></div>}
+    {canceling && <div className="trial-box" style={{ marginTop: 12 }}><div className="form-field"><label htmlFor="booking-cancel-reason">Por que você precisa cancelar?</label><textarea id="booking-cancel-reason" rows={4} maxLength={500} minLength={3} required value={cancelReason} onChange={event => setCancelReason(event.target.value)} placeholder="Conte brevemente o motivo. Essa informação será enviada à profissional pelo WhatsApp."/></div><button className="btn" style={{ width: "100%" }} disabled={busy || cancelReason.trim().length < 3} onClick={() => act("cancel", cancelReason)}>{busy ? "Cancelando…" : "Confirmar cancelamento e conversar no WhatsApp"}</button><button className="btn secondary" style={{ width: "100%", marginTop: 8 }} disabled={busy} onClick={() => setCanceling(false)}>Voltar sem cancelar</button></div>}
     {message && <p className="form-error" role="alert">{message}</p>}
     {success && <p className="trial-box" role="status">{success}</p>}
   </div>;
