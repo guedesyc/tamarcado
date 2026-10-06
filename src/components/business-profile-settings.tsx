@@ -6,7 +6,7 @@ import { Check, Clock3, Plus, Trash2 } from "lucide-react";
 
 type Category = { id: string; name: string; slug: string };
 type Rule = { id?: string; clientKey: string; weekday: number; start_time: string; end_time: string };
-type Settings = { name: string; display_name: string; slug: string; contact_phone: string; neighborhood: string | null; city: string | null; state: string | null; bio: string; email: string; categories: Category[]; category_ids: string[]; rules: Rule[]; cancellation_refund_policy: "none" | "before_hours"; cancellation_refund_hours: number };
+type Settings = { name: string; display_name: string; slug: string; contact_phone: string; billing_email: string; neighborhood: string | null; city: string | null; state: string | null; bio: string; email: string; categories: Category[]; category_ids: string[]; rules: Rule[]; cancellation_refund_policy: "none" | "before_hours"; cancellation_refund_hours: number };
 const week = [{ id: 1, name: "Segunda-feira" }, { id: 2, name: "Terça-feira" }, { id: 3, name: "Quarta-feira" }, { id: 4, name: "Quinta-feira" }, { id: 5, name: "Sexta-feira" }, { id: 6, name: "Sábado" }, { id: 0, name: "Domingo" }];
 const slugify = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 
@@ -24,7 +24,7 @@ export function BusinessProfileSettings() {
     fetch("/api/business/profile", { cache: "no-store" }).then(async response => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível carregar as configurações.");
-      if (active) setData({ ...result, neighborhood: result.public_neighborhood ?? "", city: result.public_city ?? "", state: result.public_state ?? "", rules: (result.rules ?? []).map((rule: Rule) => ({ ...rule, clientKey: rule.id ?? crypto.randomUUID(), start_time: rule.start_time.slice(0, 5), end_time: rule.end_time.slice(0, 5) })) });
+      if (active) setData({ ...result, billing_email: result.billing_email ?? "", neighborhood: result.public_neighborhood ?? "", city: result.public_city ?? "", state: result.public_state ?? "", rules: (result.rules ?? []).map((rule: Rule) => ({ ...rule, clientKey: rule.id ?? crypto.randomUUID(), start_time: rule.start_time.slice(0, 5), end_time: rule.end_time.slice(0, 5) })) });
     }).catch(reason => { if (active) setError(reason instanceof Error ? reason.message : "Não foi possível carregar as configurações."); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
@@ -37,7 +37,7 @@ export function BusinessProfileSettings() {
     if (!data) return;
     setSaving(true); setMessage(""); setError("");
     try {
-      const response = await fetch("/api/business/profile", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: data.name, display_name: data.display_name, slug: data.slug, contact_phone: data.contact_phone, neighborhood: data.neighborhood ?? "", city: data.city ?? "", state: data.state ?? "", bio: data.bio, category_ids: data.category_ids, cancellation_refund_policy: data.cancellation_refund_policy, cancellation_refund_hours: data.cancellation_refund_hours, rules: data.rules.map(rule => ({ id: rule.id, weekday: rule.weekday, start_time: rule.start_time, end_time: rule.end_time })) }) });
+      const response = await fetch("/api/business/profile", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: data.name, display_name: data.display_name, slug: data.slug, contact_phone: data.contact_phone, billing_email: data.billing_email, neighborhood: data.neighborhood ?? "", city: data.city ?? "", state: data.state ?? "", bio: data.bio, category_ids: data.category_ids, cancellation_refund_policy: data.cancellation_refund_policy, cancellation_refund_hours: data.cancellation_refund_hours, rules: data.rules.map(rule => ({ id: rule.id, weekday: rule.weekday, start_time: rule.start_time, end_time: rule.end_time })) }) });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Não foi possível salvar as configurações.");
       setMessage("Configurações salvas."); router.refresh();
@@ -55,6 +55,7 @@ export function BusinessProfileSettings() {
       <div className="form-field"><label htmlFor="settings-business-name">Nome do negócio</label><input id="settings-business-name" value={data.name} onChange={event => setData(current => current ? { ...current, name: event.target.value, slug: slugify(event.target.value) } : current)}/></div>
       <div className="form-field"><label htmlFor="settings-professional-name">Nome profissional</label><input id="settings-professional-name" value={data.display_name} onChange={event => setData(current => current ? { ...current, display_name: event.target.value } : current)}/></div>
       <div className="form-field"><label htmlFor="settings-email">E-mail da conta</label><input id="settings-email" type="email" value={data.email} readOnly/><small>É o e-mail usado para entrar. Para alterá-lo, é necessário confirmar o novo endereço por e-mail.</small></div>
+      <div className="form-field"><label htmlFor="settings-billing-email">E-mail financeiro</label><input id="settings-billing-email" type="email" value={data.billing_email} onChange={event => setData(current => current ? { ...current, billing_email: event.target.value } : current)} placeholder="contato@seudominio.com.br"/><small>Usado nas faturas e cobranças. Pode ser diferente do e-mail de acesso.</small></div>
       <div className="form-field"><label htmlFor="settings-phone">WhatsApp com DDD</label><input id="settings-phone" type="tel" value={data.contact_phone} onChange={event => setData(current => current ? { ...current, contact_phone: event.target.value } : current)}/></div>
       <div className="form-field settings-slug-field"><label htmlFor="settings-slug">Link público (gerado pelo nome do negócio)</label><div className="generated-slug"><span>tamarcado.ygsystems.com.br/</span><input id="settings-slug" value={data.slug} readOnly/></div></div>
     </div>

@@ -42,6 +42,7 @@ export async function POST(request: Request) {
   let subscriptionId: string | null = null;
   let nextStatus: "active" | "past_due" | "cancelled" | "incomplete" | null = null;
   let periodEnd: string | null = null;
+  let cancelAt: string | null = null;
   let checkoutId: string | null = null;
 
   if (event.type === "checkout.session.completed") {
@@ -61,6 +62,7 @@ export async function POST(request: Request) {
     subscriptionId = subscription.id;
     nextStatus = event.type === "customer.subscription.deleted" ? "cancelled" : subscriptionStatus(subscription.status);
     periodEnd = subscriptionPeriodEnd(subscription);
+    cancelAt = stripeTimestamp(subscription.cancel_at);
   }
 
   if (customerId) {
@@ -69,6 +71,7 @@ export async function POST(request: Request) {
     if (checkoutId) updates.provider_checkout_id = checkoutId;
     if (nextStatus) updates.status = nextStatus;
     if (periodEnd) updates.current_period_end = periodEnd;
+    if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") updates.cancel_at = cancelAt;
     const { error } = await admin.from("subscription_records").update(updates).eq("provider", "stripe").eq("provider_customer_id", customerId);
     if (error) return NextResponse.json({ error: "Não foi possível sincronizar a assinatura." }, { status: 500 });
   }
