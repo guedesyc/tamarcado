@@ -5,6 +5,7 @@ import { isSameSiteOrigin } from "@/lib/request-origin";
 import { rateLimitRequest } from "@/lib/rate-limit";
 import { siteUrl } from "@/lib/site-url";
 import { safeCustomerNext } from "@/lib/customer-auth";
+import { customerAccountCreationEnabled } from "@/lib/customer-account-feature";
 
 const schema = z.discriminatedUnion("method", [
   z.object({ method: z.literal("google"), next: z.string().optional() }),
@@ -17,6 +18,8 @@ export async function POST(request: Request) {
   if (!limit.allowed) return NextResponse.json({ error: "Aguarde alguns minutos antes de tentar novamente." }, { status: 429 });
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Confira os dados informados." }, { status: 400 });
+  const accountsEnabled = customerAccountCreationEnabled();
+  if (!accountsEnabled && parsed.data.method === "google") return NextResponse.json({ error: "O acesso de cliente está temporariamente pausado." }, { status: 503 });
   const supabase = await createClient();
   if (!supabase) return NextResponse.json({ error: "Acesso indisponível no momento." }, { status: 503 });
   const next = safeCustomerNext(parsed.data.next ?? null);
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
   }
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data.email,
-    options: { emailRedirectTo: callback, shouldCreateUser: true }
+    options: { emailRedirectTo: callback, shouldCreateUser: accountsEnabled }
   });
   if (error) return NextResponse.json({ error: "Não foi possível enviar o link. Tente novamente em instantes." }, { status: 400 });
   return NextResponse.json({ sent: true }, { headers: { "Cache-Control": "no-store" } });

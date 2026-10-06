@@ -5,6 +5,7 @@ import { isSameSiteOrigin } from "@/lib/request-origin";
 import { rateLimitRequest } from "@/lib/rate-limit";
 import { siteUrl } from "@/lib/site-url";
 import { hasStrongPassword } from "@/lib/password-policy";
+import { customerAccountCreationEnabled } from "@/lib/customer-account-feature";
 
 const schema = z.object({
   name: z.string().trim().min(2).max(120), phone: z.string().trim().min(10).max(40),
@@ -12,6 +13,7 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  if (!customerAccountCreationEnabled()) return NextResponse.redirect(siteUrl("/cliente/entrar?erro=signup-paused", request.url), 303);
   if (!isSameSiteOrigin(request)) return NextResponse.redirect(siteUrl("/cliente/cadastro?erro=invalid", request.url), 303);
   const limit = rateLimitRequest(request, "customer-signup", 5, 60 * 60 * 1000);
   if (!limit.allowed) return NextResponse.redirect(siteUrl("/cliente/cadastro?erro=limit", request.url), 303);

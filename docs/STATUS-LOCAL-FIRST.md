@@ -9,16 +9,18 @@
 - [ ] Aplicar a migration no Supabase, configurar `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID` e `STRIPE_WEBHOOK_SECRET` na Hostinger e cadastrar o endpoint `/api/billing/stripe-webhook` com os eventos descritos em `docs/STRIPE-SETUP.md`.
 - [ ] Exercitar o checkout e cartão de teste, renovação/falha de cobrança, Customer Portal e cancelamento no ambiente Stripe de testes antes de criar equivalentes em produção.
 
-## Interface do app e contas opcionais — 05/10/2026
+## Interface do app e contas opcionais — 06/10/2026
 
 - [x] Interações e foco visual padronizados nas abas internas, com estados de clique, navegação mais leve, cartões responsivos e respeito a movimento reduzido. Solicitações ganhou resumo visual separado por atendimento, serviço e recebimento.
 - [x] Convite à conta somente após o pedido, login Google/e-mail pelo Supabase Auth, `/minha-agenda`, perfil simples, vínculo de pedidos por token e permanência do fluxo anônimo.
 - [x] Migration incremental `202610050007_optional_customer_accounts.sql` criada; não foi aplicada no Supabase nesta tarefa.
 - [x] Instruções de ativação e roteiro manual em `docs/CUSTOMER-AUTH-SETUP.md`.
-- [ ] Aplicar a migration no projeto Supabase correto, configurar Google e o template de link por e-mail, e executar o roteiro com contas reais. O build local não valida serviços externos sem essas configurações.
-- [ ] Conferir a interface em desktop e celular após o deploy Hostinger, inclusive a nova área da cliente.
+- [x] Cadastro de novas contas pausado por padrão com `NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED` ausente ou `false`: bloqueia cadastro direto e criação por link de e-mail, e oculta Google para evitar criação via OAuth.
+- [x] A pausa é reversível e não remove tabelas, migration, perfis ou código. Login por senha de contas existentes, agendamento anônimo e acompanhamento por token permanecem disponíveis.
+- [ ] A migration e a autenticação de clientes ficam fora do fluxo ativo enquanto o cadastro estiver pausado; reativar e validar Google/e-mail e a área da cliente quando isso for priorizado.
+- [ ] Conferir a implantação Hostinger e os fluxos ativos em desktop e celular; validação local não substitui teste real após deploy.
 
-Atualizado em 05/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; o deploy das últimas alterações ainda precisa ser conferido. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
+Atualizado em 06/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; conferir o deploy das alterações mais recentes. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
 
 ## Revisão dos passos 1, 2 e 4 — 04/10/2026
 
@@ -27,6 +29,7 @@ Atualizado em 05/10/2026. O repositório GitHub (`main`) é a fonte de versionam
 - [x] Passo 4 — segurança/readiness: validação de origem nas rotas mutáveis, limites de tentativas nas rotas públicas/de autenticação, origem pública canônica mais restrita, logs de erro reduzidos e aviso honesto na política de privacidade sobre dados/retensão pendentes.
 - [x] Testes locais desta revisão: `npm run typecheck`, `npm test` (11/11), build Webpack (`npm run build`) e lint isolado dos arquivos alterados passaram. `npm run lint` global segue falhando por uma chamada impura a `Date.now()` preexistente em `src/components/local-booking-demo.tsx`; os demais apontamentos são warnings não bloqueantes e estão fora do escopo desta revisão.
 - [x] Usuário confirmou a aplicação de `supabase/migrations/202610040001_waitlist.sql` no Supabase.
+- [x] Lembrete por WhatsApp preparado para envio manual, estado de falta após o atendimento e lista de espera opt-in implementados. WhatsApp não é disparado automaticamente.
 - [ ] Antes de produção com múltiplas instâncias, substituir o limitador process-local por armazenamento compartilhado (Redis/KV) e concluir prazo de retenção, canal de privacidade e revisão jurídica.
 
 ## Landing institucional — 02/10/2026
@@ -117,7 +120,7 @@ Alterações desta revisão (código versionado em `main`; confirmar a conclusã
 - [x] Usuário confirmou que aplicou as migrations `202609290003_service_question_editor.sql`, `202609290004_record_service_balance.sql` e `202609290005_portfolio_owner_read.sql` no Supabase; elas são aditivas e não removem tabelas.
 - [ ] Depois de concluir o deploy das correções mais recentes, validar o fluxo autenticado no domínio Hostinger com conta real: salvar configurações e expediente, editar e responder perguntas, visualizar imagens privadas do portfólio, ver calendário/clientes, conferir sinal e lançar o saldo.
 - [x] Correção anterior: Clientes consulta contatos, atendimentos e respostas separadamente e expõe falhas em vez de exibir falso estado vazio; Financeiro e Clientes exibem botão Voltar visível dentro da página.
-- [ ] Persistem limitações externas já conhecidas: `wa.me` abre texto para envio manual; o Asaas permanece fora do escopo desta revisão; teste real em vários celulares e validação de DNS/ambiente continuam necessários.
+- [ ] Persistem limitações externas já conhecidas: `wa.me` abre texto para envio manual; Stripe ainda precisa de configuração/validação de sandbox; teste real em vários celulares e validação de DNS/ambiente continuam necessários.
 
 ## O que existe
 
@@ -131,11 +134,11 @@ Alterações desta revisão (código versionado em `main`; confirmar a conclusã
 - [x] Fluxo demonstrativo `/demo/fluxo`: a cliente escolhe serviço, responde perguntas, escolhe um horário e envia solicitação; a profissional responde ou propõe alterações; a cliente pode aceitar, pedir outro horário ou cancelar. Dados ficam no `localStorage` do navegador.
 - [x] Página de acompanhamento por link individual no fluxo conectado, sem exigir cadastro da cliente. Mensagens preparadas para WhatsApp incluem o link de acompanhamento.
 - [x] Sinal Pix no fluxo conectado: reserva temporária de uma hora, cliente informa que pagou, profissional confere manualmente e então confirma. A confirmação não é automática por comprovante.
-- [x] Assinatura mensal ajustada para **R$ 49,99** na comunicação e no valor enviado ao checkout Asaas.
+- [x] Assinatura mensal ajustada para **R$ 49,99**; cobrança atual migrou do Asaas para Stripe Billing (detalhes e pendências acima).
 
 ### Código de backend preparado
 
-- [x] Projeto Next.js/TypeScript, rotas de autenticação, APIs, integração Supabase/PostgreSQL, RLS e Asaas já presentes no repositório.
+- [x] Projeto Next.js/TypeScript, rotas de autenticação, APIs, integração Supabase/PostgreSQL, RLS e Stripe Billing presentes no repositório.
 - [x] Migration nova `supabase/migrations/202609230001_public_booking_signal.sql` adiciona configurações Pix, estado/prazo do sinal e tokens adicionais de acompanhamento com hash.
 - [x] Validação desta revisão: `npm run test` (7 testes), `npm run typecheck`, `npm run lint` (0 erros; avisos não bloqueantes) e `npm run build` (Webpack) passaram; `git diff --check` passou.
 - [x] Build da Hostinger corrigido e implantado: `package.json` executa `next build --webpack`; `next.config.ts` foi convertido para `next.config.mjs` para evitar a falha ao carregar a configuração TypeScript no ambiente de build da hospedagem.
@@ -163,7 +166,7 @@ Alterações desta revisão (código versionado em `main`; confirmar a conclusã
 ## Hospedagem e GitHub Pages
 
 - [x] Aplicação Next.js implantada com sucesso na Hostinger após usar Webpack e configuração `next.config.mjs`.
-- [ ] Abrir e validar o app implantado no domínio `tamarcado.ygsystems.com.br` (páginas, navegação, APIs e logs); sucesso no deploy não confirma que Supabase/Asaas já estejam configurados.
+- [ ] Abrir e validar o app implantado no domínio `tamarcado.ygsystems.com.br` (páginas, navegação, APIs e logs); sucesso no deploy não confirma que Supabase/Stripe já estejam configurados.
 - [ ] Confirmar DNS, HTTPS e variáveis de ambiente do domínio de produção.
 
 - [x] Prévia de apresentação estática em `index.html` na raiz do repositório; ela substituiu o README na página inicial do GitHub Pages.
@@ -183,7 +186,7 @@ GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema 
 - [ ] Validar concorrência de horários, cancelamento durante sinal pendente, liberação após expiração e consistência entre agenda e clientes.
 - [ ] Definir política operacional para cancelamento pela profissional e devolução/uso do sinal; o pagamento Pix é direto entre as partes.
 - [ ] Revisar notificações: hoje as integrações `wa.me` preparam mensagens para envio; não são disparos automáticos.
-- [ ] Completar estados de falta/no-show, atendimento concluído, lembretes e lista de espera.
+- [ ] Automatizar notificações somente se/quando um provedor e credenciais forem definidos; hoje `wa.me` prepara a mensagem para envio manual.
 - [ ] Ampliar testes automatizados para preço, disponibilidade, transições de estado, tokens, isolamento RLS e concorrência; revisar acessibilidade e comportamento em aparelhos móveis reais.
 - [ ] Revisar texto jurídico, privacidade, retenção de dados, suporte e política de cancelamento com assessoria apropriada antes do lançamento.
 
@@ -195,7 +198,7 @@ GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema 
 - [x] Hostinger aceitou e compilou o app Next.js com Node 22.x e `npm run build` (Webpack).
 - [ ] Confirmar DNS/HTTPS de `tamarcado.ygsystems.com.br` e variáveis do app com segurança.
 - [ ] Configurar variáveis de ambiente e autenticação/e-mail; nunca versionar chaves privadas.
-- [ ] Configurar Asaas em sandbox, validar checkout recorrente de R$ 49,99, webhooks idempotentes e cancelamento; só então habilitar produção.
+- [ ] Validar Stripe em sandbox: aplicar `202610060001_stripe_billing.sql`, configurar segredos e webhook conforme `docs/STRIPE-SETUP.md`, e testar checkout recorrente de R$ 49,99, idempotência e cancelamento antes de produção.
 - [ ] Testar uploads, segurança, backups, logs, rate limiting e recuperação de falhas.
 
 ## Como testar localmente

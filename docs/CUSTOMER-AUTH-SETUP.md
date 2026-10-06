@@ -1,5 +1,9 @@
 # Contas opcionais para clientes
 
+## Pausar novas contas de cliente
+
+A criação de contas de cliente fica desativada por padrão (`NEXT_PUBLIC_CUSTOMER_ACCOUNTS_ENABLED=false` ou variável ausente). Isso oculta os links de cadastro, redireciona visitas diretas à tela de cadastro, bloqueia o envio do formulário e impede que o link por e-mail crie novos usuários. O Google fica temporariamente oculto porque o OAuth do Supabase pode criar uma conta automaticamente. Contas existentes com senha continuam podendo entrar; agendamento e acompanhamento sem conta permanecem disponíveis. Nenhuma tabela, perfil ou migration é removida. Para reativar, defina a variável como `true` e faça novo deploy.
+
 ## Arquitetura
 
 - A cliente continua podendo agendar sem conta. O convite para entrar aparece **depois** do pedido ser salvo.
@@ -10,9 +14,9 @@
 - `/r/[token]` e os agendamentos anônimos permanecem operacionais. Uma cliente autenticada pode adicionar um pedido antigo à própria agenda enquanto o link estiver válido.
 - Após um pedido anônimo, um cookie `HttpOnly`, `SameSite=Lax` e temporário guarda a prova para ligar **aquele** pedido depois do login no mesmo navegador. O token de acompanhamento não é enviado ao provedor OAuth. Se o cookie expirar ou o login ocorrer em outro dispositivo, abra o link de acompanhamento e use “Adicionar à minha agenda” antes de entrar.
 
-## Ativação no Supabase
+## Reativação futura no Supabase
 
-1. Aplique, uma vez, `supabase/migrations/202610050007_optional_customer_accounts.sql` no SQL Editor do projeto correto. Não altere migrações antigas.
+1. A migration `supabase/migrations/202610050007_optional_customer_accounts.sql` foi criada para habilitar as contas opcionais. Antes de executá-la, confirme se já foi aplicada no projeto correto; não altere migrações antigas.
 2. Em Authentication → URL Configuration, configure o Site URL de produção como `https://tamarcado.ygsystems.com.br` e permita `https://tamarcado.ygsystems.com.br/auth/callback` e `https://tamarcado.ygsystems.com.br/auth/confirm`. Adicione equivalentes locais para desenvolvimento.
 3. Em Authentication → Providers → Google, habilite Google e informe Client ID e Client Secret criados no Google Cloud. No Google Cloud, use a URL de callback **do projeto Supabase** indicada nessa tela. Os segredos ficam no Google Cloud/Supabase, nunca no repositório.
 4. Habilite o provedor Email. Para magic link com SSR/PKCE, ajuste o template “Magic Link” para usar um link como:
