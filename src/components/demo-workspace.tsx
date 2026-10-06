@@ -1,5 +1,6 @@
 "use client";
 import { BrandLogo } from "@/components/brand-logo";
+import { greetingForHour } from "@/lib/greeting";
 
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -59,7 +60,7 @@ export function DemoWorkspace(){
  const [month,setMonth]=useState(()=>new Date(new Date().getFullYear(),new Date().getMonth(),1,12)),[selectedDay,setSelectedDay]=useState(""),[bookingDay,setBookingDay]=useState(""),[clientService,setClientService]=useState(starterServices[0].id),[clientName,setClientName]=useState(""),[clientPhone,setClientPhone]=useState(""),[clientAnswers,setClientAnswers]=useState<Record<string,string>>({}),[clientSuccess,setClientSuccess]=useState("");
  const [newService,setNewService]=useState(""),[newServicePrice,setNewServicePrice]=useState(20000),[newServiceDuration,setNewServiceDuration]=useState(120),[newServiceImage,setNewServiceImage]=useState(""),[blockStartDay,setBlockStartDay]=useState(offsetDate(1)),[blockStart,setBlockStart]=useState("00:00"),[blockEndDay,setBlockEndDay]=useState(offsetDate(1)),[blockEnd,setBlockEnd]=useState("23:59"),[portfolioService,setPortfolioService]=useState(starterServices[0].id),[notice,setNotice]=useState(""),[confirmationState,setConfirmationState]=useState<{id:string;status:"confirming"|"done"}|null>(null);
   useEffect(()=>{const hydrate=window.setTimeout(()=>{try{const stored=localStorage.getItem(KEY);if(stored)setData(normalizeData(JSON.parse(stored)))}catch{}setReady(true)},0);const sync=(event:StorageEvent)=>{if(event.key===KEY&&event.newValue){try{setData(normalizeData(JSON.parse(event.newValue)))}catch{}}};window.addEventListener("storage",sync);return()=>{window.clearTimeout(hydrate);window.removeEventListener("storage",sync)}},[]);
- useEffect(()=>{const updateGreeting=()=>{const hour=new Date().getHours();setGreetingEmoji(hour>=6&&hour<18?"☀️":"🌙")};updateGreeting();const timer=window.setInterval(updateGreeting,60_000);return()=>window.clearInterval(timer)},[]);
+ useEffect(()=>{const updateGreeting=()=>{const hour=new Date().getHours();setGreetingEmoji(greetingForHour(hour).emoji)};updateGreeting();const timer=window.setInterval(updateGreeting,60_000);return()=>window.clearInterval(timer)},[]);
   useEffect(()=>{if(ready){localStorage.setItem(KEY,JSON.stringify(data));const shown=window.setTimeout(()=>setSaved(true),0);const hidden=window.setTimeout(()=>setSaved(false),1200);return()=>{window.clearTimeout(shown);window.clearTimeout(hidden)}}},[data,ready]);
  const days=useMemo(()=>calendarDays(month),[month]);
  const titles:Record<Section,string>={inicio:`Olá, ${data.displayName.split(/\s+/)[0]} ${greetingEmoji}`,agenda:"Agenda",cliente:"Agendar como cliente",solicitacoes:"Solicitações",clientes:"Clientes",servicos:"Seus serviços",perguntas:"Perguntas para clientes",financeiro:"Financeiro",portfolio:"Portfólio", "minha-pagina":"Sua página pública",configuracoes:"Configurações do espaço",bloqueios:"Bloqueio de agenda","meus-links":"Meus links",assinatura:"Seu plano"};
