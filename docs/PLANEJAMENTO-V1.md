@@ -21,7 +21,7 @@ Princípios: segurança e integridade no servidor, mobile-first, linguagem simpl
 - Painel: início, agenda, solicitações, clientes, serviços, portfólio, minha página, financeiro, assinatura e configurações.
 - Atendimentos manuais sem consumo do trial.
 - Histórico básico de clientes e financeiro.
-- Trial de 10 atendimentos públicos elegíveis, contador auditável e bloqueio apenas de novos agendamentos públicos após o limite.
+- Trial de 5 atendimentos públicos elegíveis, contador auditável e bloqueio apenas de novos agendamentos públicos após o limite.
 - Abstrações para notificações e pagamentos, sem integração externa obrigatória na primeira entrega.
 - RLS, autorização server-side, logs estruturados, tratamento de erros, testes de domínio e integração.
 

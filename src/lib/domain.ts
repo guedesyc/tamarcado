@@ -39,11 +39,11 @@ export function calculateService(basePriceCents: number, baseDurationMinutes: nu
 }
 
 export function trialMessage(completedPublicBookings: number): string | null {
-  if (completedPublicBookings === 8) return "Você já realizou 8 atendimentos pelo Tá Marcado 🎉 Restam 2 atendimentos gratuitos. Depois disso, continue usando sua agenda por R$ 49,99/mês.";
-  if (completedPublicBookings === 10) return "10 atendimentos. Tá funcionando. 💛 Continue recebendo agendamentos e cuidando da sua agenda por R$ 49,99/mês.";
+  if (completedPublicBookings === 3) return "Você já realizou 3 atendimentos pelo Tá Marcado 🎉 Restam 2 atendimentos gratuitos. Depois disso, continue usando sua agenda por R$ 49,99/mês.";
+  if (completedPublicBookings >= 5) return "Seus 5 atendimentos gratuitos foram concluídos. 💛 Assine para continuar recebendo agendamentos online.";
   return null;
 }
 
 export function publicBookingsPaused(count: number, subscriptionActive: boolean): boolean {
-  return count >= 10 && !subscriptionActive;
+  return count >= 5 && !subscriptionActive;
 }

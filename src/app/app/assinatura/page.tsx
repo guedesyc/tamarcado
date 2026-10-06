@@ -36,7 +36,7 @@ export default async function SubscriptionPage() {
         ? `Seu plano foi cancelado, mas você pode usar os recursos até ${formatDate(periodEnd)}.`
         : cancelled
           ? "Seu plano foi cancelado. Quando quiser, você pode realizar uma nova assinatura."
-          : "Use seus 10 atendimentos públicos gratuitos antes de decidir continuar no plano mensal.";
+          : "Use seus 5 atendimentos públicos gratuitos antes de decidir continuar no plano mensal.";
 
   return <main className="wrap" style={{ maxWidth: 950, paddingTop: 35, paddingBottom: 90 }}>
     <span className="eyebrow">Seu plano</span>
@@ -52,7 +52,7 @@ export default async function SubscriptionPage() {
         <CancelSubscription active={active} scheduledCancellation={scheduledCancellation} />
       </div>
       <div style={{ minWidth: 230 }}>
-        <section className="trial-box"><div className="trial-top"><span>Atendimentos gratuitos</span><span>{used} de 10</span></div><div className="progress"><span style={{ width: `${Math.min(100, used * 10)}%` }} /></div><p>Atendimentos públicos concluídos. Registros manuais não entram na contagem.</p></section>
+        {active ? <section className="trial-box"><div className="trial-top"><span>Atendimentos</span><span>Ilimitados</span></div><p>Sua assinatura ativa libera atendimentos públicos ilimitados. Registros manuais também seguem disponíveis.</p></section> : <section className="trial-box"><div className="trial-top"><span>Atendimentos gratuitos</span><span>{Math.min(used, 5)} de 5</span></div><div className="progress"><span style={{ width: `${Math.min(100, used * 20)}%` }} /></div><p>Atendimentos públicos concluídos. Registros manuais não entram na contagem.</p></section>}
         <div style={{ marginTop: 20 }}>{scheduledCancellation ? <span className="pill">Acesso até {formatDate(cancelAt!)}</span> : active ? <span className="pill">Assinatura ativa</span> : <StartSubscription />}</div>
       </div>
     </section>

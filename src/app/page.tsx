@@ -8,7 +8,7 @@ import "./marketing.css";
 
 export const metadata: Metadata = {
   title: "Tá Marcado — sua agenda, do seu jeito",
-  description: "Uma página profissional para mostrar seu trabalho, receber pedidos e organizar sua agenda. Experimente seus primeiros 10 atendimentos sem pagar.",
+  description: "Uma página profissional para mostrar seu trabalho, receber pedidos e organizar sua agenda. Experimente seus primeiros 5 atendimentos sem pagar.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Tá Marcado — sua agenda, do seu jeito",
@@ -19,11 +19,11 @@ export const metadata: Metadata = {
 };
 
 const faqs = [
-  ["Preciso de cartão para começar?", "Não. Você começa sem cadastrar cartão e pode experimentar seus primeiros 10 atendimentos públicos."],
+  ["Preciso de cartão para começar?", "Não. Você começa sem cadastrar cartão e pode experimentar seus primeiros 5 atendimentos públicos."],
   ["Quanto custa depois?", "Um único plano de R$ 49,99 por mês, sem comissão sobre os seus atendimentos."],
   ["Minha cliente precisa criar conta?", "Não. Ela solicita e acompanha o atendimento por um link seguro."],
   ["Posso cadastrar diferentes tipos de serviço?", "Sim. Você define os serviços, preços, durações e as perguntas que fazem sentido para cada atendimento."],
-  ["O que acontece depois dos 10 atendimentos?", "Seus dados e sua agenda continuam acessíveis. Novos agendamentos pela página pausam até ativar a assinatura."],
+  ["O que acontece depois dos 5 atendimentos?", "Seus dados e sua agenda continuam acessíveis. Novos agendamentos pela página pausam até ativar a assinatura."],
   ["Posso cancelar quando quiser?", "Sim. A assinatura é mensal e pode ser cancelada quando você decidir."],
 ];
 
@@ -67,7 +67,7 @@ export default function Home() {
             <h1>Sua agenda, seu trabalho, <em>do seu jeito.</em></h1>
             <p>Uma página profissional para mostrar o que você faz, receber pedidos de horário e cuidar da sua rotina com mais tranquilidade.</p>
             <div className="mh-actions"><Link className="mh-button mh-button-dark" href="/cadastro">Começar grátis <ArrowRight size={17}/></Link><a className="mh-button mh-button-quiet" href="#conheca"><ArrowDown size={16}/> Conheça o Tá Marcado</a></div>
-            <div className="mh-trust"><span><Check size={14}/> 10 atendimentos grátis</span><i/><span>Sem cartão</span><i/><span>Sem comissão</span></div>
+            <div className="mh-trust"><span><Check size={14}/> 5 atendimentos grátis</span><i/><span>Sem cartão</span><i/><span>Sem comissão</span></div>
           </div>
           <div className="mh-hero-visual" data-scroll-reveal><BrandLogo className="mh-hero-logo"/></div>
         </div>
@@ -102,7 +102,7 @@ export default function Home() {
 
 
 
-      <section className="mh-offer" data-scroll-reveal id="preco"><div className="mh-wrap mh-offer-grid"><div className="mh-offer-art"><div className="mh-offer-circle"><span>10</span><small>atendimentos<br/>para começar</small></div><div className="mh-offer-spark"><Sparkles size={22}/></div><span className="mh-offer-caption">Seu próximo capítulo começa aqui.</span></div><div className="mh-offer-copy"><SectionKicker>Comece com calma</SectionKicker><h2>Primeiros 10 atendimentos, <em>por nossa conta.</em></h2><p>Experimente sua página e conheça a rotina com tudo mais organizado. Sem cartão para começar e sem comissão pelos seus atendimentos.</p><div className="mh-offer-includes"><span><Check size={16}/> Página profissional</span><span><Check size={16}/> Agenda e solicitações</span><span><Check size={16}/> Cadastro de clientes e serviços</span></div><Link className="mh-button mh-button-dark" href="/cadastro">Criar meu espaço grátis <ArrowRight size={17}/></Link><small className="mh-price-note">Depois, se fizer sentido para você, R$ 49,99 por mês.</small></div></div></section>
+      <section className="mh-offer" data-scroll-reveal id="preco"><div className="mh-wrap mh-offer-grid"><div className="mh-offer-art"><div className="mh-offer-circle"><span>5</span><small>atendimentos<br/>para começar</small></div><div className="mh-offer-spark"><Sparkles size={22}/></div><span className="mh-offer-caption">Seu próximo capítulo começa aqui.</span></div><div className="mh-offer-copy"><SectionKicker>Comece com calma</SectionKicker><h2>Primeiros 5 atendimentos, <em>por nossa conta.</em></h2><p>Experimente sua página e conheça a rotina com tudo mais organizado. Sem cartão para começar e sem comissão pelos seus atendimentos.</p><div className="mh-offer-includes"><span><Check size={16}/> Página profissional</span><span><Check size={16}/> Agenda e solicitações</span><span><Check size={16}/> Cadastro de clientes e serviços</span></div><Link className="mh-button mh-button-dark" href="/cadastro">Criar meu espaço grátis <ArrowRight size={17}/></Link><small className="mh-price-note">Depois, se fizer sentido para você, R$ 49,99 por mês.</small></div></div></section>
 
       <section className="mh-price" data-scroll-reveal><div className="mh-wrap mh-price-inner"><div><SectionKicker>Quando estiver pronta</SectionKicker><h2>Um plano. <em>Sem surpresas.</em></h2><p>O mesmo preço, sem comissão sobre cada atendimento.</p></div><div className="mh-price-card"><span>Plano profissional</span><div>R$ <b>49</b><sup>,99</sup><small>/ mês</small></div><span><Check size={14}/> Sem comissão · cancele quando quiser</span><Link href="/cadastro">Começar grátis <ArrowRight size={15}/></Link></div></div></section>
 
@@ -112,7 +112,7 @@ export default function Home() {
 
       <QuoteRail />
 
-      <section className="mh-final" data-scroll-reveal><div className="mh-final-flower"><FloralArtwork variant="rose"/></div><a className="mh-final-social" href="https://instagram.com/tamarcado_app" aria-label="Instagram Tá Marcado"><Instagram size={21}/></a><div className="mh-final-content"><SectionKicker>Seu próximo passo</SectionKicker><h2>Seu trabalho merece um espaço <em>só seu.</em></h2><p>Comece sem pressa. Organize a agenda no seu ritmo.</p><Link className="mh-button mh-button-light" href="/cadastro">Criar meu Tá Marcado <ArrowRight size={17}/></Link><span>10 atendimentos grátis · Sem cartão</span></div><div className="mh-final-mark" aria-hidden="true">tm</div></section>
+      <section className="mh-final" data-scroll-reveal><div className="mh-final-flower"><FloralArtwork variant="rose"/></div><a className="mh-final-social" href="https://instagram.com/tamarcado_app" aria-label="Instagram Tá Marcado"><Instagram size={21}/></a><div className="mh-final-content"><SectionKicker>Seu próximo passo</SectionKicker><h2>Seu trabalho merece um espaço <em>só seu.</em></h2><p>Comece sem pressa. Organize a agenda no seu ritmo.</p><Link className="mh-button mh-button-light" href="/cadastro">Criar meu Tá Marcado <ArrowRight size={17}/></Link><span>5 atendimentos grátis · Sem cartão</span></div><div className="mh-final-mark" aria-hidden="true">tm</div></section>
     </main>
 
   </div></ScrollReveal>;

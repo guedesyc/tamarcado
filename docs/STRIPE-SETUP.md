@@ -1,6 +1,6 @@
 # Stripe Billing — configuração do Tá Marcado
 
-O Tá Marcado cobra da profissional um plano mensal de R$ 49,99 após os 10 atendimentos públicos gratuitos. Os pagamentos entre cliente e profissional continuam fora do Stripe.
+O Tá Marcado cobra da profissional um plano mensal de R$ 49,99 após os 5 atendimentos públicos gratuitos. Os pagamentos entre cliente e profissional continuam fora do Stripe.
 
 ## Ambiente de teste
 
