@@ -82,7 +82,7 @@ export function BookingControls({ token, status, paymentStatus, service, profess
 
   const canCancel = ["requested", "under_review", "proposed", "confirmed"].includes(status);
   return <div className="booking-controls">
-    {paymentStatus === "signal_requested" && <div className="trial-box">
+    {paymentStatus === "signal_requested" && <div className="trial-box booking-signal-action">
       <b>O horário está reservado por 1 hora</b>
       <p>Faça o Pix e avise por este link antes do prazo: {signalDeadline ? new Intl.DateTimeFormat("pt-BR", { timeStyle: "short", timeZone }).format(new Date(signalDeadline)) : "1 hora após a aprovação"}.</p>
       <button className="btn" style={{ width: "100%" }} disabled={busy || !signalDeadline} onClick={() => act("report_signal")}><Check size={15}/> Já fiz o Pix</button>
@@ -90,18 +90,17 @@ export function BookingControls({ token, status, paymentStatus, service, profess
     {paymentStatus === "signal_reported" && <p className="trial-box">Aviso de pagamento enviado. A profissional ainda precisa conferir o Pix para confirmar o atendimento.</p>}
     {paymentStatus === "signal_expired" && <p className="trial-box">O prazo de pagamento terminou e o horário foi liberado. Entre em contato com a profissional para solicitar outro horário.</p>}
     {paymentStatus === "partial" && <p className="trial-box">Sinal conferido pela profissional. Seu atendimento está confirmado!</p>}
-    {status === "proposed" && <>
-      <p>A profissional sugeriu este horário. Ao aceitar, ela ainda enviará as instruções do sinal para reservar a vaga.</p>
-      <button className="btn" style={{ width: "100%" }} disabled={busy} onClick={() => act("accept")}><Check size={15}/> Aceitar proposta</button>
-      <button className="btn secondary" style={{ width: "100%", marginTop: 9 }} disabled={busy} onClick={() => setChoosing(!choosing)}><CalendarClock size={15}/> Escolher outro horário</button>
-      {choosing && <div className="trial-box" style={{ marginTop: 12 }}>
+    {status === "proposed" && <section className="booking-proposal-actions">
+      <div className="booking-action-stack"><button className="btn" disabled={busy} onClick={() => act("accept")}><Check size={15}/> Aceitar proposta</button>
+      <button className="btn secondary" disabled={busy} onClick={() => setChoosing(!choosing)}><CalendarClock size={15}/> {choosing ? "Fechar opções" : "Escolher outro horário"}</button></div>
+      {choosing && <div className="trial-box booking-alternate-time">
         <div className="form-field"><label htmlFor="alternate-date">Outro dia</label><input id="alternate-date" type="date" value={date} onChange={event => loadSlots(event.target.value)}/></div>
         <div className="form-field"><label htmlFor="alternate-time">Horário disponível</label><select id="alternate-time" value={time} onChange={event => setTime(event.target.value)}><option value="">Selecione</option>{slots.map(slot => <option key={slot} value={slot}>{slot}</option>)}</select></div>
         <button className="btn" disabled={busy || !time} onClick={() => act("request_another_time")}>Pedir este horário</button>
       </div>}
-    </>}
-    {canCancel && !canceling && <button className="btn secondary" style={{ width: "100%", marginTop: 9 }} disabled={busy} onClick={() => { setCancelReason(""); setCanceling(true); }}><X size={15}/> Cancelar solicitação</button>}
-    {canceling && <div className="trial-box" style={{ marginTop: 12 }}><div className="form-field"><label htmlFor="booking-cancel-reason">Por que você precisa cancelar?</label><textarea id="booking-cancel-reason" rows={4} maxLength={500} minLength={3} required value={cancelReason} onChange={event => setCancelReason(event.target.value)} placeholder="Conte brevemente o motivo. Essa informação será enviada à profissional pelo WhatsApp."/></div><button className="btn" style={{ width: "100%" }} disabled={busy || cancelReason.trim().length < 3} onClick={() => act("cancel", cancelReason)}>{busy ? "Cancelando…" : "Confirmar cancelamento e conversar no WhatsApp"}</button><button className="btn secondary" style={{ width: "100%", marginTop: 8 }} disabled={busy} onClick={() => setCanceling(false)}>Voltar sem cancelar</button></div>}
+    </section>}
+    {canCancel && !canceling && <button className="booking-cancel-trigger" type="button" disabled={busy} onClick={() => { setCancelReason(""); setCanceling(true); }}><X size={15}/> Cancelar solicitação</button>}
+    {canceling && <section className="trial-box booking-cancel-card"><div className="form-field"><label htmlFor="booking-cancel-reason">Por que você precisa cancelar?</label><textarea id="booking-cancel-reason" rows={4} maxLength={500} minLength={3} required value={cancelReason} onChange={event => setCancelReason(event.target.value)} placeholder="Conte brevemente o motivo. Essa informação será enviada à profissional pelo WhatsApp."/></div><div className="booking-action-stack"><button className="btn" disabled={busy || cancelReason.trim().length < 3} onClick={() => act("cancel", cancelReason)}>{busy ? "Cancelando…" : "Confirmar cancelamento"}</button><button type="button" className="btn secondary" disabled={busy} onClick={() => setCanceling(false)}>Voltar</button></div></section>}
     {message && <p className="form-error" role="alert">{message}</p>}
     {success && <p className="trial-box" role="status">{success}</p>}
   </div>;

@@ -44,18 +44,24 @@ export default async function BookingStatus({ params }: { params: Promise<{ toke
     : booking.payment_status === "partial" ? "Confirmado"
     : labels[booking.status] ?? "Em atualização";
   const signalAmount = booking.signal_amount_cents === null ? "—" : `R$ ${(booking.signal_amount_cents / 100).toFixed(2).replace(".", ",")}`;
+  const nextStep = booking.status === "proposed" ? "Escolha uma das opções abaixo para responder à proposta."
+    : booking.payment_status === "signal_requested" ? "Faça o Pix e avise por este link para reservar seu horário."
+    : booking.payment_status === "signal_reported" ? "Você avisou sobre o Pix. Agora aguarde a conferência da profissional."
+    : booking.status === "confirmed" ? "Seu horário está confirmado. Guarde este link para acompanhar qualquer mudança."
+    : "A profissional está avaliando sua solicitação. Você será avisada por este link quando houver uma resposta.";
 
-  return <main className="form-wrap"><section className="form-card">
+  return <main className="form-wrap booking-tracking-wrap"><section className="form-card booking-tracking-card">
     <span className="eyebrow">Seu atendimento</span>
     <h1>Pedido para {booking.business_name}.</h1>
-    <p>Acompanhe por este link. Você não precisa criar uma conta.</p>
-    <div className="trial-box">
+    <p className="booking-tracking-intro">Acompanhe por este link. Você não precisa criar uma conta.</p>
+    <div className="trial-box booking-status-card">
       <div className="trial-top"><span>{booking.service_name}</span><span className="status">{statusLabel}</span></div>
       <p style={{ marginTop: 12 }}><CalendarDays size={14}/> {new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(booking.requested_at))}</p>
     </div>
+    <p className="booking-next-step"><b>Próximo passo</b>{nextStep}</p>
     {booking.note && <p>{booking.note}</p>}
-    {booking.status === "proposed" && booking.proposal_reason && <div className="trial-box"><b>Mensagem da profissional</b><p>{booking.proposal_reason}</p></div>}
-    {["signal_requested", "signal_reported"].includes(booking.payment_status) && <div className="trial-box">
+    {booking.status === "proposed" && booking.proposal_reason && <div className="trial-box booking-message-card"><b>Mensagem da profissional</b><p>{booking.proposal_reason}</p></div>}
+    {["signal_requested", "signal_reported"].includes(booking.payment_status) && <div className="trial-box booking-signal-card">
       <b>Dados para o sinal</b>
       <p>Valor: <strong>{signalAmount}</strong></p>
       <p>Pix ({booking.pix_holder}): <strong>{booking.pix_key}</strong></p>
