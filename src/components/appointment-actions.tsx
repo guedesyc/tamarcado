@@ -189,7 +189,8 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
     }, popup, whatsappMessage);
   }
 
-  const pending = ["requested", "under_review", "proposed"].includes(status);
+  const pending = ["requested", "under_review"].includes(status);
+  const awaitingClientProposal = status === "proposed";
   const durationMinutes = requestedAt && endAt ? Math.max(0, Math.round((new Date(endAt).getTime() - new Date(requestedAt).getTime()) / 60000)) : 0;
   const hasValidPhone = Boolean(clientPhone && whatsappPhone(clientPhone).length >= 12);
   const appointmentHasEnded = Boolean(endAt && clock && new Date(endAt).getTime() <= clock);
@@ -207,6 +208,7 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <button className="pill" disabled={busy} onClick={() => { setRejecting(value => !value); setProposing(false); setError(""); }}><X size={14}/> Recusar</button>
       <button className="pill" disabled={busy} onClick={() => { setProposing(value => !value); setRejecting(false); setError(""); }}><CalendarClock size={14}/> Sugerir horário</button>
     </>}
+    {awaitingClientProposal && <span className="pill" role="status"><Clock3 size={14}/> Aguardando resposta da cliente</span>}
     {status === "under_review" && <span className="pill" role="status"><Clock3 size={14}/> Em análise</span>}
     {status === "confirmed" && paymentStatus === "signal_requested" && <>
       <span className="pill">Aguardando sinal · 1h</span>
