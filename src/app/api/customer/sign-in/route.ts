@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   const next = safeCustomerNext(parsed.data.next ?? null);
   const callback = siteUrl(`/auth/callback?next=${encodeURIComponent(next)}`, request.url).toString();
   if (parsed.data.method === "google") {
-    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: callback } });
+    const { data, error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: callback, data: { account_type: "customer" } } });
     if (error || !data.url) return NextResponse.json({ error: "Não foi possível iniciar o acesso pelo Google." }, { status: 400 });
     return NextResponse.json({ url: data.url }, { headers: { "Cache-Control": "no-store" } });
   }

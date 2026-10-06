@@ -8,5 +8,6 @@ export const CUSTOMER_CLAIM_COOKIE = "tm_pending_customer_claim";
 
 export function safeAuthCallbackNext(value: string | null): string {
   if (value === "/senha") return value;
+  if (value === "/cliente/senha") return value;
   return value ? safeCustomerNext(value) : "/app/onboarding";
 }

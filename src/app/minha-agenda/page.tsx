@@ -38,32 +38,36 @@ function BookingCards({ rows }: { rows: Appointment[] }) {
   </article>)}</div>;
 }
 
-export default async function CustomerAgenda() {
+export default async function CustomerAgenda({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
+  const { aba } = await searchParams;
+  const section = aba === "historico" || aba === "perfil" ? aba : "agenda";
   const supabase = await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
   if (user && (await cookies()).has(CUSTOMER_CLAIM_COOKIE)) redirect("/api/customer/finish");
-  const [{ data: profile }, { data: records, error }] = user && supabase ? await Promise.all([
+  const [{ data: profile }, { data: records, error }, { data: professional }] = user && supabase ? await Promise.all([
     supabase.from("customer_profiles").select("name,phone").eq("user_id", user.id).maybeSingle(),
-    supabase.rpc("get_my_customer_appointments")
-  ]) : [{ data: null }, { data: null, error: null }];
+    supabase.rpc("get_my_customer_appointments"),
+    supabase.from("business_members").select("business_id").eq("user_id", user.id).limit(1).maybeSingle()
+  ]) : [{ data: null }, { data: null, error: null }, { data: null }];
+  if (professional) redirect("/app");
   const appointments = (records ?? []) as Appointment[];
   const upcoming = appointments.filter(item => !ended.has(item.status) && (!item.is_past || ["requested", "under_review", "proposed"].includes(item.status)));
   const history = appointments.filter(item => !upcoming.includes(item));
   const showPhonePrompt = user && !error && !profile?.phone;
 
   return <main className="customer-agenda">
-    <header className="customer-agenda-header"><Link href="/"><BrandLogo/></Link><nav><Link href="/">Início</Link>{user && <><Link href="#meus-dados">Meu perfil</Link><form action="/api/auth/logout" method="post"><button type="submit"><LogOut size={15}/> Sair</button></form></>}</nav></header>
+    <header className="customer-agenda-header"><Link href="/"><BrandLogo/></Link><nav><Link href="/">Início</Link>{user && <><Link href="/minha-agenda" aria-current={section === "agenda" ? "page" : undefined}>Minha agenda</Link><Link href="/minha-agenda?aba=historico" aria-current={section === "historico" ? "page" : undefined}>Histórico</Link><Link href="/minha-agenda?aba=perfil" aria-current={section === "perfil" ? "page" : undefined}>Meu perfil</Link><form action="/api/auth/logout" method="post"><button type="submit"><LogOut size={15}/> Sair</button></form></>}</nav></header>
     <div className="customer-agenda-content">
       <span className="eyebrow">Tá Marcado para você</span>
-      <h1>Minha agenda</h1>
-      <p className="customer-agenda-intro">Seus pedidos e atendimentos com diferentes profissionais, no mesmo lugar.</p>
+      <h1>{section === "historico" ? "Meu histórico" : section === "perfil" ? "Meu perfil" : "Minha agenda"}</h1>
+      <p className="customer-agenda-intro">{section === "historico" ? "Consulte os atendimentos que já terminaram ou foram cancelados." : section === "perfil" ? "Mantenha seus dados prontos para os próximos agendamentos." : "Seus pedidos e atendimentos com diferentes profissionais, no mesmo lugar."}</p>
       {!user ? <><CustomerAccess/><p className="customer-guest-note">Você também pode continuar agendando sem conta. Seu link de acompanhamento continua funcionando.</p></> : <>
         {showPhonePrompt && <section className="customer-agenda-section customer-profile customer-first-login" id="meus-dados"><span className="eyebrow">Só falta uma coisa 👋</span><h2>Qual número você usa no WhatsApp?</h2><p>Salve seus dados para agilizar próximos pedidos. Seu telefone não associa históricos antigos automaticamente.</p><CustomerProfileForm name={profile?.name ?? user.user_metadata?.full_name ?? ""} phone="" requirePhone/></section>}
         {error ? <section className="customer-empty"><h2>Estamos preparando sua agenda</h2><p>O acesso à conta ainda precisa ser ativado. Seus pedidos continuam disponíveis pelos links de acompanhamento.</p></section> : <>
-          <section className="customer-agenda-section"><h2>Próximos e em andamento</h2>{upcoming.length ? <BookingCards rows={upcoming}/> : <div className="customer-empty"><CalendarDays size={24}/><p>Nenhum atendimento em andamento por aqui.</p><small>Pedidos feitos antes da conta aparecem quando você abre o link de acompanhamento e escolhe “Adicionar à minha agenda”.</small></div>}</section>
-          <section className="customer-agenda-section"><h2>Histórico</h2>{history.length ? <BookingCards rows={history}/> : <div className="customer-empty"><p>Seu histórico aparecerá aqui.</p></div>}</section>
+          {section === "agenda" && <section className="customer-agenda-section"><h2>Próximos e em andamento</h2>{upcoming.length ? <BookingCards rows={upcoming}/> : <div className="customer-empty"><CalendarDays size={24}/><p>Nenhum atendimento em andamento por aqui.</p><small>Pedidos feitos antes da conta aparecem quando você abre o link de acompanhamento e escolhe “Adicionar à minha agenda”.</small></div>}</section>}
+          {section === "historico" && <section className="customer-agenda-section"><h2>Atendimentos anteriores</h2>{history.length ? <BookingCards rows={history}/> : <div className="customer-empty"><p>Seu histórico aparecerá aqui.</p></div>}</section>}
         </>}
-        {!showPhonePrompt && !error && <section className="customer-agenda-section customer-profile" id="meus-dados"><h2>Meus dados</h2><p>Seu e-mail de acesso: <strong>{user.email ?? "—"}</strong>. O WhatsApp salvo não vincula atendimentos antigos automaticamente.</p><CustomerProfileForm name={profile?.name ?? ""} phone={profile?.phone ?? ""}/></section>}
+        {section === "perfil" && !showPhonePrompt && !error && <section className="customer-agenda-section customer-profile" id="meus-dados"><h2>Meus dados</h2><p>Seu e-mail de acesso: <strong>{user.email ?? "—"}</strong>. O WhatsApp salvo não vincula atendimentos antigos automaticamente.</p><CustomerProfileForm name={profile?.name ?? ""} phone={profile?.phone ?? ""}/></section>}
       </>}
     </div>
   </main>;

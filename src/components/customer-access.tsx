@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { CalendarDays, Mail } from "lucide-react";
+import Link from "next/link";
 
 export function CustomerAccess({ next = "/minha-agenda", compact = false }: { next?: string; compact?: boolean }) {
   const [email, setEmail] = useState("");
@@ -27,6 +28,8 @@ export function CustomerAccess({ next = "/minha-agenda", compact = false }: { ne
     {!compact && <span className="customer-access-icon"><CalendarDays size={22}/></span>}
     <h2>{compact ? "Seus próximos agendamentos podem ser ainda mais rápidos" : "Sua agenda, em um só lugar"}</h2>
     <p>Acompanhe pedidos em diferentes profissionais e preencha seus dados mais rápido na próxima vez. A conta é opcional.</p>
+    <div className="customer-account-links"><Link className="btn" href="/cliente/cadastro">Criar conta de cliente</Link><Link className="btn secondary" href="/cliente/entrar">Já tenho conta</Link></div>
+    <p className="customer-access-alternative">Prefere entrar sem senha?</p>
     <button type="button" className="btn customer-google" onClick={() => void signIn("google")} disabled={pending}><span aria-hidden="true">G</span> Continuar com Google</button>
     <form onSubmit={submit} className="customer-email-form"><label htmlFor={compact ? "customer-email-booking" : "customer-email"}>Ou receba um link por e-mail</label><div><input id={compact ? "customer-email-booking" : "customer-email"} type="email" required autoComplete="email" placeholder="seu@email.com" value={email} onChange={event => setEmail(event.target.value)}/><button className="btn secondary" type="submit" disabled={pending}><Mail size={16}/> Enviar link</button></div></form>
     {sent && <p className="customer-access-success" role="status">Enviamos um link para o seu e-mail. Abra-o para acessar sua agenda.</p>}

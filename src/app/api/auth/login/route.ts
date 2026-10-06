@@ -25,6 +25,11 @@ export async function POST(request: Request) {
       const { data: business } = await supabase.from("businesses").select("slug,published_at").eq("id", membership.business_id).maybeSingle();
       if (business?.published_at && business.slug) return NextResponse.redirect(siteUrl(`/${business.slug}`, request.url), 303);
     }
+    const { data: customer } = await supabase.from("customer_profiles").select("user_id").eq("user_id", user.id).maybeSingle();
+    if (customer) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(siteUrl("/cliente/entrar?erro=customer", request.url), 303);
+    }
   }
   return NextResponse.redirect(siteUrl("/app", request.url), 303);
 }
