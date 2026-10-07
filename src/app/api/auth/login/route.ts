@@ -17,7 +17,11 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   if (!supabase) return NextResponse.redirect(siteUrl("/entrar?erro=config", request.url), 303);
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return NextResponse.redirect(siteUrl("/entrar?erro=credentials", request.url), 303);
+  if (error) {
+    const code = "code" in error ? String(error.code) : "";
+    if (code === "email_not_confirmed") return NextResponse.redirect(siteUrl("/entrar?erro=confirmar-email", request.url), 303);
+    return NextResponse.redirect(siteUrl("/entrar?erro=credentials", request.url), 303);
+  }
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
     const { data: membership } = await supabase.from("business_members").select("business_id").eq("user_id", user.id).limit(1).maybeSingle();
