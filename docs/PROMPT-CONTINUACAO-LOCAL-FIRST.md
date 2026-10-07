@@ -1,6 +1,8 @@
 # Prompt para continuar o Tá Marcado
 
-Você está continuando o projeto `https://github.com/guedesyc/tamarcado`. Leia primeiro `docs/STATUS-LOCAL-FIRST.md`, confira `git status`, a branch e o histórico antes de editar. Preserve mudanças locais existentes.
+Você está continuando o projeto `https://github.com/guedesyc/tamarcado`. A raiz é o diretório do clone que contém `AGENTS.md` e `package.json`; o caminho local varia entre computadores. Siga `AGENTS.md`, confira `git rev-parse --show-toplevel`, `git status --short --branch`, `git remote -v` e o histórico antes de editar. Preserve mudanças locais existentes. Para atualizar um clone: autentique com `gh auth login -h github.com`, rode `gh auth setup-git`, confira `gh auth status -h github.com` e atualize `main` com `git pull --ff-only origin main`.
+
+**Nota de retomada:** os detalhes abaixo registram decisões e observações históricas. Datas, hashes de commit, listas de pendências e estado de deploy podem ter mudado; use o GitHub e `docs/STATUS-LOCAL-FIRST.md` atual como fonte de estado, confirme a aplicação de migrations e não repita uma ação remota só porque um registro antigo a marca como pendente.
 
 ## Objetivo
 

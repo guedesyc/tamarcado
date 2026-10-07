@@ -1,5 +1,13 @@
 # Tá Marcado — andamento e próximos passos
 
+## Retomada — 07/10/2026
+
+- [x] Pushes `65bd6b4` (reenvio de confirmação de e-mail profissional) e `6e47d0b` (slug gerado pelo nome do negócio e onboarding com tela de configuração animada) foram enviados para `origin/main`; o repositório ficou sincronizado após o push.
+- [x] O onboarding não pede mais um slug editável nem uma descrição nesta etapa. O backend gera o slug a partir do nome do negócio, acrescentando sufixo numérico se o endereço já estiver ocupado/reservado, e publica a página ao concluir o cadastro.
+- [x] A tela de confirmação de e-mail profissional permite reenviar o link. O endpoint limita reenvios e exibe resposta genérica para não revelar se o endereço tem cadastro pendente.
+- [ ] Confirmar deploy Hostinger dessas alterações e conferir o novo onboarding completo em celular e desktop. O push no GitHub não comprova deploy.
+- [ ] As alterações acima passaram por `git diff --check`; testes, typecheck e build não foram executados nesta sessão.
+
 ## Revisão de produção no Supabase — 06/10/2026
 
 - [x] Security Advisor consultado no projeto `ta-marcado` (branch `main`, produção): 0 erros, 61 avisos e 3 sugestões.
@@ -57,7 +65,7 @@
 - [ ] A migration e a autenticação de clientes ficam fora do fluxo ativo enquanto o cadastro estiver pausado; reativar e validar Google/e-mail e a área da cliente quando isso for priorizado.
 - [ ] Conferir a implantação Hostinger e os fluxos ativos em desktop e celular; validação local não substitui teste real após deploy.
 
-Atualizado em 06/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; conferir o deploy das alterações mais recentes. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico. Última conferência local: `HEAD` e `origin/main` apontavam para `d8b367c`; `git fetch origin` não foi possível porque o ambiente negou escrita em `.git/FETCH_HEAD`, portanto esse hash é o último estado remoto conhecido localmente, não uma confirmação de que GitHub não recebeu commit depois.
+Registro histórico da revisão de 06/10/2026 (não representa o HEAD atual): o repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico. Naquela conferência, `HEAD` e `origin/main` apontavam para `d8b367c`; esse hash é apenas uma observação antiga, não o estado atual do remoto.
 
 ## Revisão dos passos 1, 2 e 4 — 04/10/2026
 
