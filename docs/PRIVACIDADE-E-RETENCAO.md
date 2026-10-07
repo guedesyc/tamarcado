@@ -7,16 +7,15 @@
 
 O sistema já tem controles relevantes: dados de agenda isolados por negócio via RLS, operações privilegiadas no servidor, tokens de acompanhamento aleatórios guardados como hash no banco, limite de tentativas e exclusão manual de entradas da lista de espera. A criação de contas de clientes está pausada; o agendamento anônimo permanece ativo.
 
-**Ainda não considero a frente de privacidade pronta para lançamento público.** O canal de contato informado pelo responsável é `contato@ygsystems.com.br`; faltam formalizar prazos de retenção por categoria, processo operacional para pedidos de direitos e revisão jurídica. Pedidos e histórico de clientes não são apagados automaticamente: o vencimento do link bloqueia o acesso por aquele token, mas não elimina os registros. Isso é intencional por enquanto: o histórico pode ser necessário para prestar o serviço, suporte e conciliação financeira; não se deve apagar pedidos junto com a credencial do link nem inventar um prazo sem avaliar obrigações aplicáveis. A exclusão de conta do cliente não é oferecida pela interface.
+**A política operacional inicial foi definida pelo responsável do produto:** solicitações e dados pessoais associados poderão ser mantidos por até 13 meses, conforme as regras abaixo; links de acompanhamento vencem separadamente e isso não apaga o pedido. O CEO da YG Systems monitora `contato@ygsystems.com.br` e atende solicitações de titulares. Isso documenta uma decisão operacional, não é parecer jurídico; obrigações específicas podem exigir conservação mínima e devem ser confirmadas juridicamente. A aplicação automática do prazo ainda não está implementada.
 
 Correções técnicas feitas nesta revisão local:
 
 - Novos webhooks Stripe passam a guardar apenas ID, tipo, status de processamento e um objeto vazio, não o corpo integral que pode conter dados de cobrança.
-- Migration aditiva `202610060008_minimize_stripe_webhook_payload.sql` preparada para esvaziar os corpos de eventos antigos, preservando as linhas e os IDs necessários à idempotência. **Ainda precisa ser aplicada no Supabase**; não foi executada remotamente.
-- Migration `202610060008` limpa somente payloads de eventos Stripe já processados; eventos não processados permanecem intactos. Não exclui linhas, assinaturas, cobranças ou outros dados financeiros.
+- Migration aditiva `202610060008_minimize_stripe_webhook_payload.sql` aplicada no Supabase conforme confirmação do responsável; limpa payloads de eventos Stripe processados sem apagar linhas, IDs ou dados de assinatura.
 - Contato de suporte/privacidade informado: `contato@ygsystems.com.br`, exibido no rodapé global e nos Termos/Política.
 - E-mail financeiro separado removido do produto; o Stripe usa o e-mail de acesso autenticado. Migration `202610060010` limpa valores anteriores e preserva a coluna legada para evitar mudança destrutiva de schema.
-- Migration aditiva `202610060009_tracking_link_expires_after_appointment_day.sql` preparada para expirar links no início do dia seguinte à data acordada, pelo fuso do negócio; ao remarcar, a validade dos links existentes acompanha a data. Isso não exclui o atendimento. **Precisa ser aplicada no Supabase**.
+- Migration aditiva `202610060009_tracking_link_expires_after_appointment_day.sql` aplicada no Supabase conforme confirmação do responsável; links vencem no início do dia seguinte à data acordada pelo fuso do negócio e acompanham remarcações. Isso não exclui o atendimento.
 - Uploads de JPG, PNG e WebP passam a remover segmentos/campos comuns de EXIF, XMP e texto que podem carregar localização ou identificação, sem reencodar a imagem.
 - Logs de falha de transições, ações públicas de acompanhamento e Stripe deixaram de registrar mensagens brutas dos provedores/banco. A resposta funcional ao usuário não mudou.
 - Política pública e Termos serão alinhados ao comportamento observado e manterão explícitas as pendências de contato e retenção, sem inventar prazos/canais.
@@ -37,21 +36,23 @@ Correções técnicas feitas nesta revisão local:
 
 ## Pendências que precisam de decisão antes do lançamento público
 
-1. **Canal de privacidade e suporte:** endereço informado `contato@ygsystems.com.br` e exibido no site. Ainda cabe definir responsáveis, triagem, prazos de resposta e verificação de identidade antes de alterar/excluir dados.
-2. **Matriz de retenção:** aprovar prazos e finalidades por categoria (solicitação abandonada/expirada, concluída/cancelada, lista de espera, perfil, logs, eventos Stripe e backups), incluindo exceções legais/contábeis e o que será anonimizado. O vencimento do link é controle de acesso, não prazo de exclusão dos dados; nenhum prazo arbitrário foi aplicado.
-3. **Processo de direitos e exclusão:** estabelecer autenticação do solicitante, atendimento, exportação/correção e exclusão ou anonimização seletiva. Hoje apagar uma entrada da lista de espera é possível, mas não cobre todos os dados; apagar a conta Auth não deve ser usado como política de retenção porque o resultado em cascata depende do papel e pode apagar o espaço profissional.
-4. **Fornecedores e transferências:** confirmar região de hospedagem, acordos/termos de tratamento, retenção de logs/backups e suboperadores de Supabase, Hostinger, Stripe e WhatsApp. O código não revela essas configurações contratuais/administrativas.
-5. **Imagens:** uploads agora removem metadados comuns; confirmar consentimento/autorização de pessoas identificáveis nas fotos. O bucket continua público para os itens publicados.
-6. **Documentos jurídicos e papéis:** advogado deve revisar controlador(es), bases legais por finalidade, avisos, contratos com profissionais, transferência internacional, prazos fiscais/consumeristas e política de cancelamento. A aplicação atende negócios profissionais diferentes, então papéis e responsabilidades precisam ser definidos juridicamente.
-7. **Incidentes e acesso operacional:** documentar quem pode acessar dados de produção, como revogar credenciais, investigar incidente, preservar evidências e comunicar titulares/autoridades quando aplicável. Confirmar MFA e menor privilégio nos painéis de fornecedores.
+1. **Canal e responsável:** `contato@ygsystems.com.br` é monitorado pelo CEO da YG Systems, conforme definição do responsável. Não o identificar como encarregado formal sem designação específica.
+2. **Retenção de solicitações:** política aprovada: até 13 meses após conclusão/cancelamento; para solicitações abandonadas, até 13 meses desde a última atividade relevante. A abertura do link não reinicia o prazo. Ao atingir o prazo, a política prevê anonimizar ou remover dados identificadores (nome, telefone, respostas e observações), podendo preservar dados agregados sem identificação. O registro do pedido não precisa ser apagado apenas porque o link expirou. Dados sujeitos a obrigação legal/financeira específica podem ser mantidos separadamente, minimizados e com acesso restrito, após validação da base e prazo aplicáveis.
+3. **Atendimento a direitos:** receber pedidos pelo canal publicado; verificar profissionais pelo e-mail já associado à conta e clientes pela referência/link do pedido ou confirmação via contato já cadastrado. Não solicitar documentos de identidade por padrão; usar verificação proporcional somente diante de dúvida razoável. Registrar data, categoria, referência mínima, providências e resposta, sem manter cópias de documentos. Atender imediatamente quando viável; para declaração completa de acesso, observar o prazo legal aplicável (até 15 dias conforme art. 19, II); se não puder atender de imediato, responder com a situação e os motivos. A política prevê manter esse registro mínimo por até 13 meses após encerramento, salvo obrigação específica.
+4. **Implementação pendente:** a política de 13 meses está documentada, mas o código não executa automaticamente anonimização/expurgo. Antes de automatizar, revisar dependências entre pedidos, respostas, eventos e dados financeiros e validar com assessoria jurídica; não excluir registros em cascata nem aplicar limpeza automática sem testes e salvaguardas.
+5. **Fornecedores e transferências:** confirmar região de hospedagem, acordos/termos de tratamento, retenção de logs/backups e suboperadores de Supabase, Hostinger, Stripe e WhatsApp. O código não revela essas configurações contratuais/administrativas.
+6. **Imagens:** uploads agora removem metadados comuns; confirmar consentimento/autorização de pessoas identificáveis nas fotos. O bucket continua público para os itens publicados.
+7. **Documentos jurídicos e papéis:** advogado deve revisar controlador(es), bases legais por finalidade, avisos, contratos com profissionais, transferência internacional, prazos fiscais/consumeristas e política de cancelamento. A aplicação atende negócios profissionais diferentes, então papéis e responsabilidades precisam ser definidos juridicamente.
+8. **Incidentes e acesso operacional:** documentar quem pode acessar dados de produção, como revogar credenciais, investigar incidente, preservar evidências e comunicar titulares/autoridades quando aplicável. Confirmar MFA e menor privilégio nos painéis de fornecedores.
 
 ## Proposta para decidir a matriz de retenção
 
-Não definir/aplicar limpeza automática até haver aprovação dos responsáveis e revisão jurídica. Como base de discussão (não como prazo legal):
+O prazo operacional de 13 meses foi aprovado pelo responsável, mas não é um prazo mínimo ou prazo definido pela LGPD. Não implementar expurgo automático antes da revisão jurídica e da análise das relações de dados. Regra documentada:
 
 - manter pedidos ativos enquanto necessários à prestação do serviço;
-- para pedidos encerrados, decidir prazo operacional/contábil e então apagar ou anonimizar nome, telefone, respostas e notas, preservando somente dados estritamente necessários;
-- remover entradas de lista de espera quando a cliente retirar o pedido ou após um prazo curto aprovado;
+- pedidos concluídos/cancelados: contar até 13 meses a partir do encerramento; pedidos abandonados: até 13 meses desde a última atividade relevante, sem reinício por simples abertura do link;
+- no vencimento, anonimizar/remover identificadores e preservar somente o que tiver finalidade/base documentada; separar registros financeiros cuja conservação seja necessária;
+- tratar lista de espera, contas, logs, backups e eventos Stripe com regras próprias, limitadas por suas finalidades e pelos períodos disponíveis/contratuais dos fornecedores;
 - conservar o mínimo de metadados de eventos Stripe necessário à idempotência/auditoria, sem payload pessoal;
 - definir retenção separada para backups e logs com os fornecedores.
 
@@ -63,4 +64,4 @@ Não definir/aplicar limpeza automática até haver aprovação dos responsávei
 
 ## Resultado
 
-**Status: revisão técnica realizada; lançamento público ainda condicionado.** Contato definido e controles técnicos preparados. Ainda faltam formalizar retenção e fluxo de direitos/exclusão, confirmar fornecedores/backups/logs e aplicar as migrations `202610060008` (limpeza apenas de payloads Stripe processados) e `202610060009` (expiração dos links por dia do atendimento). Revisão jurídica continua recomendada. Nenhuma tabela ou registro de atendimento será excluído por essas migrations.
+**Status: política inicial de retenção e fluxo de atendimento documentados; controles técnicos parciais.** As migrations `202610060008` e `202610060009` foram confirmadas como aplicadas no Supabase. A regra operacional de 13 meses ainda não é aplicada automaticamente pelo sistema. Permanecem pendentes a confirmação de configurações/retenção de fornecedores e a revisão jurídica. Nenhuma dessas duas migrations exclui tabelas ou atendimentos.

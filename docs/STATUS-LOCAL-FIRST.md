@@ -20,13 +20,12 @@
 
 - [x] Inventário do tratamento e controles no código, RLS, tokens, logs, imagens, lista de espera, dados de agenda, Stripe e autenticação documentado em `docs/PRIVACIDADE-E-RETENCAO.md`.
 - [x] Webhooks novos deixam de persistir o objeto integral da Stripe; logs revisados deixam de gravar mensagens brutas de falha.
-- [ ] Aplicar `supabase/migrations/202610060008_minimize_stripe_webhook_payload.sql` para minimizar os payloads Stripe antigos. Migration preserva tabela, IDs, tipos e estado de processamento; apenas substitui corpos dos eventos por `{}`.
+- [x] Migrations `202610060008` (minimização dos payloads Stripe processados) e `202610060009` (expiração de links após o dia do atendimento) confirmadas como aplicadas no Supabase; preservam pedidos e tabelas.
 - [x] Contato de suporte/privacidade definido como `contato@ygsystems.com.br`; aparece no rodapé global, Termos e Política.
-- [ ] Aprovar prazos de retenção por categoria e processo de direitos/exclusão. Pedidos não serão apagados automaticamente quando o link vencer; o histórico pode ser necessário para o atendimento e conciliação financeira, sujeito às obrigações aplicáveis.
+- [x] Política operacional aprovada: solicitações concluídas/canceladas até 13 meses após encerramento; abandonadas até 13 meses desde a última atividade relevante. Depois, anonimizar/remover identificadores, preservando dados agregados e exceções legais/financeiras minimizadas. O prazo ainda não é automatizado no código.
+- [x] CEO monitora `contato@ygsystems.com.br`; pedidos de titulares serão verificados proporcionalmente, registrados com dados mínimos e atendidos imediatamente quando possível. Declaração completa de acesso observa o prazo legal aplicável; não guardar documentos de identidade por padrão.
 - [ ] Confirmar retenção de backups/logs, regiões e contratos dos fornecedores nos painéis Hostinger, Supabase, Stripe e WhatsApp.
 - [x] Uploads de portfólio, logo e capa removem metadados comuns EXIF/XMP/texto de JPG, PNG e WebP, sem alterar o formato da imagem; autorização de pessoas retratadas continua necessária.
-- [ ] Aplicar `202610060008_minimize_stripe_webhook_payload.sql` no Supabase: altera somente payloads de eventos já processados para `{}`, mantendo todos os eventos e dados de assinatura.
-- [ ] Aplicar `202610060009_tracking_link_expires_after_appointment_day.sql` no Supabase: links expiram à meia-noite posterior ao dia combinado no fuso do negócio; ao remarcar, acompanham a nova data. Não apaga pedidos.
 - [ ] Revisão jurídica dos Termos, Política de Privacidade, papéis de tratamento e bases legais antes do lançamento.
 
 ## Interface do app e contas opcionais — 06/10/2026
