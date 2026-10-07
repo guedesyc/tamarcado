@@ -15,7 +15,7 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
  const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:"Entre na sua conta para continuar."},{status:401});
  const {error}=await supabase.rpc("transition_appointment",{p_appointment_id:id,p_next:parsed.data.status,p_changes:parsed.data.changes});
  if(error){
-  console.error("[appointment-transition] RPC failed",{code:error.code,message:error.message,appointmentId:id,nextStatus:parsed.data.status});
+  console.error("[appointment-transition] RPC failed",{code:error.code,appointmentId:id,nextStatus:parsed.data.status});
   const message=error.message.includes("SLOT_UNAVAILABLE")?"O horário proposto está fora do expediente, bloqueado ou sem capacidade. Confira a data, a duração e o horário de atendimento da profissional."
    :error.message.includes("NO_SHOW_TOO_EARLY")?"A falta só pode ser registrada depois do término do horário marcado."
    :error.message.includes("Invalid appointment status transition")?"Esta solicitação já mudou de estado. Atualize a página e confira a situação atual."

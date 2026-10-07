@@ -2,8 +2,9 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSameSiteOrigin } from "@/lib/request-origin";
+import { stripImageMetadata } from "@/lib/image-metadata";
 
-function detectedImage(bytes: Uint8Array) {
+function detectedImage(bytes: Uint8Array): "image/jpeg" | "image/png" | "image/webp" | null {
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
   if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) return "image/png";
   if (String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP") return "image/webp";
@@ -32,9 +33,11 @@ export async function POST(request: Request) {
   const previous = profile?.[column] ?? null;
   let path: string | null = null;
   if (!remove && file instanceof File) {
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const mime = detectedImage(bytes);
+    const originalBytes = new Uint8Array(await file.arrayBuffer());
+    const mime = detectedImage(originalBytes);
     if (!mime || mime !== file.type) return NextResponse.json({ error: "Use uma imagem JPG, PNG ou WebP válida." }, { status: 400 });
+    let bytes: Uint8Array;
+    try { bytes = stripImageMetadata(originalBytes, mime); } catch { return NextResponse.json({ error: "Não foi possível processar a imagem. Tente exportá-la novamente como JPG, PNG ou WebP." }, { status: 400 }); }
     const extension = mime === "image/jpeg" ? "jpg" : mime.slice(6);
     path = `${member.business_id}/branding/${slot}-${randomUUID()}.${extension}`;
     const { error } = await supabase.storage.from("portfolio").upload(path, bytes, { contentType: mime, cacheControl: "3600", upsert: false });

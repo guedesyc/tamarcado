@@ -31,7 +31,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Assinatura inválida." }, { status: 400 });
   }
 
-  const { error: insertError } = await admin.from("stripe_webhook_events").insert({ event_id: event.id, event_type: event.type, payload: event });
+  // The event body may contain customer and billing data. Idempotency only
+  // needs the event ID/type and processing timestamp, so do not persist it.
+  const { error: insertError } = await admin.from("stripe_webhook_events").insert({ event_id: event.id, event_type: event.type, payload: {} });
   if (insertError) {
     if (insertError.code !== "23505") return NextResponse.json({ error: "Não foi possível registrar o evento." }, { status: 500 });
     const { data: previous } = await admin.from("stripe_webhook_events").select("processed_at").eq("event_id", event.id).maybeSingle();

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const session = await stripe.billingPortal.sessions.create({ customer: record.provider_customer_id, return_url: `${siteUrl}/app/assinatura`, locale: "pt-BR" });
     return NextResponse.json({ url: session.url }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    console.error("[stripe-portal] Could not create portal session", { message: error instanceof Error ? error.message : "unknown" });
+    console.error("[stripe-portal] Could not create portal session", { errorType: error instanceof Error ? error.name : "unknown" });
     return NextResponse.json({ error: "Não foi possível abrir o gerenciamento da assinatura." }, { status: 502 });
   }
 }

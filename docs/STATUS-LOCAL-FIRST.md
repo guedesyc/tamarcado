@@ -6,8 +6,21 @@
 - [x] Produto e preço recorrente mensal de R$ 49,99 criados no ambiente de testes do Stripe; o identificador do preço não foi versionado e deve ficar em `STRIPE_PRICE_ID` na hospedagem.
 - [x] Customer Portal de testes configurado para faturas, atualização de forma de pagamento e cancelamento ao fim do período.
 - [x] Migration aditiva `202610060001_stripe_billing.sql` criada para guardar eventos Stripe com idempotência, registrar o preço e atualizar o valor padrão do plano. Não remove dados ou tabelas do Asaas.
-- [ ] Aplicar a migration no Supabase, configurar `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID` e `STRIPE_WEBHOOK_SECRET` na Hostinger e cadastrar o endpoint `/api/billing/stripe-webhook` com os eventos descritos em `docs/STRIPE-SETUP.md`.
-- [ ] Exercitar o checkout e cartão de teste, renovação/falha de cobrança, Customer Portal e cancelamento no ambiente Stripe de testes antes de criar equivalentes em produção.
+- [x] A usuária confirmou em 06/10/2026 que Stripe está configurado e que testou o fluxo, incluindo cancelamento.
+- [ ] Antes de cobrar clientes reais, conferir que o domínio de produção usa chaves/preço/webhook de modo live e que o estado da assinatura no banco acompanha eventos reais; não presumir isso a partir de testes em sandbox.
+
+## Auditoria técnica de privacidade e retenção — 06/10/2026
+
+- [x] Inventário do tratamento e controles no código, RLS, tokens, logs, imagens, lista de espera, dados de agenda, Stripe e autenticação documentado em `docs/PRIVACIDADE-E-RETENCAO.md`.
+- [x] Webhooks novos deixam de persistir o objeto integral da Stripe; logs revisados deixam de gravar mensagens brutas de falha.
+- [ ] Aplicar `supabase/migrations/202610060008_minimize_stripe_webhook_payload.sql` para minimizar os payloads Stripe antigos. Migration preserva tabela, IDs, tipos e estado de processamento; apenas substitui corpos dos eventos por `{}`.
+- [x] Contato de suporte/privacidade definido como `contato@ygsystems.com.br`; aparece no rodapé global, Termos e Política.
+- [ ] Aprovar prazos de retenção por categoria e processo de direitos/exclusão. Pedidos não serão apagados automaticamente quando o link vencer; o histórico pode ser necessário para o atendimento e conciliação financeira, sujeito às obrigações aplicáveis.
+- [ ] Confirmar retenção de backups/logs, regiões e contratos dos fornecedores nos painéis Hostinger, Supabase, Stripe e WhatsApp.
+- [x] Uploads de portfólio, logo e capa removem metadados comuns EXIF/XMP/texto de JPG, PNG e WebP, sem alterar o formato da imagem; autorização de pessoas retratadas continua necessária.
+- [ ] Aplicar `202610060008_minimize_stripe_webhook_payload.sql` no Supabase: altera somente payloads de eventos já processados para `{}`, mantendo todos os eventos e dados de assinatura.
+- [ ] Aplicar `202610060009_tracking_link_expires_after_appointment_day.sql` no Supabase: links expiram à meia-noite posterior ao dia combinado no fuso do negócio; ao remarcar, acompanham a nova data. Não apaga pedidos.
+- [ ] Revisão jurídica dos Termos, Política de Privacidade, papéis de tratamento e bases legais antes do lançamento.
 
 ## Interface do app e contas opcionais — 06/10/2026
 

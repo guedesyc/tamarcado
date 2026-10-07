@@ -2,8 +2,9 @@ import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSameSiteOrigin } from "@/lib/request-origin";
+import { stripImageMetadata } from "@/lib/image-metadata";
 
-function detectedImage(buffer:Uint8Array){if(buffer[0]===0xff&&buffer[1]===0xd8&&buffer[2]===0xff)return "image/jpeg";if(buffer[0]===0x89&&buffer[1]===0x50&&buffer[2]===0x4e&&buffer[3]===0x47)return "image/png";if(String.fromCharCode(...buffer.slice(0,4))==="RIFF"&&String.fromCharCode(...buffer.slice(8,12))==="WEBP")return "image/webp";return null}
+function detectedImage(buffer:Uint8Array):"image/jpeg"|"image/png"|"image/webp"|null{if(buffer[0]===0xff&&buffer[1]===0xd8&&buffer[2]===0xff)return "image/jpeg";if(buffer[0]===0x89&&buffer[1]===0x50&&buffer[2]===0x4e&&buffer[3]===0x47)return "image/png";if(String.fromCharCode(...buffer.slice(0,4))==="RIFF"&&String.fromCharCode(...buffer.slice(8,12))==="WEBP")return "image/webp";return null}
 
 export async function POST(request:Request){
  if(!isSameSiteOrigin(request))return NextResponse.json({error:"Não foi possível enviar esta imagem deste endereço."},{status:403});
@@ -11,7 +12,7 @@ export async function POST(request:Request){
  const {data:member}=await supabase.from("business_members").select("business_id").eq("user_id",user.id).limit(1).maybeSingle();if(!member)return NextResponse.json({error:"Seu espaço não foi encontrado."},{status:404});
  let form:FormData;try{form=await request.formData()}catch{return NextResponse.json({error:"Escolha uma imagem válida."},{status:400})}const file=form.get("image");if(!(file instanceof File)||file.size<1||file.size>5*1024*1024)return NextResponse.json({error:"A imagem deve ter até 5 MB."},{status:400});
  const serviceIdValue=form.get("serviceId");if(typeof serviceIdValue!=="string"||!serviceIdValue)return NextResponse.json({error:"Selecione o serviço relacionado à foto."},{status:400});const {data:service}=await supabase.from("services").select("id").eq("id",serviceIdValue).eq("business_id",member.business_id).maybeSingle();if(!service)return NextResponse.json({error:"O serviço selecionado não pertence ao seu espaço."},{status:400});
- const bytes=new Uint8Array(await file.arrayBuffer());const mime=detectedImage(bytes);if(!mime||mime!==file.type)return NextResponse.json({error:"Use uma imagem JPG, PNG ou WebP válida."},{status:400});const extension=mime==="image/jpeg"?"jpg":mime.slice(6);const path=`${member.business_id}/${randomUUID()}.${extension}`;
+ const originalBytes=new Uint8Array(await file.arrayBuffer());const mime=detectedImage(originalBytes);if(!mime||mime!==file.type)return NextResponse.json({error:"Use uma imagem JPG, PNG ou WebP válida."},{status:400});let bytes:Uint8Array;try{bytes=stripImageMetadata(originalBytes,mime)}catch{return NextResponse.json({error:"Não foi possível processar a imagem. Tente exportá-la novamente como JPG, PNG ou WebP."},{status:400})}const extension=mime==="image/jpeg"?"jpg":mime.slice(6);const path=`${member.business_id}/${randomUUID()}.${extension}`;
  const {error:uploadError}=await supabase.storage.from("portfolio").upload(path,bytes,{contentType:mime,cacheControl:"3600",upsert:false});if(uploadError)return NextResponse.json({error:"Não foi possível guardar a imagem."},{status:400});
  const {data,error}=await supabase.from("portfolio_items").insert({business_id:member.business_id,service_id:serviceIdValue,storage_path:path,alt_text:String(form.get("alt")??"").slice(0,200),is_public:true}).select("id,storage_path,alt_text,service_id").single();if(error){await supabase.storage.from("portfolio").remove([path]);return NextResponse.json({error:"Não foi possível adicionar a imagem ao portfólio."},{status:400})}
  return NextResponse.json({ok:true,item:data},{status:201});

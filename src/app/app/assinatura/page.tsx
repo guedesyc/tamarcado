@@ -24,7 +24,7 @@ export default async function SubscriptionPage() {
   const used = trial?.eligible_completed_count ?? 0;
   const active = subscription?.status === "active";
   const cancelAt = subscription?.cancel_at ? new Date(subscription.cancel_at) : null;
-  const scheduledCancellation = Boolean(active && cancelAt && cancelAt.getTime() > Date.now());
+  const scheduledCancellation = Boolean(active && cancelAt);
   const cancelled = subscription?.status === "cancelled";
   const periodEnd = subscription?.current_period_end ? new Date(subscription.current_period_end) : null;
   const planTitle = scheduledCancellation ? "Plano cancelado" : active ? "Plano ativo" : cancelled ? "Plano cancelado" : "Plano gratuito";
@@ -32,8 +32,8 @@ export default async function SubscriptionPage() {
     ? `Seu cancelamento está programado. Você continua usando todos os recursos até ${formatDate(cancelAt!)}.`
     : active
       ? "Sua assinatura está ativa e seus recursos seguem liberados."
-      : cancelled && periodEnd && periodEnd.getTime() > Date.now()
-        ? `Seu plano foi cancelado, mas você pode usar os recursos até ${formatDate(periodEnd)}.`
+      : cancelled && periodEnd
+        ? `Seu plano foi cancelado. O período final registrado termina em ${formatDate(periodEnd)}.`
         : cancelled
           ? "Seu plano foi cancelado. Quando quiser, você pode realizar uma nova assinatura."
           : "Use seus 5 atendimentos públicos gratuitos antes de decidir continuar no plano mensal.";

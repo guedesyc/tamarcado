@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     if (error) throw new Error("O checkout foi criado, mas não conseguimos registrar sua tentativa.");
     return NextResponse.json({ url: session.url }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    console.error("[stripe-checkout] Could not create session", { message: error instanceof Error ? error.message : "unknown" });
+    console.error("[stripe-checkout] Could not create session", { errorType: error instanceof Error ? error.name : "unknown" });
     return NextResponse.json({ error: "Não foi possível iniciar sua assinatura. Tente novamente." }, { status: 502 });
   }
 }
