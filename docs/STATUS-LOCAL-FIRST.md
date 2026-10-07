@@ -1,5 +1,22 @@
 # Tá Marcado — andamento e próximos passos
 
+## Revisão de produção no Supabase — 06/10/2026
+
+- [x] Security Advisor consultado no projeto `ta-marcado` (branch `main`, produção): 0 erros, 61 avisos e 3 sugestões.
+- [x] RLS conferido na tela Database > Policies: as tabelas do schema `public` exibidas estão com RLS habilitado. Tabelas internas sem policies aparecem com Data API desativada ou sem retorno via Data API. Isso confirma o estado de habilitação, não substitui revisão das expressões das policies e dos grants.
+- [ ] Revisar os avisos do Advisor antes de ampliar o uso: proteção contra senhas vazadas aparece desativada; há avisos sobre funções `SECURITY DEFINER` executáveis por `anon`/`authenticated` e sobre custo de inicialização de auth nas policies. Distinguir RPCs públicas intencionais das funções que não devem aceitar chamadas públicas; revisar corpo, `search_path`, grants e isolamento por negócio. Não remover permissões às cegas, pois algumas RPCs atendem o agendamento público.
+- [ ] MFA da conta administrativa Supabase: painel de segurança mostra “No authenticator apps yet”. Responsável ativará MFA amanhã; cadastrar TOTP e método/fator reserva com segurança.
+- [x] Plano/backup consultado: organização aparece no plano Free; painel confirma que Free não inclui backups automáticos nem PITR. Decisão do responsável: adiar upgrade/backup pago até haver renda; manter como risco operacional aceito temporariamente, sem tratar como requisito técnico já resolvido.
+- [x] Retenção consultada: documentação atual do Supabase informa logs acessíveis por 1 dia no Free; Pro lista logs por 7 dias e backups diários por 7 dias. Isso é retenção do fornecedor, separada da política de retenção dos pedidos do Tá Marcado.
+- [ ] Avaliar a proteção contra senhas vazadas e demais controles de autenticação compatíveis com o plano atual; não presumir que trocar o plano foi decidido.
+- [ ] Manter backup/recuperação como prioridade futura quando houver receita; antes disso, avaliar também exportação externa testada e restauração, não apenas a existência de snapshots.
+
+## Stripe live — conferência em 06/10/2026
+
+- [x] Painel live conferido: a assinatura ativa e paga encontrada está vinculada a “Tá Marcado! - Plano Profissional”, R$ 49,99/mês; webhook live teve entregas de eventos verificadas com HTTP 200.
+- [x] Existe outro produto mensal de mesmo valor, “Tá Marcado · Plano mensal”, sem assinatura ativa associada na lista consultada. Não foi excluído; verificar configuração do preço para novos checkouts antes de desativar/remover.
+- [ ] Depois de validar `STRIPE_PRICE_ID` de produção na Hostinger contra o produto/preço acima, decidir se arquiva o produto duplicado. Não remover produto ativo nem cancelar assinatura.
+
 ## Remoção da demonstração pública — 06/10/2026
 
 - [x] Removidos do site público o link de demonstração, o agendamento simulado da landing page, o laboratório local e a página de exemplo de profissional.
@@ -13,7 +30,8 @@
 - [x] Customer Portal de testes configurado para faturas, atualização de forma de pagamento e cancelamento ao fim do período.
 - [x] Migration aditiva `202610060001_stripe_billing.sql` criada para guardar eventos Stripe com idempotência, registrar o preço e atualizar o valor padrão do plano. Não remove dados ou tabelas do Asaas.
 - [x] A usuária confirmou em 06/10/2026 que Stripe está configurado e que testou o fluxo, incluindo cancelamento.
-- [ ] Antes de cobrar clientes reais, conferir que o domínio de produção usa chaves/preço/webhook de modo live e que o estado da assinatura no banco acompanha eventos reais; não presumir isso a partir de testes em sandbox.
+- [x] Em 06/10/2026, painel live mostrou assinatura ativa paga no produto “Tá Marcado! - Plano Profissional”, por R$ 49,99/mês, e entregas de webhook observadas com HTTP 200.
+- [ ] Confirmar que `STRIPE_PRICE_ID` usado nos novos checkouts da Hostinger aponta para esse preço live; uma assinatura existente não prova, sozinha, qual ID o código usará nos próximos checkouts.
 - [x] Removido o e-mail financeiro separado da tela/API de configurações; o Stripe Checkout usa o e-mail da conta autenticada. A migration `202610060010_remove_unused_billing_contact_email.sql` limpa valores antigos sem remover coluna ou tabela.
 
 ## Auditoria técnica de privacidade e retenção — 06/10/2026
@@ -39,7 +57,7 @@
 - [ ] A migration e a autenticação de clientes ficam fora do fluxo ativo enquanto o cadastro estiver pausado; reativar e validar Google/e-mail e a área da cliente quando isso for priorizado.
 - [ ] Conferir a implantação Hostinger e os fluxos ativos em desktop e celular; validação local não substitui teste real após deploy.
 
-Atualizado em 06/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; conferir o deploy das alterações mais recentes. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico.
+Atualizado em 06/10/2026. O repositório GitHub (`main`) é a fonte de versionamento do código. GitHub Pages mantém uma prévia estática e o app Next.js é hospedado na Hostinger; conferir o deploy das alterações mais recentes. O usuário confirmou que aplicou `202610040001_waitlist.sql` no Supabase. A migration é aditiva e não remove tabelas ou dados. Não reexecutar migrations apenas por falta de histórico. Última conferência local: `HEAD` e `origin/main` apontavam para `d8b367c`; `git fetch origin` não foi possível porque o ambiente negou escrita em `.git/FETCH_HEAD`, portanto esse hash é o último estado remoto conhecido localmente, não uma confirmação de que GitHub não recebeu commit depois.
 
 ## Revisão dos passos 1, 2 e 4 — 04/10/2026
 

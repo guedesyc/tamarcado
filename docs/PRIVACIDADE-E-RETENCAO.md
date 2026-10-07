@@ -3,6 +3,17 @@
 **Revisão do repositório:** 06/10/2026  
 **Escopo:** código, migrations e textos versionados. Não houve acesso às configurações administrativas da Hostinger, Supabase ou Stripe, aos contratos desses fornecedores, aos backups nem aos registros de produção. Isto não é parecer jurídico nem certificação de conformidade.
 
+## Atualização da verificação administrativa Supabase — 06/10/2026
+
+Verificação somente de leitura no Dashboard do projeto `ta-marcado`, branch `main` (produção):
+
+- Security Advisor: 0 erros, 61 avisos e 3 sugestões. Avisos observados incluem proteção contra senhas vazadas desativada, várias funções `SECURITY DEFINER` executáveis por `anon` e/ou `authenticated`, e recomendações de otimização do plano de inicialização de auth nas policies. A contagem do Advisor não determina sozinha explorabilidade; revisar cada função, o corpo SQL, `search_path`, grants e validação de associação ao negócio. Algumas funções públicas são intencionais para agendamento sem conta e não devem ter permissões removidas sem análise funcional.
+- Database > Policies: botões “Disable RLS” estavam presentes para as tabelas de `public` apresentadas, indicando RLS habilitado. Algumas tabelas internas sem policies aparecem com Data API desativada ou sem retorno via Data API. A interface não foi usada para inspecionar cada expressão de policy; isolamento efetivo e grants continuam pendentes de auditoria aprofundada/testes negativos entre negócios.
+- Security > Account: nenhum aplicativo autenticador cadastrado. O MFA da conta administrativa permanece pendente para o responsável ativar; não foi alterado por esta revisão.
+- Plano mostrado pelo painel: Free. A página Database Backups informa que backups automáticos não estão incluídos; PITR também não está incluído. O painel indica backups diários com até 7 dias no Pro. Documentação consultada informa logs acessíveis por 1 dia no Free e 7 dias no Pro. O responsável decidiu adiar custo de backup/upgrade até haver renda; trata-se de risco operacional aceito temporariamente, não de controle compensatório nem de segurança resolvida. Avaliar exportação externa e teste de restauração quando possível.
+
+Esta revisão remota altera o escopo da declaração inicial: houve leitura do Dashboard, mas não foram alteradas políticas, MFA, plano ou retenção. As evidências do painel e a decisão de adiar backup devem ser mantidas em `docs/STATUS-LOCAL-FIRST.md`.
+
 ## Resumo executivo
 
 O sistema já tem controles relevantes: dados de agenda isolados por negócio via RLS, operações privilegiadas no servidor, tokens de acompanhamento aleatórios guardados como hash no banco, limite de tentativas e exclusão manual de entradas da lista de espera. A criação de contas de clientes está pausada; o agendamento anônimo permanece ativo.
