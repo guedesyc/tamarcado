@@ -1,5 +1,11 @@
 # Tá Marcado — andamento e próximos passos
 
+## Remoção da demonstração pública — 06/10/2026
+
+- [x] Removidos do site público o link de demonstração, o agendamento simulado da landing page, o laboratório local e a página de exemplo de profissional.
+- [x] As rotas antigas `/demo`, `/demo/fluxo` e `/exemplo-trancista` redirecionam para a página inicial, preservando links já compartilhados sem manter a demonstração acessível.
+- [x] O fluxo real de agendamento e as páginas públicas de profissionais continuam disponíveis.
+
 ## Stripe Billing — 06/10/2026
 
 - [x] Integração Asaas substituída no código por Stripe Checkout hospedado, Stripe Billing, Customer Portal e webhook com verificação de assinatura.
@@ -218,7 +224,7 @@ GitHub Pages só serve arquivos estáticos e aqui serve como prévia. O sistema 
 ## Como testar localmente
 
 1. Rodar `npm run dev`.
-2. Abrir `http://localhost:3000/demo` para o painel e `http://localhost:3000/demo/fluxo` para o laboratório cliente ↔ profissional.
+2. Para validar o produto, use uma conta profissional e um perfil real de teste; o laboratório local `/demo` foi retirado em 06/10/2026 e suas rotas antigas redirecionam para a página inicial.
 3. Os dados de demonstração pertencem ao navegador atual; não são sincronizados entre dispositivos nem devem conter dados reais.
 
 ## Referências

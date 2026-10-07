@@ -14,7 +14,7 @@ Plataforma de agendamento para profissionais autônomas. Stack: Next.js 16 App R
 4. No Supabase Auth, habilite confirmação por e-mail e adicione `http://localhost:3000/auth/callback` às URLs permitidas.
 5. Rode `npm ci` e `npm run dev`.
 
-Para explorar a interface sem configurar o Supabase, rode `npm run dev` e abra `/demo`. O laboratório `/demo/fluxo` demonstra a configuração de perguntas, o pedido da cliente, a resposta/proposta da profissional e a atualização do calendário. Essa demonstração salva dados fictícios no `localStorage` do navegador; veja `docs/STATUS-LOCAL-FIRST.md` para o checklist e os limites do modo local.
+As rotas antigas de demonstração (`/demo`, `/demo/fluxo` e `/exemplo-trancista`) redirecionam para a página inicial. O site de produção não oferece mais o laboratório local; os fluxos reais usam o Supabase.
 
 A landing page abre sem credenciais. Cadastro, painel, publicação, portfólio, agendamentos e assinatura precisam de um projeto Supabase configurado. A chave `SUPABASE_SERVICE_ROLE_KEY` só é usada no servidor para conciliar webhooks e assinaturas; nunca a exponha no navegador.
 

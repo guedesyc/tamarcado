@@ -3,6 +3,13 @@ const developmentScriptPolicy = process.env.NODE_ENV === "development" ? " 'unsa
 
 const nextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: "/demo", destination: "/", permanent: true },
+      { source: "/demo/fluxo", destination: "/", permanent: true },
+      { source: "/exemplo-trancista", destination: "/", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

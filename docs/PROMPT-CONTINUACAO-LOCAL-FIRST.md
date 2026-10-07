@@ -9,7 +9,7 @@ Construir e validar uma V1 confiável para profissionais autônomas de beleza. O
 ## Estado atual
 
 - Next.js App Router/React/TypeScript com módulos de painel, agenda, solicitações, clientes, serviços, portfólio, página pública, configurações e assinatura.
-- `/demo` e `/demo/fluxo` são laboratórios locais; dados fictícios ficam no `localStorage` do navegador.
+- Em 06/10/2026, o laboratório público/local de demonstração foi removido; `/demo`, `/demo/fluxo` e `/exemplo-trancista` redirecionam para `/`.
 - O fluxo ligado ao backend já tem acompanhamento por token, preparo de mensagens de WhatsApp com link individual e lógica de sinal Pix com prazo de uma hora e confirmação manual da profissional. Não prometa detecção automática de pagamento.
 - O preço do plano é R$ 49,99/mês. A cobrança atual usa Stripe Checkout/Billing; a usuária confirmou configuração e teste do fluxo/cancelamento em 06/10/2026. Consulte `docs/STRIPE-SETUP.md`; confirme modo live antes de cobrança real.
 - As migrations de sinal, portfólio, capacidade/janela e correções de proposta foram aplicadas no Supabase conforme validação/confirmação registrada em `docs/STATUS-LOCAL-FIRST.md`; não recriar tabelas nem executar SQL destrutivo.
