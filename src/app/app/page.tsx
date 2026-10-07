@@ -14,8 +14,12 @@ type Appointment={id:string;start_at:string;status:string;service_name_snapshot:
 export default async function Dashboard() {
   const supabase=await createClient();if(!supabase)redirect("/entrar?erro=config");
   const {data:{user}}=await supabase.auth.getUser();if(!user)redirect("/entrar");
-  const {data:membership}=await supabase.from("business_members").select("business_id").eq("user_id",user.id).limit(1).maybeSingle();
-  if(!membership)redirect("/app/onboarding");
+  const {data:memberships}=await supabase.from("business_members").select("business_id").eq("user_id",user.id);
+  if(!memberships?.length)redirect("/app/onboarding");
+  const {data:ownedBusinesses}=await supabase.from("businesses").select("id,name,slug,timezone,published_at,created_at").in("id",memberships.map(item=>item.business_id)).order("created_at",{ascending:false});
+  const selectedBusiness=(ownedBusinesses??[]).find(item=>item.published_at)??ownedBusinesses?.[0];
+  if(!selectedBusiness?.published_at)redirect("/app/onboarding");
+  const membership={business_id:selectedBusiness.id};
   const [{data:business},{data:profile},{data:trial},{data:subscription},{data:records},{count:pendingCount}]=await Promise.all([
     supabase.from("businesses").select("id,name,slug,timezone,published_at").eq("id",membership.business_id).single(),
     supabase.from("professional_profiles").select("display_name").eq("business_id",membership.business_id).maybeSingle(),

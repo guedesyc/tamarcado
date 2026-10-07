@@ -16,16 +16,40 @@ export async function POST(request:Request){
  const supabase=await createClient();if(!supabase)return NextResponse.json({error:"A configuração do espaço ainda não está disponível."},{status:503});
  const {data:{user},error:authError}=await supabase.auth.getUser();if(authError||!user)return NextResponse.json({error:"Entre na sua conta para continuar."},{status:401});
  const value=parsed.data;
- const {data:businessId,error}=await supabase.rpc("create_business_setup",{p_business_name:value.name,p_slug:value.slug,p_display_name:value.displayName,p_category_slugs:value.categories});
- if(error||!businessId)return NextResponse.json({error:error?.message.includes("duplicate key")?"Esse endereço já está em uso. Escolha outro.":"Não foi possível criar seu espaço. Confira o endereço e tente novamente."},{status:409});
- const {error:serviceError}=await supabase.from("services").insert({business_id:businessId,name:value.service,base_price_cents:Math.round(value.price*100),base_duration_minutes:value.duration,booking_mode:"approval"});
- if(serviceError)return NextResponse.json({error:"O espaço foi criado, mas não conseguimos salvar o serviço inicial. Entre novamente para continuar."},{status:500});
- const {error:availabilityError}=await supabase.from("availability_rules").insert([1,2,3,4,5].map(weekday=>({business_id:businessId,weekday,start_time:value.start,end_time:value.end})));
- if(availabilityError)return NextResponse.json({error:"O espaço foi criado, mas não conseguimos salvar os horários iniciais."},{status:500});
- const {error:profileError}=await supabase.from("professional_profiles").update({bio:value.description}).eq("business_id",businessId);
- if(profileError)return NextResponse.json({error:"Não foi possível concluir seu perfil. Entre novamente para continuar."},{status:500});
+ const { data: memberships } = await supabase.from("business_members").select("business_id").eq("user_id",user.id).eq("role","owner");
+ const businessIds=(memberships??[]).map(row=>row.business_id);
+ const { data: ownedBusinesses } = businessIds.length ? await supabase.from("businesses").select("id,slug,published_at,created_at").in("id",businessIds).order("created_at",{ascending:false}) : {data:[]};
+ const draft=(ownedBusinesses??[]).find(business=>!business.published_at);
  const [neighborhood,...cityParts]=(value.city??"").split(",").map(part=>part.trim());
- const {error:publishError}=await supabase.from("businesses").update({contact_phone:value.phone,public_neighborhood:neighborhood||null,public_city:cityParts.join(", ")||neighborhood||null,published_at:new Date().toISOString()}).eq("id",businessId);
- if(publishError)return NextResponse.json({error:"Não foi possível publicar sua página."},{status:500});
- return NextResponse.json({ok:true,url:`/${value.slug}`},{status:201});
+ let businessId=draft?.id;
+ if(businessId){
+  const {error}=await supabase.from("businesses").update({name:value.name,slug:value.slug,contact_phone:value.phone,public_neighborhood:neighborhood||null,public_city:cityParts.join(", ")||neighborhood||null}).eq("id",businessId).select("id").maybeSingle();
+  if(error)return NextResponse.json({error:error.code==="23505"?"Esse endereço já está em uso. Escolha outro.":"Não foi possível atualizar o espaço que já começou a ser configurado."},{status:error.code==="23505"?409:500});
+ }else{
+  const {data,error}=await supabase.rpc("create_business_setup",{p_business_name:value.name,p_slug:value.slug,p_display_name:value.displayName,p_category_slugs:value.categories});
+  if(error||!data)return NextResponse.json({error:error?.code==="23505"?"Esse endereço já está em uso. Escolha outro.":"Não foi possível criar seu espaço. Confira o endereço e tente novamente."},{status:409});
+  businessId=data;
+ }
+ const {error:profileError}=await supabase.from("professional_profiles").upsert({business_id:businessId,display_name:value.displayName,bio:value.description},{onConflict:"business_id"});
+ if(profileError)return NextResponse.json({error:"Não foi possível salvar os dados profissionais. Tente publicar novamente."},{status:500});
+ const {error:removeCategoriesError}=await supabase.from("business_categories").delete().eq("business_id",businessId);
+ if(removeCategoriesError)return NextResponse.json({error:"Não foi possível atualizar as categorias do espaço."},{status:500});
+ const {data:categoryRows,error:categoryLookupError}=await supabase.from("categories").select("id,slug").in("slug",value.categories).eq("active",true);
+ if(categoryLookupError||(categoryRows??[]).length!==value.categories.length)return NextResponse.json({error:"Uma das categorias escolhidas não está disponível. Volte e selecione novamente."},{status:400});
+ const {error:categoryInsertError}=await supabase.from("business_categories").insert(categoryRows!.map(category=>({business_id:businessId,category_id:category.id})));
+ if(categoryInsertError)return NextResponse.json({error:"Não foi possível atualizar as categorias do espaço."},{status:500});
+ const {data:existingService,error:serviceLookupError}=await supabase.from("services").select("id").eq("business_id",businessId).order("created_at").limit(1).maybeSingle();
+ if(serviceLookupError)return NextResponse.json({error:"Não foi possível verificar o serviço inicial. Tente novamente."},{status:500});
+ const serviceValue={name:value.service,base_price_cents:Math.round(value.price*100),base_duration_minutes:value.duration,booking_mode:"approval" as const,active:true};
+ const serviceResult=existingService
+  ? await supabase.from("services").update(serviceValue).eq("id",existingService.id).eq("business_id",businessId)
+  : await supabase.from("services").insert({business_id:businessId,...serviceValue});
+ if(serviceResult.error)return NextResponse.json({error:"Não conseguimos salvar o serviço inicial. Revise os dados e tente novamente."},{status:500});
+ const {error:clearAvailabilityError}=await supabase.from("availability_rules").delete().eq("business_id",businessId);
+ if(clearAvailabilityError)return NextResponse.json({error:"Não foi possível atualizar os horários iniciais."},{status:500});
+ const {error:availabilityError}=await supabase.from("availability_rules").insert([1,2,3,4,5].map(weekday=>({business_id:businessId,weekday,start_time:value.start,end_time:value.end})));
+ if(availabilityError)return NextResponse.json({error:"Não foi possível salvar os horários iniciais. Revise os horários e tente novamente."},{status:500});
+ const {data:published,error:publishError}=await supabase.from("businesses").update({published_at:new Date().toISOString()}).eq("id",businessId).select("id,slug,published_at").maybeSingle();
+ if(publishError||!published?.published_at)return NextResponse.json({error:"Os dados foram salvos, mas a página ainda não foi publicada. Tente novamente."},{status:500});
+ return NextResponse.json({ok:true,url:`/${published.slug}`},{status:201});
 }
