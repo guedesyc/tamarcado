@@ -5,12 +5,10 @@ import { RESERVED_SLUGS } from "@/lib/domain";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
-const billingEmail = z.string().trim().max(255).refine(value => value === "" || z.string().email().safeParse(value).success);
 const schema = z.object({
   name: z.string().trim().min(2).max(120), display_name: z.string().trim().min(2).max(120),
   slug: z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).min(3).max(40),
   contact_phone: z.string().trim().min(10).max(40), neighborhood: z.string().trim().max(100),
-  billing_email: billingEmail,
   city: z.string().trim().max(100), state: z.string().trim().max(60), bio: z.string().max(1000),
   cancellation_refund_policy: z.enum(["none", "before_hours"]), cancellation_refund_hours: z.number().int().min(1).max(720),
   category_ids: z.array(z.string().uuid()).max(8),
@@ -33,7 +31,7 @@ async function owner() {
 export async function GET() {
   const auth = await owner(); if ("response" in auth) return auth.response;
   const [businessResult, profileResult, categoriesResult, selectedResult, rulesResult] = await Promise.all([
-    auth.supabase.from("businesses").select("name,slug,contact_phone,billing_email,public_neighborhood,public_city,public_state,description,cancellation_refund_policy,cancellation_refund_hours").eq("id", auth.businessId).single(),
+    auth.supabase.from("businesses").select("name,slug,contact_phone,public_neighborhood,public_city,public_state,description,cancellation_refund_policy,cancellation_refund_hours").eq("id", auth.businessId).single(),
     auth.supabase.from("professional_profiles").select("display_name,bio").eq("business_id", auth.businessId).maybeSingle(),
     auth.supabase.from("categories").select("id,name,slug").eq("active", true).order("name"),
     auth.supabase.from("business_categories").select("category_id").eq("business_id", auth.businessId),
@@ -60,7 +58,7 @@ export async function PUT(request: Request) {
   ]);
   if (duplicate) return NextResponse.json({ error: "Esse link já está sendo usado por outro negócio." }, { status: 409 });
   if ((categories ?? []).length !== value.category_ids.length) return NextResponse.json({ error: "Uma das categorias selecionadas não está disponível." }, { status: 400 });
-  const { error: businessError } = await auth.supabase.from("businesses").update({ name: value.name, slug: value.slug, contact_phone: value.contact_phone, billing_email: value.billing_email || null, public_neighborhood: value.neighborhood || null, public_city: value.city || null, public_state: value.state || null, description: value.bio, cancellation_refund_policy: value.cancellation_refund_policy, cancellation_refund_hours: value.cancellation_refund_hours }).eq("id", auth.businessId);
+  const { error: businessError } = await auth.supabase.from("businesses").update({ name: value.name, slug: value.slug, contact_phone: value.contact_phone, public_neighborhood: value.neighborhood || null, public_city: value.city || null, public_state: value.state || null, description: value.bio, cancellation_refund_policy: value.cancellation_refund_policy, cancellation_refund_hours: value.cancellation_refund_hours }).eq("id", auth.businessId);
   if (businessError) return NextResponse.json({ error: "Não foi possível salvar os dados do negócio. Verifique se o link está disponível." }, { status: 400 });
   const { error: profileError } = await auth.supabase.from("professional_profiles").upsert({ business_id: auth.businessId, display_name: value.display_name, bio: value.bio }, { onConflict: "business_id" });
   if (profileError) return NextResponse.json({ error: "O negócio foi atualizado, mas não foi possível salvar o nome profissional." }, { status: 500 });

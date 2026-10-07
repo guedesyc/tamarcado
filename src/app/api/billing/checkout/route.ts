@@ -21,10 +21,10 @@ export async function POST(request: Request) {
   const priceId = process.env.STRIPE_PRICE_ID;
   if (!stripe || !admin || !priceId) return NextResponse.json({ error: "A assinatura ainda não foi configurada para este ambiente." }, { status: 503 });
 
-  const { data: business } = await supabase.from("businesses").select("id,name,contact_phone,billing_email").eq("id", member.business_id).single();
+  const { data: business } = await supabase.from("businesses").select("id,name,contact_phone").eq("id", member.business_id).single();
   if (!business) return NextResponse.json({ error: "Seu espaço não foi encontrado." }, { status: 404 });
   const { data: existing } = await admin.from("subscription_records").select("provider,provider_customer_id,provider_livemode").eq("business_id", business.id).maybeSingle();
-  const billingEmail = business.billing_email?.trim() || user.email;
+  const billingEmail = user.email;
   const livemode = stripeIsLiveMode();
 
   try {

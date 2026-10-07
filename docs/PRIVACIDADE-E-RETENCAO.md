@@ -15,6 +15,7 @@ Correções técnicas feitas nesta revisão local:
 - Migration aditiva `202610060008_minimize_stripe_webhook_payload.sql` preparada para esvaziar os corpos de eventos antigos, preservando as linhas e os IDs necessários à idempotência. **Ainda precisa ser aplicada no Supabase**; não foi executada remotamente.
 - Migration `202610060008` limpa somente payloads de eventos Stripe já processados; eventos não processados permanecem intactos. Não exclui linhas, assinaturas, cobranças ou outros dados financeiros.
 - Contato de suporte/privacidade informado: `contato@ygsystems.com.br`, exibido no rodapé global e nos Termos/Política.
+- E-mail financeiro separado removido do produto; o Stripe usa o e-mail de acesso autenticado. Migration `202610060010` limpa valores anteriores e preserva a coluna legada para evitar mudança destrutiva de schema.
 - Migration aditiva `202610060009_tracking_link_expires_after_appointment_day.sql` preparada para expirar links no início do dia seguinte à data acordada, pelo fuso do negócio; ao remarcar, a validade dos links existentes acompanha a data. Isso não exclui o atendimento. **Precisa ser aplicada no Supabase**.
 - Uploads de JPG, PNG e WebP passam a remover segmentos/campos comuns de EXIF, XMP e texto que podem carregar localização ou identificação, sem reencodar a imagem.
 - Logs de falha de transições, ações públicas de acompanhamento e Stripe deixaram de registrar mensagens brutas dos provedores/banco. A resposta funcional ao usuário não mudou.

@@ -8,6 +8,7 @@
 - [x] Migration aditiva `202610060001_stripe_billing.sql` criada para guardar eventos Stripe com idempotência, registrar o preço e atualizar o valor padrão do plano. Não remove dados ou tabelas do Asaas.
 - [x] A usuária confirmou em 06/10/2026 que Stripe está configurado e que testou o fluxo, incluindo cancelamento.
 - [ ] Antes de cobrar clientes reais, conferir que o domínio de produção usa chaves/preço/webhook de modo live e que o estado da assinatura no banco acompanha eventos reais; não presumir isso a partir de testes em sandbox.
+- [x] Removido o e-mail financeiro separado da tela/API de configurações; o Stripe Checkout usa o e-mail da conta autenticada. A migration `202610060010_remove_unused_billing_contact_email.sql` limpa valores antigos sem remover coluna ou tabela.
 
 ## Auditoria técnica de privacidade e retenção — 06/10/2026
 
