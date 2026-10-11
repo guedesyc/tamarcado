@@ -67,5 +67,5 @@ export function BookingForm({selectedService,serviceId,slug,basePriceCents,baseD
     </form>
     {step === 2 && <PublicWaitlistForm slug={slug} serviceId={serviceId} selectedDate={unavailableRequest?.date || date} selectedTime={unavailableRequest?.time} initialName={unavailableRequest?.name} initialPhone={unavailableRequest?.phone} startOpen={openWaitlist} onClose={() => setOpenWaitlist(false)} />}
   </>;
-}
+} 
 
