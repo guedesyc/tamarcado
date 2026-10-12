@@ -1,5 +1,32 @@
 # Tá Marcado
 
+## Retomar em outro computador
+
+O repositório oficial é [`guedesyc/tamarcado`](https://github.com/guedesyc/tamarcado), e `main` é a branch usada para o trabalho. A raiz correta do projeto é a pasta clonada que contém `AGENTS.md`, `.git` e `package.json`; o caminho dessa pasta pode variar por computador.
+
+No PowerShell, autentique o GitHub CLI e configure o Git para usar essa autenticação:
+
+```powershell
+gh auth login -h github.com
+gh auth setup-git
+gh auth status -h github.com
+```
+
+Em seguida, entre na pasta deste repositório. Para atualizar um clone existente:
+
+```powershell
+Set-Location "CAMINHO-DA-PASTA-DO-REPOSITORIO"
+git status --short --branch
+git switch main
+git pull --ff-only origin main
+```
+
+Para criar um clone novo, use `git clone https://github.com/guedesyc/tamarcado.git` e entre na pasta `tamarcado` criada pelo comando. Instale dependências com `npm ci`. Para rodar localmente, crie `.env.local` a partir de `.env.example` e preencha as variáveis a partir da fonte segura de credenciais; nunca coloque segredos neste repositório, em commits ou no chat. Em um computador novo, `.env.local`, `node_modules` e outros arquivos ignorados pelo Git precisam ser recriados.
+
+Antes de publicar, confira o diff e o branch. O fluxo aprovado pelo usuário é commit e push para `main` (`git push origin main`). Isso atualiza o GitHub, mas não confirma por si só um deploy na Hostinger. Se a autenticação expirar, repita `gh auth login -h github.com` e `gh auth setup-git`; não compartilhe tokens ou senhas.
+
+As instruções permanentes para agentes estão em [`AGENTS.md`](AGENTS.md). Para estado e pendências do produto, confira [`docs/STATUS-LOCAL-FIRST.md`](docs/STATUS-LOCAL-FIRST.md), validando itens antigos contra o estado atual antes de agir.
+
 ## Conta opcional da cliente
 
 O agendamento público continua disponível sem conta. Depois de enviar o pedido, a cliente pode usar Google ou link por e-mail para reunir atendimentos em `/minha-agenda`. A implantação dessa função exige a migration `202610050007_optional_customer_accounts.sql` e a configuração dos provedores no Supabase. Consulte [docs/CUSTOMER-AUTH-SETUP.md](docs/CUSTOMER-AUTH-SETUP.md) para arquitetura, ativação e verificação manual.
@@ -43,7 +70,7 @@ A base cobre site institucional, cadastro/recuperação de acesso, onboarding, c
 
 A página institucional do app está em `src/app/page.tsx`, com estilos em `src/app/marketing.css` e interações em `src/components/marketing-home.tsx`. Ela inclui uma demonstração local de agendamento, apresentação dos recursos e uma faixa horizontal de comentários. O bloco de portfólio promocional e o footer foram retirados da landing; o recurso de portfólio do painel permanece disponível. `public/tamarcado-share-preview.png` é a imagem de prévia fornecida pelo usuário, e o Instagram da marca é `https://instagram.com/tamarcado_app`.
 
-Há cinco comentários de exemplo na faixa, além do texto anterior. Troque ou valide esses textos com profissionais reais antes de apresentá-los como depoimentos autênticos. As alterações mais recentes de UI foram enviadas à `main` no commit `79e021c`; ainda é necessário confirmar o deploy da Hostinger. Consulte `docs/STATUS-LOCAL-FIRST.md` para o estado completo e as próximas validações.
+Há cinco comentários de exemplo na faixa, além do texto anterior. Troque ou valide esses textos com profissionais reais antes de apresentá-los como depoimentos autênticos. Para o histórico de mudanças e o estado conhecido do deploy, consulte `docs/STATUS-LOCAL-FIRST.md`; confirme os fatos com o GitHub e a Hostinger antes de retomar.
 
 ## Comandos
 
