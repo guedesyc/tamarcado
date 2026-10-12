@@ -16,7 +16,8 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
  const {error}=await supabase.rpc("transition_appointment",{p_appointment_id:id,p_next:parsed.data.status,p_changes:parsed.data.changes});
  if(error){
   console.error("[appointment-transition] RPC failed",{code:error.code,appointmentId:id,nextStatus:parsed.data.status});
-  const message=error.message.includes("SLOT_UNAVAILABLE")?"O horário proposto está fora do expediente, bloqueado ou sem capacidade. Confira a data, a duração e o horário de atendimento da profissional."
+  const message=error.message.includes("TM_TRIAL_PAUSED")?"As cinco vagas gratuitas já estão utilizadas ou reservadas. Ative a assinatura para confirmar novos atendimentos públicos."
+   :error.message.includes("SLOT_UNAVAILABLE")?"O horário proposto está fora do expediente, bloqueado ou sem capacidade. Confira a data, a duração e o horário de atendimento da profissional."
    :error.message.includes("NO_SHOW_TOO_EARLY")?"A falta só pode ser registrada depois do término do horário marcado."
    :error.message.includes("Invalid appointment status transition")?"Esta solicitação já mudou de estado. Atualize a página e confira a situação atual."
    :error.message.includes("SIGNAL_REQUIRED")?"Este espaço exige sinal. Use “Confirmar e pedir sinal” para concluir a confirmação."

@@ -15,6 +15,7 @@ type Props = {
   serviceName?: string;
   requestedAt?: string;
   endAt?: string;
+  trialAutoCompleteNotBefore?: string | null;
   timeZone?: string;
   priceEstimateCents?: number | null;
   serviceCapacity?: number;
@@ -26,7 +27,7 @@ function whatsappPhone(value: string): string {
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
 
-export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, timeZone = "America/Sao_Paulo", priceEstimateCents, serviceCapacity = 1, answers = [] }: Props) {
+export function AppointmentActions({ id, status, paymentStatus, signalEnabled = true, clientPhone, clientName, serviceName, requestedAt, endAt, trialAutoCompleteNotBefore, timeZone = "America/Sao_Paulo", priceEstimateCents, serviceCapacity = 1, answers = [] }: Props) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -194,6 +195,10 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
   const durationMinutes = requestedAt && endAt ? Math.max(0, Math.round((new Date(endAt).getTime() - new Date(requestedAt).getTime()) / 60000)) : 0;
   const hasValidPhone = Boolean(clientPhone && whatsappPhone(clientPhone).length >= 12);
   const appointmentHasEnded = Boolean(endAt && clock && new Date(endAt).getTime() <= clock);
+  const completionDeadline = endAt ? new Date(Math.max(new Date(endAt).getTime() + 48 * 60 * 60 * 1000, trialAutoCompleteNotBefore ? new Date(trialAutoCompleteNotBefore).getTime() : 0)) : null;
+  const hasTransitionGrace = Boolean(endAt && trialAutoCompleteNotBefore && new Date(trialAutoCompleteNotBefore).getTime() > new Date(endAt).getTime() + 48 * 60 * 60 * 1000);
+  const withinCompletionWindow = Boolean(appointmentHasEnded && completionDeadline && clock < completionDeadline.getTime());
+  const canComplete = !paymentStatus || ["partial", "paid", "not_applicable"].includes(paymentStatus);
   const reminderWhen = requestedAt ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(requestedAt)) : "";
   const reminderText = `Olá, ${clientName || "tudo bem"}! Passando para lembrar do seu atendimento de ${serviceName ?? "serviço"}, marcado para ${reminderWhen}. Se precisar falar comigo sobre o horário, pode responder por aqui.`;
   const reminderUrl = hasValidPhone ? `https://wa.me/${whatsappPhone(clientPhone!)}?text=${encodeURIComponent(reminderText)}` : "";
@@ -217,10 +222,11 @@ export function AppointmentActions({ id, status, paymentStatus, signalEnabled = 
       <button className="pill" disabled={busy} onClick={() => signal("verify")}><Check size={14}/> Conferir sinal recebido</button>
       <button className="pill" disabled={busy} onClick={() => signal("not_received")}><X size={14}/> Não recebi o sinal do Pix</button>
     </>}
-    {status === "confirmed" && (paymentStatus === "partial" || !paymentStatus) && <button className="pill" disabled={busy} onClick={() => update("completed")}>Concluir</button>}
+    {status === "confirmed" && canComplete && <button className="pill" disabled={busy || !withinCompletionWindow} title={!appointmentHasEnded ? "Disponível após o atendimento" : !withinCompletionWindow ? "Prazo de 48 horas encerrado; a conclusão automática ocorrerá em breve" : undefined} onClick={() => update("completed")}>Concluir</button>}
     {status === "confirmed" && <>
+      {endAt && <small role="status">{hasTransitionGrace && completionDeadline ? `Prazo de transição: registre a conclusão ou a falta até ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone }).format(completionDeadline)}. Depois, o sistema conclui automaticamente.` : appointmentHasEnded ? "Registre a conclusão ou a falta em até 48h após o atendimento. Depois, o sistema conclui automaticamente." : "Após o atendimento, você terá 48h para registrar a conclusão ou a falta."}</small>}
       {reminderUrl && requestedAt && clock > 0 && new Date(requestedAt).getTime() > clock && <a className="pill" href={reminderUrl} target="_blank" rel="noreferrer">Preparar lembrete no WhatsApp</a>}
-      <button className="pill" disabled={busy || !appointmentHasEnded} title={!appointmentHasEnded ? "Disponível após o término do horário marcado" : undefined} onClick={() => { if (window.confirm("Confirmar que a cliente não compareceu? O atendimento ficará registrado como falta.")) void update("no_show"); }}><X size={14}/> {busy ? "Atualizando…" : "Marcar falta"}</button>
+      <button className="pill" disabled={busy || !withinCompletionWindow} title={!appointmentHasEnded ? "Disponível após o término do horário marcado" : !withinCompletionWindow ? "Prazo de 48 horas encerrado" : undefined} onClick={() => { if (window.confirm("Confirmar que a cliente não compareceu? O atendimento ficará registrado como falta.")) void update("no_show"); }}><X size={14}/> {busy ? "Atualizando…" : "Marcar falta"}</button>
     </>}
     {status === "completed" && <span className="pill"><Check size={14}/> Concluído</span>}
     {status === "no_show" && <span className="pill" role="status"><X size={14}/> Não compareceu</span>}
