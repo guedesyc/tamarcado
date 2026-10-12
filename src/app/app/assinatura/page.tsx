@@ -15,13 +15,16 @@ export default async function SubscriptionPage() {
   const { data: member } = await supabase.from("business_members").select("business_id").eq("user_id", user.id).limit(1).maybeSingle();
   if (!member) redirect("/app/onboarding");
 
-  const [{ data: trial }, { data: storedSubscription }] = await Promise.all([
+  const [{ data: trial }, { count: reservedCount }, { data: storedSubscription }] = await Promise.all([
     supabase.from("trial_usage").select("eligible_completed_count").eq("business_id", member.business_id).maybeSingle(),
+    supabase.from("appointments").select("id", { count: "exact", head: true }).eq("business_id", member.business_id).eq("source", "public").eq("status", "confirmed"),
     supabase.from("subscription_records").select("provider,status,current_period_end,cancel_at,provider_livemode").eq("business_id", member.business_id).maybeSingle(),
   ]);
 
   const subscription = storedSubscription?.provider === "stripe" && storedSubscription.provider_livemode === stripeIsLiveMode() ? storedSubscription : null;
   const used = trial?.eligible_completed_count ?? 0;
+  const reserved = reservedCount ?? 0;
+  const occupied = Math.min(5, used + reserved);
   const active = subscription?.status === "active";
   const cancelAt = subscription?.cancel_at ? new Date(subscription.cancel_at) : null;
   const scheduledCancellation = Boolean(active && cancelAt);
@@ -52,7 +55,7 @@ export default async function SubscriptionPage() {
         <CancelSubscription active={active} scheduledCancellation={scheduledCancellation} />
       </div>
       <div style={{ minWidth: 230 }}>
-        {active ? <section className="trial-box"><div className="trial-top"><span>Atendimentos</span><span>Ilimitados</span></div><p>Sua assinatura ativa libera atendimentos públicos ilimitados. Registros manuais também seguem disponíveis.</p></section> : <section className="trial-box"><div className="trial-top"><span>Atendimentos gratuitos</span><span>{Math.min(used, 5)} de 5</span></div><div className="progress"><span style={{ width: `${Math.min(100, used * 20)}%` }} /></div><p>Atendimentos públicos concluídos. Registros manuais não entram na contagem.</p></section>}
+        {active ? <section className="trial-box"><div className="trial-top"><span>Atendimentos</span><span>Ilimitados</span></div><p>Sua assinatura ativa libera atendimentos públicos ilimitados. Registros manuais também seguem disponíveis.</p></section> : <section className="trial-box"><div className="trial-top"><span>Atendimentos gratuitos</span><span>{occupied} de 5</span></div><div className="progress"><span style={{ width: `${Math.min(100, occupied * 20)}%` }} /></div><p>{used} concluído(s) e {reserved} confirmado(s) reservado(s). Atendimentos manuais não entram na contagem.</p></section>}
         <div style={{ marginTop: 20 }}>{scheduledCancellation ? <span className="pill">Acesso até {formatDate(cancelAt!)}</span> : active ? <span className="pill">Assinatura ativa</span> : <StartSubscription />}</div>
       </div>
     </section>

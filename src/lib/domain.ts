@@ -38,9 +38,9 @@ export function calculateService(basePriceCents: number, baseDurationMinutes: nu
   }), { priceCents: basePriceCents, durationMinutes: baseDurationMinutes });
 }
 
-export function trialMessage(completedPublicBookings: number): string | null {
-  if (completedPublicBookings === 3) return "Você já realizou 3 atendimentos pelo Tá Marcado 🎉 Restam 2 atendimentos gratuitos. Depois disso, continue usando sua agenda por R$ 49,99/mês.";
-  if (completedPublicBookings >= 5) return "Seus 5 atendimentos gratuitos foram concluídos. 💛 Assine para continuar recebendo agendamentos online.";
+export function trialMessage(occupiedFreeSlots: number): string | null {
+  if (occupiedFreeSlots === 3) return "Você já utilizou ou reservou 3 dos 5 atendimentos gratuitos. Depois disso, continue usando sua agenda por R$ 49,99/mês.";
+  if (occupiedFreeSlots >= 5) return "Suas 5 vagas gratuitas foram utilizadas ou reservadas. 💛 Assine para continuar recebendo agendamentos online.";
   return null;
 }
 
