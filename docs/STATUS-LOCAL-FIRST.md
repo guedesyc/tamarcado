@@ -6,6 +6,16 @@
 - [x] Ao preencher a mensagem e continuar, o site abre uma conversa com o número de suporte `+55 71 99958-3586` e texto pré-preenchido. A pessoa ainda precisa tocar em Enviar no WhatsApp; o site não envia mensagens automaticamente nem armazena o texto.
 - [ ] Confirmar o comportamento no domínio após deploy da Hostinger, em desktop e celular.
 
+## Franquia gratuita e conclusão automática — 12/10/2026
+
+- [x] Migration aditiva `202610120001_reserve_free_slots_auto_complete_48h.sql` aplicada no Supabase de produção após teste em transação revertida. Nenhuma tabela ou pedido foi excluído. Confirmado: `pg_cron` 1.6.4, um job ativo a cada 5 minutos, nenhum atendimento imediatamente vencido para a rotina e um atendimento antigo com carência de 48 horas a partir da implantação.
+- [x] Um atendimento público confirmado reserva uma das cinco vagas gratuitas; quando concluído, passa a consumir a vaga. A soma de concluídos e confirmados limita novos pedidos e novas confirmações, com serialização por negócio para evitar exceder cinco em confirmações simultâneas. Atendimentos manuais ficam fora da franquia. Assinatura ativa ignora o limite e o painel mostra “Ilimitados”, sem contador de 5 vagas.
+- [x] Após o fim do atendimento, há 48 horas para registrar a conclusão. Se continuar confirmado, a rotina o conclui e registra evento de auditoria e consumo da vaga; a execução pode ocorrer até cinco minutos após o prazo. Registros já confirmados antes da implantação receberam carência única de 48 horas, sem conclusão surpresa.
+- [x] Cancelamentos e “Não compareceu” permanecem com a regra anterior. Em especial, “Não compareceu” ainda libera a reserva sem consumir uma vaga; alterar isso exige decisão comercial específica e não foi aplicado ao banco.
+- [x] A primeira execução do job no `cron.job_run_details` terminou como `succeeded` às 20:45 UTC de 12/10/2026, sem atendimentos vencidos processados.
+- [ ] Há um atendimento público antigo, já além do prazo original, com sinal informado pela cliente mas ainda não conferido pela profissional. Ele está protegido pela carência de implantação; se continuar `confirmed` até o fim dela, será concluído automaticamente. Conferir esse atendimento antes do vencimento da carência.
+- [ ] Testar os fluxos reais de confirmação, conclusão e assinatura após o deploy da interface. O SQL foi aplicado ao banco, mas isso não prova que o código já foi implantado na Hostinger.
+
 ## Retomada — 07/10/2026
 
 - [x] Pushes `65bd6b4` (reenvio de confirmação de e-mail profissional) e `6e47d0b` (slug gerado pelo nome do negócio e onboarding com tela de configuração animada) foram enviados para `origin/main`; o repositório ficou sincronizado após o push.
