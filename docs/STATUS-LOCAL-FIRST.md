@@ -1,5 +1,11 @@
 # Tá Marcado — andamento e próximos passos
 
+## Atendimento pelo WhatsApp — 13/10/2026
+
+- [x] Widget flutuante de ajuda adicionado ao layout global, com botão de interrogação no canto inferior direito, painel responsivo e identidade visual do Tá Marcado.
+- [x] Ao preencher a mensagem e continuar, o site abre uma conversa com o número de suporte `+55 71 99958-3586` e texto pré-preenchido. A pessoa ainda precisa tocar em Enviar no WhatsApp; o site não envia mensagens automaticamente nem armazena o texto.
+- [ ] Confirmar o comportamento no domínio após deploy da Hostinger, em desktop e celular.
+
 ## Retomada — 07/10/2026
 
 - [x] Pushes `65bd6b4` (reenvio de confirmação de e-mail profissional) e `6e47d0b` (slug gerado pelo nome do negócio e onboarding com tela de configuração animada) foram enviados para `origin/main`; o repositório ficou sincronizado após o push.
