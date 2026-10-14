@@ -11,6 +11,13 @@
 - [x] `npm run typecheck` passou depois de remover somente as referências de tipos obsoletas em `.next/types`, um cache gerado e ignorado pelo Git. `git diff --check` também passou.
 - [ ] Testes automatizados e validação visual não foram executados nesta alteração.
 
+## Revisão do bloqueio de agenda e cores — 14/10/2026
+
+- [x] A checagem inicial do bloqueio considerava somente status ativos e, por isso, não mostrava um registro `completed` que cruzava o intervalo. A consulta passa a incluir qualquer status exceto cancelados e expirados; o painel identifica concluído e falta corretamente.
+- [x] Os seletores CSS dos marcadores foram ajustados para superar a regra base mais específica, que mantinha todas as bolinhas na cor padrão. Confirmado, pendente/sinal, bloqueio e falta agora têm cores próprias.
+- [x] Migration corretiva aditiva criada: `202610140002_include_completed_agenda_block_conflicts.sql`. Aplicar depois de `202610140001_manage_agenda_blocks.sql` se a primeira já tiver sido aplicada.
+- [x] `npm run typecheck` passou; a revisão visual em navegador ainda não foi feita.
+
 ## Atendimento pelo WhatsApp — 13/10/2026
 
 - [x] Widget flutuante de ajuda adicionado ao layout global, com botão de interrogação no canto inferior direito, painel responsivo e identidade visual do Tá Marcado.

@@ -93,10 +93,10 @@
 .professional-calendar-day.past:hover{opacity:.72}
 .calendar-day-markers{display:flex;align-items:center;gap:4px;margin-top:auto}
 .professional-calendar-day .calendar-day-markers i,.calendar-legend i{display:block;width:9px;height:9px;margin:0;border-radius:50%;background:var(--green2)}
-.professional-calendar-day .calendar-marker-confirmed,.calendar-legend .calendar-legend-event{background:#2e9861}
-.professional-calendar-day .calendar-marker-pending,.calendar-legend .calendar-legend-pending{background:#e88936}
-.professional-calendar-day .calendar-marker-block,.calendar-legend .calendar-legend-block{background:#c2414b}
-.professional-calendar-day .calendar-marker-no-show,.calendar-legend .calendar-legend-no-show{background:#7a6a72}
+.professional-calendar-day .calendar-day-markers .calendar-marker-confirmed,.calendar-legend .calendar-legend-event{background:#2e9861}
+.professional-calendar-day .calendar-day-markers .calendar-marker-pending,.calendar-legend .calendar-legend-pending{background:#e88936}
+.professional-calendar-day .calendar-day-markers .calendar-marker-block,.calendar-legend .calendar-legend-block{background:#c2414b}
+.professional-calendar-day .calendar-day-markers .calendar-marker-no-show,.calendar-legend .calendar-legend-no-show{background:#7a6a72}
 .calendar-entry.calendar-confirmed{border-left:4px solid #2e9861;background:#f2fbf5}
 .calendar-entry.calendar-request-pending{border-left:4px solid #e88936;background:#fff7ed}
 .calendar-entry.calendar-signal-pending{border-left:4px solid #d89b29;background:#fffbef}

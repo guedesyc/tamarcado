@@ -24,7 +24,7 @@ function timeLabel(value: string, timeZone: string) {
 }
 
 function statusLabel(status: string) {
-  return status === "confirmed" ? "Confirmado" : status === "proposed" ? "Aguardando resposta à proposta" : status === "under_review" ? "Em análise" : "Aguardando resposta";
+  return status === "confirmed" ? "Confirmado" : status === "completed" ? "Concluído" : status === "no_show" ? "Não compareceu" : status === "proposed" ? "Aguardando resposta à proposta" : status === "under_review" ? "Em análise" : "Aguardando resposta";
 }
 
 export function AgendaBlockSettings() {
