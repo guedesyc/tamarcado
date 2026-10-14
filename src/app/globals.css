@@ -261,8 +261,23 @@
 .agenda-block-affected .pill{flex:0 0 auto;min-height:40px}
 .agenda-block-review-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:14px}
 .agenda-block-review-actions>.btn{min-height:44px}
+.agenda-block-review-actions>.agenda-block-danger{background:#b4233a;border-color:#b4233a;color:#fff}
+.agenda-block-review-actions>.agenda-block-danger:hover{background:#951b2f;border-color:#951b2f}
+.agenda-block-review-actions>.agenda-block-reschedule,.agenda-reschedule-fields>.agenda-block-reschedule{background:#218653;border-color:#218653;color:#fff}
+.agenda-block-review-actions>.agenda-block-reschedule:hover,.agenda-reschedule-fields>.agenda-block-reschedule:hover{background:#176b41;border-color:#176b41}
+.agenda-reschedule-queue{margin:0 0 18px;padding:18px}
+.agenda-reschedule-queue>.settings-intro{max-width:850px}
+.agenda-reschedule-item{display:grid;grid-template-columns:minmax(190px,1fr) minmax(250px,1.4fr);gap:16px;align-items:start;padding:16px 0;border-top:1px solid var(--line)}
+.agenda-reschedule-summary{display:grid;gap:6px}
+.agenda-reschedule-summary small{color:var(--muted);line-height:1.5}
+.agenda-reschedule-fields{display:grid;grid-template-columns:minmax(130px,1fr) minmax(160px,1fr) auto;gap:10px;align-items:end}
+.agenda-reschedule-fields>.form-error,.agenda-reschedule-fields>.muted{grid-column:1/-1;margin:0}
+.agenda-reschedule-success{grid-column:2;display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:#218653}
+.agenda-reschedule-finish{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--line)}
+.agenda-reschedule-finish p{margin:0;color:#218653}
 @media(max-width:760px){.agenda-block-form{grid-template-columns:repeat(2,minmax(0,1fr))}.agenda-block-form>.btn{grid-column:1/-1}.agenda-block-affected{align-items:flex-start;flex-direction:column}}
 @media(max-width:480px){.agenda-block-form{grid-template-columns:1fr}.agenda-block-form>.btn{grid-column:auto;width:100%}.agenda-block-review-actions{flex-direction:column-reverse}.agenda-block-review-actions>.btn{width:100%;justify-content:center}.agenda-block-item{align-items:flex-start;flex-direction:column}.agenda-block-item>.pill{align-self:flex-start}}
+@media(max-width:700px){.agenda-reschedule-item{grid-template-columns:1fr}.agenda-reschedule-fields{grid-template-columns:1fr}.agenda-reschedule-fields>.btn{width:100%;justify-content:center}.agenda-reschedule-success{grid-column:1}.agenda-reschedule-finish{align-items:stretch;flex-direction:column}.agenda-reschedule-finish>.btn{width:100%;justify-content:center}}
 @media(max-width:850px){.professional-calendar{grid-template-columns:1fr}}
 @media(max-width:560px){.professional-calendar-grid{gap:4px}.professional-calendar-day{min-height:58px;padding:6px;border-radius:9px;font-size:12px}.professional-calendar-day small{font-size:9px}.calendar-entry{padding-right:12px}.calendar-entry .status{position:static;justify-self:start}.calendar-month-heading h2{min-width:140px;font-size:16px}}
 .public-booking-calendar{width:100%;margin:4px 0 16px}

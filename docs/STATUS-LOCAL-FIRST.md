@@ -2,9 +2,15 @@
 
 ## Bloqueio de agenda nas Configurações — 14/10/2026
 
+- [x] Quando um bloqueio encontra atendimentos futuros, a profissional escolhe entre **Bloquear sem reagendar** (cancela os afetados), **Bloquear e Reagendar** (abre uma fila na Agenda para selecionar apenas data e horário) ou **Voltar**. O link para conversar com a cliente no WhatsApp permanece junto ao atendimento afetado.
+- [x] O reagendamento preserva serviço, respostas, valores e dados da cliente. Horários são consultados e revalidados no servidor; a lista usa somente atendimentos do negócio autenticado e contempla também registros manuais sem serviço vinculado.
+- [x] Migrations aditivas `202610140004_block_cancel_or_reschedule.sql` e `202610140005_agenda_reschedule_existing_appointment.sql` ampliam a rotina de bloqueio e criam as RPCs seguras de consulta e reagendamento. Aplicar após `202610140003_ignore_past_appointments_in_agenda_blocks.sql`; elas não removem tabelas nem atendimentos.
+- [ ] Ainda não foi aplicada nem validada no Supabase remoto. Aplicar 004 e depois 005 antes de usar o fluxo em produção; fazer deploy do commit na Hostinger e validar bloqueio com pedido afetado, cancelamento, reagendamento, capacidade e notificação manual por WhatsApp.
+- [x] `npm run typecheck`, `npm run build` e `git diff --check` passaram; testes automatizados e verificação visual em navegador não foram executados.
+
 - [x] Configurações ganhou criação de bloqueios por data e horário inicial/final, listagem dos bloqueios futuros e ação para removê-los.
 - [x] Antes de salvar, a rotina consulta os pedidos em andamento, propostas aguardando resposta e atendimentos confirmados que cruzam o intervalo. Mostra cliente, serviço, horário e status, com link para iniciar uma conversa no WhatsApp. O texto fica preparado; a profissional ainda precisa enviar pelo WhatsApp.
-- [x] O bloqueio não altera nem cancela atendimentos existentes. A revisão explica o impacto e exige confirmação para bloquear mesmo assim. Os novos pedidos públicos passam a respeitar o bloqueio pela regra de disponibilidade existente.
+- [x] A revisão do bloqueio informa quais atendimentos serão afetados; o tratamento escolhido é feito de forma transacional pelas novas migrations descritas acima. Os novos pedidos públicos passam a respeitar o bloqueio pela regra de disponibilidade existente.
 - [x] Migration aditiva criada: `202610140001_manage_agenda_blocks.sql`. Ela adiciona uma RPC protegida pela associação autenticada da profissional; nenhuma tabela ou dado é removido.
 - [x] Commit `76b4c1a` enviado para `origin/main`; isso não confirma que a Hostinger já concluiu o deploy.
 - [ ] Aplicar a migration no Supabase e validar Configurações, um bloqueio sem conflitos, outro com pedido pendente/confirmado, remoção do bloqueio e indisponibilidade pública no período. Confirmar também o deploy Hostinger antes da validação em produção.

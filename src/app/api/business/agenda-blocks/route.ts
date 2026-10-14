@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSameSiteOrigin } from "@/lib/request-origin";
 
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
-const createSchema = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), start: time, end: time, acknowledgeConflicts: z.boolean().default(false) });
+const createSchema = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), start: time, end: time, acknowledgeConflicts: z.boolean().default(false), resolution: z.enum(["keep", "cancel", "reschedule"]).default("keep") });
 const deleteSchema = z.object({ id: z.string().uuid() });
 
 async function owner() {
@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     p_end: parsed.data.end,
     p_acknowledge_conflicts: parsed.data.acknowledgeConflicts,
     p_label: "Bloqueio de agenda",
+    p_resolution: parsed.data.resolution,
   });
   if (error) {
     const messages: Record<string, string> = {
@@ -47,6 +48,8 @@ export async function POST(request: Request) {
       INVALID_BLOCK_RANGE: "O horário final precisa ser depois do horário inicial.",
       AUTH_REQUIRED: "Entre na sua conta para continuar.",
       BUSINESS_NOT_FOUND: "Não encontramos seu espaço profissional.",
+      RESOLUTION_REQUIRED: "Escolha se deseja cancelar ou reagendar os atendimentos afetados.",
+      NO_APPOINTMENTS_TO_RESOLVE: "Não há atendimentos afetados para tratar neste horário.",
     };
     const code = error.message.match(/(?:^|[^A-Z_])([A-Z_]{5,})(?:$|[^A-Z_])/g)?.map(value => value.trim().replace(/^[^A-Z_]+|[^A-Z_]+$/g, "")).find(value => messages[value]);
     return NextResponse.json({ error: code ? messages[code] : "Não foi possível criar o bloqueio. Atualize a página e tente novamente." }, { status: 400 });
