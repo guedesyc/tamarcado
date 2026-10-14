@@ -18,6 +18,11 @@
 - [x] Migration corretiva aditiva criada: `202610140002_include_completed_agenda_block_conflicts.sql`. Aplicar depois de `202610140001_manage_agenda_blocks.sql` se a primeira já tiver sido aplicada.
 - [x] `npm run typecheck` passou; a revisão visual em navegador ainda não foi feita.
 
+## Limite temporal dos atendimentos afetados por bloqueio — 14/10/2026
+
+- [x] Verificado: a função revisada incluía atendimentos concluídos sem restringir a data do atendimento. Migration corretiva `202610140003_ignore_past_appointments_in_agenda_blocks.sql` acrescenta `start_at >= now()`, excluindo explicitamente registros no passado e mantendo futuros concluídos na revisão.
+- [ ] Aplicar `202610140003_ignore_past_appointments_in_agenda_blocks.sql` depois das migrations `001` e `002` de bloqueio, caso ainda não tenham sido aplicadas.
+
 ## Atendimento pelo WhatsApp — 13/10/2026
 
 - [x] Widget flutuante de ajuda adicionado ao layout global, com botão de interrogação no canto inferior direito, painel responsivo e identidade visual do Tá Marcado.
