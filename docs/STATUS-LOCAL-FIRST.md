@@ -5,6 +5,7 @@
 - [x] Quando um bloqueio encontra atendimentos futuros, a profissional escolhe entre **Bloquear sem reagendar** (cancela os afetados), **Bloquear e Reagendar** (abre uma fila na Agenda para selecionar apenas data e horário) ou **Voltar**. O link para conversar com a cliente no WhatsApp permanece junto ao atendimento afetado.
 - [x] O reagendamento preserva serviço, respostas, valores e dados da cliente. Horários são consultados e revalidados no servidor; a lista usa somente atendimentos do negócio autenticado e contempla também registros manuais sem serviço vinculado.
 - [x] Migrations aditivas `202610140004_block_cancel_or_reschedule.sql` e `202610140005_agenda_reschedule_existing_appointment.sql` ampliam a rotina de bloqueio e criam as RPCs seguras de consulta e reagendamento. Aplicar após `202610140003_ignore_past_appointments_in_agenda_blocks.sql`; elas não removem tabelas nem atendimentos.
+- [x] Ajustada a sintaxe da migration 005 após o editor SQL do Supabase rejeitar a expressão `CASE` dentro de `IF`; a disponibilidade agora é calculada antes da condição. Use a versão mais recente do arquivo no GitHub.
 - [ ] Ainda não foi aplicada nem validada no Supabase remoto. Aplicar 004 e depois 005 antes de usar o fluxo em produção; fazer deploy do commit na Hostinger e validar bloqueio com pedido afetado, cancelamento, reagendamento, capacidade e notificação manual por WhatsApp.
 - [x] `npm run typecheck`, `npm run build` e `git diff --check` passaram; testes automatizados e verificação visual em navegador não foram executados.
 

@@ -12,6 +12,7 @@ declare
   slot_start timestamptz;
   slot_end timestamptz;
   local_slot time;
+  slot_capacity_ok boolean;
 begin
   select * into appointment_value from public.appointments where id=p_appointment_id;
   if appointment_value.id is null or not public.is_business_member(appointment_value.business_id) then
@@ -33,17 +34,22 @@ begin
     while local_slot+make_interval(mins=>duration_minutes)<=rule_value.end_time loop
       slot_start:=(p_date::text||' '||local_slot::text)::timestamp at time zone business_value.timezone;
       slot_end:=slot_start+make_interval(mins=>duration_minutes);
+      if appointment_value.service_id is null then
+        select not exists(
+          select 1 from public.appointments other
+          where other.business_id=appointment_value.business_id and other.id<>appointment_value.id and other.status='confirmed'
+            and (other.payment_status<>'signal_requested' or other.signal_deadline>now())
+            and tstzrange(other.start_at,other.end_at,'[)') && tstzrange(slot_start,slot_end,'[)')
+        ) into slot_capacity_ok;
+      else
+        slot_capacity_ok:=public.service_has_capacity(appointment_value.business_id,appointment_value.service_id,slot_start,slot_end,appointment_value.id);
+      end if;
       if slot_start>now()+interval '2 hours'
         and (slot_end at time zone business_value.timezone)::time<=rule_value.end_time
         and not exists(select 1 from public.availability_exceptions e
           where e.business_id=appointment_value.business_id and e.kind='blocked'
             and tstzrange(e.starts_at,e.ends_at,'[)') && tstzrange(slot_start,slot_end,'[)'))
-        and case when appointment_value.service_id is null then not exists(
-          select 1 from public.appointments other
-          where other.business_id=appointment_value.business_id and other.id<>appointment_value.id and other.status='confirmed'
-            and (other.payment_status<>'signal_requested' or other.signal_deadline>now())
-            and tstzrange(other.start_at,other.end_at,'[)') && tstzrange(slot_start,slot_end,'[)')
-        ) else public.service_has_capacity(appointment_value.business_id,appointment_value.service_id,slot_start,slot_end,appointment_value.id) end then
+        and slot_capacity_ok then
         slot_time:=local_slot; return next;
       end if;
       local_slot:=local_slot+interval '15 minutes';
@@ -65,6 +71,7 @@ declare
   end_value timestamptz;
   duration_minutes integer;
   next_status public.appointment_status;
+  slot_capacity_ok boolean;
 begin
   if auth.uid() is null then raise exception using message='AUTH_REQUIRED',errcode='P0001'; end if;
   select * into appointment_value from public.appointments where id=p_appointment_id for update;
@@ -81,6 +88,16 @@ begin
   if duration_minutes<1 or duration_minutes>1440 then raise exception using message='SLOT_UNAVAILABLE',errcode='P0001'; end if;
   start_value:=(p_date::text||' '||p_time::text)::timestamp at time zone business_value.timezone;
   end_value:=start_value+make_interval(mins=>duration_minutes);
+  if appointment_value.service_id is null then
+    select not exists(
+      select 1 from public.appointments other
+      where other.business_id=appointment_value.business_id and other.id<>appointment_value.id and other.status='confirmed'
+        and (other.payment_status<>'signal_requested' or other.signal_deadline>now())
+        and tstzrange(other.start_at,other.end_at,'[)') && tstzrange(start_value,end_value,'[)')
+    ) into slot_capacity_ok;
+  else
+    slot_capacity_ok:=public.service_has_capacity(appointment_value.business_id,appointment_value.service_id,start_value,end_value,appointment_value.id);
+  end if;
 
   if start_value<=now()+interval '2 hours'
     or not exists(select 1 from public.availability_rules r where r.business_id=appointment_value.business_id
@@ -88,12 +105,7 @@ begin
       and (end_value at time zone business_value.timezone)::time<=r.end_time)
     or exists(select 1 from public.availability_exceptions e where e.business_id=appointment_value.business_id
       and e.kind='blocked' and tstzrange(e.starts_at,e.ends_at,'[)') && tstzrange(start_value,end_value,'[)'))
-    or case when appointment_value.service_id is null then exists(
-      select 1 from public.appointments other
-      where other.business_id=appointment_value.business_id and other.id<>appointment_value.id and other.status='confirmed'
-        and (other.payment_status<>'signal_requested' or other.signal_deadline>now())
-        and tstzrange(other.start_at,other.end_at,'[)') && tstzrange(start_value,end_value,'[)')
-    ) else not public.service_has_capacity(appointment_value.business_id,appointment_value.service_id,start_value,end_value,appointment_value.id) end then
+     or not slot_capacity_ok then
     raise exception using message='SLOT_UNAVAILABLE',errcode='P0001';
   end if;
 
