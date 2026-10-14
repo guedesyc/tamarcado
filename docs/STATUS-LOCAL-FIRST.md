@@ -6,7 +6,8 @@
 - [x] Antes de salvar, a rotina consulta os pedidos em andamento, propostas aguardando resposta e atendimentos confirmados que cruzam o intervalo. Mostra cliente, serviço, horário e status, com link para iniciar uma conversa no WhatsApp. O texto fica preparado; a profissional ainda precisa enviar pelo WhatsApp.
 - [x] O bloqueio não altera nem cancela atendimentos existentes. A revisão explica o impacto e exige confirmação para bloquear mesmo assim. Os novos pedidos públicos passam a respeitar o bloqueio pela regra de disponibilidade existente.
 - [x] Migration aditiva criada: `202610140001_manage_agenda_blocks.sql`. Ela adiciona uma RPC protegida pela associação autenticada da profissional; nenhuma tabela ou dado é removido.
-- [ ] Aplicar a migration no Supabase e validar Configurações, um bloqueio sem conflitos, outro com pedido pendente/confirmado, remoção do bloqueio e indisponibilidade pública no período. O código ainda precisa ser enviado/deployado antes da validação em produção.
+- [x] Commit `76b4c1a` enviado para `origin/main`; isso não confirma que a Hostinger já concluiu o deploy.
+- [ ] Aplicar a migration no Supabase e validar Configurações, um bloqueio sem conflitos, outro com pedido pendente/confirmado, remoção do bloqueio e indisponibilidade pública no período. Confirmar também o deploy Hostinger antes da validação em produção.
 - [x] `npm run typecheck` passou depois de remover somente as referências de tipos obsoletas em `.next/types`, um cache gerado e ignorado pelo Git. `git diff --check` também passou.
 - [ ] Testes automatizados e validação visual não foram executados nesta alteração.
 
