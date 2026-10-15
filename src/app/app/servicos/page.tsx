@@ -4,9 +4,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ServiceManager } from "@/components/service-manager";
 import { ServiceCatalogManager } from "@/components/service-catalog-manager";
+import { WorkspaceMenuLinks } from "@/components/workspace-menu-links";
 
 type Service = { id: string; name: string; description: string | null; base_price_cents: number | null; base_duration_minutes: number | null; buffer_minutes: number; booking_mode: string; active: boolean; simultaneous_capacity: number; photos: {id:string;storage_path:string;alt_text:string}[] };
-const links = [["Início", "/app"], ["Agenda", "/app/agenda"], ["Solicitações", "/app/solicitacoes"], ["Clientes", "/app/clientes"], ["Serviços", "/app/servicos"], ["Perguntas para clientes", "/app/perguntas"], ["Financeiro", "/app/financeiro"], ["Portfólio", "/app/portfolio"], ["Minha página", "/app/minha-pagina"], ["Configurações", "/app/configuracoes"], ["Assinatura", "/app/assinatura"]];
 
 export default async function ServicesPage() {
   const supabase = await createClient();
@@ -23,12 +23,11 @@ export default async function ServicesPage() {
   const storageBaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
   return <div className="app-shell">
-    <aside className="sidebar"><Link className="brand" href="/app"><BrandLogo /></Link><div className="side-label" style={{ marginTop: 25 }}>Seu espaço</div>{links.map(([name, url]) => <Link className={`side-link ${name === "Serviços" ? "active" : ""}`} href={url} key={url}>{name}</Link>)}</aside>
+    <aside className="sidebar"><Link className="brand" href="/app"><BrandLogo /></Link><div className="side-label" style={{ marginTop: 25 }}>Seu espaço</div><WorkspaceMenuLinks activePath="/app/servicos"/></aside>
     <main className="app-main"><header className="app-top"><span style={{ fontSize: 13, color: "var(--muted)" }}>Seu espaço de atendimento</span></header>
       <div className="app-content"><div className="dash-heading"><div><span className="eyebrow">Seu catálogo</span><h1>Serviços</h1><p>O que você faz, do seu jeito.</p></div><ServiceManager/></div>
         <ServiceCatalogManager services={services} storageBaseUrl={storageBaseUrl}/>
       </div>
     </main>
-    <nav className="mobile-nav">{links.slice(0, 5).map(([name, url]) => <Link className={name === "Serviços" ? "active" : ""} href={url} key={url}>{name}</Link>)}</nav>
   </div>;
 }

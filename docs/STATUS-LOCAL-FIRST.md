@@ -1,5 +1,13 @@
 # Tá Marcado — andamento e próximos passos
 
+## Navegação profissional e treinamento — 15/10/2026
+
+- [x] A navegação lateral de Início, Agenda, Serviços, Lista de espera e demais seções usa a mesma lista de módulos; a navegação móvel também usa essa lista. Corrige os módulos que não apareciam no Início.
+- [x] O novo item **Treinamento** abre o vídeo público no Google Drive em nova aba. O arquivo de aproximadamente 600 MB não é copiado para o aplicativo nem para o repositório.
+- [x] Login, cadastro e redefinição da senha profissional têm botão para mostrar/ocultar o texto digitado. Cadastro e redefinição exigem no mínimo 10 caracteres no formulário e na API; a configuração mínima adicional do Supabase deve ser conferida no painel se houver divergência observada.
+- [x] Pastas locais de produção de vídeo `marketing-video/` e `video-home/` ficam fora do typecheck/build do aplicativo, sem alterar os vídeos publicados em `public/intro/`.
+- [ ] Confirmar o link do Drive e o menu em computador e celular após o deploy. O arquivo externo precisa permanecer com acesso público no Google Drive.
+
 ## Abertura cinematográfica da Home com a Ana — 15/10/2026
 
 - [x] Vídeo de 8 s sem áudio, produzido localmente e sem custo (Qwen-Image-Edit-2511 + Wan 2.2 I2V em ComfyUI, RIFE, Remotion): Ana no celular → toque visto de dentro da tela com "Quero marcar!" e ✓ → Ana olha para a câmera e sorri → logo oficial. Versões 16:9 e 9:16 com enquadramentos próprios em `public/intro/` (AV1 0,8/0,96 MB; H.264 de fallback 3,1/3,4 MB; posters WebP). Detalhes, troca do vídeo e nova renderização em `docs/ABERTURA-HOME.md`.

@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
+import { PasswordField } from "@/components/password-field";
 
 const errorMessages:Record<string,string>={
   invalid:"Confira seu nome, e-mail e senha. A senha precisa ter pelo menos 10 caracteres.",
@@ -26,8 +27,8 @@ export function SignupForm({error}:{error?:string}) {
     <div className="progress-steps"><span className="on"/><span/><span/><span/><span/></div>
     <div className="form-field"><label htmlFor="name">Como podemos chamar você?</label><input id="name" name="name" autoComplete="name" placeholder="Seu nome" required minLength={2}/></div>
     <div className="form-field"><label htmlFor="email">Seu melhor e-mail</label><input id="email" name="email" type="email" autoComplete="email" placeholder="voce@email.com" required/></div>
-    <div className="form-field"><label htmlFor="password">Crie uma senha</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={10} placeholder="Pelo menos 10 caracteres" required value={password} onChange={event=>{setPassword(event.target.value);setMismatch(false)}}/><small style={{color:"var(--muted)",fontSize:11}}>Use pelo menos 10 caracteres.</small></div>
-    <div className="form-field"><label htmlFor="confirmPassword">Confirme sua senha</label><input id="confirmPassword" name="confirmPassword" type="password" autoComplete="new-password" minLength={10} placeholder="Digite a mesma senha novamente" required value={confirmPassword} onChange={event=>{setConfirmPassword(event.target.value);setMismatch(false)}}/></div>
+    <div className="form-field"><label htmlFor="password">Crie uma senha</label><PasswordField id="password" name="password" autoComplete="new-password" minLength={10} placeholder="Pelo menos 10 caracteres" required value={password} onChange={event=>{setPassword(event.target.value);setMismatch(false)}}/><small style={{color:"var(--muted)",fontSize:11}}>Use pelo menos 10 caracteres.</small></div>
+    <div className="form-field"><label htmlFor="confirmPassword">Confirme sua senha</label><PasswordField id="confirmPassword" name="confirmPassword" autoComplete="new-password" minLength={10} placeholder="Digite a mesma senha novamente" required value={confirmPassword} onChange={event=>{setConfirmPassword(event.target.value);setMismatch(false)}}/></div>
     <p className="signup-email-hint">Depois do cadastro, confirme seu e-mail pelo link que enviaremos. A configuração profissional começa em seguida.</p>
     {(mismatch||errorMessages[error??""])&&<p className="form-error" role="alert">{mismatch?"As senhas não coincidem. Confira os dois campos.":errorMessages[error??""]}</p>}
     <button className="btn" style={{width:"100%",marginTop:8}}>Criar meu acesso <Check size={16}/></button>
