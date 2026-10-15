@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowDown, ArrowRight, ArrowUpRight, CalendarCheck2, Check, CheckCheck, ChevronDown, Instagram, MapPin, MessageCircle, Scissors, ShieldCheck, Sparkles, Star, Users, WalletCards } from "lucide-react";
 import { BrandLogo } from "@/components/brand-logo";
+import { HomeIntro } from "@/components/home-intro";
 import { MarketingHeader, ScrollReveal, SpecialtyRail, StorySection } from "@/components/marketing-home";
 import "./marketing.css";
 
@@ -57,7 +58,7 @@ function QuoteRail() {
 }
 
 export default function Home() {
-  return <ScrollReveal><div className="marketing-home">
+  return <><HomeIntro/><ScrollReveal><div className="marketing-home">
     <MarketingHeader />
     <main>
       <section className="mh-hero" data-scroll-reveal>
@@ -113,7 +114,7 @@ export default function Home() {
       <section className="mh-final" data-scroll-reveal><div className="mh-final-flower"><FloralArtwork variant="rose"/></div><a className="mh-final-social" href="https://instagram.com/tamarcado_app" aria-label="Instagram Tá Marcado"><Instagram size={21}/></a><div className="mh-final-content"><SectionKicker>Seu próximo passo</SectionKicker><h2>Seu trabalho merece um espaço <em>só seu.</em></h2><p>Comece sem pressa. Organize a agenda no seu ritmo.</p><Link className="mh-button mh-button-light" href="/cadastro">Criar meu Tá Marcado <ArrowRight size={17}/></Link><span>5 atendimentos grátis · Sem cartão</span></div><div className="mh-final-mark" aria-hidden="true">tm</div></section>
     </main>
 
-  </div></ScrollReveal>;
+  </div></ScrollReveal></>;
 }
 
 function CheckCircleIcon(){return <span className="mh-check-circle"><Check size={11}/></span>}

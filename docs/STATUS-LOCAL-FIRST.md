@@ -1,5 +1,12 @@
 # Tá Marcado — andamento e próximos passos
 
+## Abertura cinematográfica da Home com a Ana — 15/10/2026
+
+- [x] Vídeo de 8 s sem áudio, produzido localmente e sem custo (Qwen-Image-Edit-2511 + Wan 2.2 I2V em ComfyUI, RIFE, Remotion): Ana no celular → toque visto de dentro da tela com "Quero marcar!" e ✓ → Ana olha para a câmera e sorri → logo oficial. Versões 16:9 e 9:16 com enquadramentos próprios em `public/intro/` (AV1 0,8/0,96 MB; H.264 de fallback 3,1/3,4 MB; posters WebP). Detalhes, troca do vídeo e nova renderização em `docs/ABERTURA-HOME.md`.
+- [x] Exibida só em `/`, uma vez por sessão (`sessionStorage`, marcada no início). Script inline no `<head>` evita o flash da Home; navegação interna até a Home também é coberta. Botão **Pular abertura** (e `Esc`), liberação automática em erro, se não iniciar em 4,5 s ou após 14 s; sem abertura com movimento reduzido, Save-Data ou 2G. Nenhuma outra rota, login ou página de profissional usa o componente.
+- [x] Verificado: `npm test` (26 testes, incluindo 4 novos de sessão/script), `npm run typecheck`, lint dos arquivos alterados, `git diff --check` e `npm run build`. No navegador (dev e `next start`): primeira visita, atualização, ida e volta, sessão nova chegando por `/entrar`, saída da Home no meio da abertura, Pular, falha de vídeo (404), rota `/[slug]`, desktop e celular 375×812; console sem mensagens em produção.
+- [ ] Ainda não validado em Safari/iOS real nem após deploy na Hostinger. Em modo dev, a página 404 mostra um aviso do React sobre o `<script>` do layout (não ocorre em produção). `npm run lint` continua com um erro anterior em `agenda-reschedule-queue.tsx`, não relacionado.
+
 ## Bloqueio de agenda nas Configurações — 14/10/2026
 
 - [x] Quando um bloqueio encontra atendimentos futuros, a profissional escolhe entre **Bloquear sem reagendar** (cancela os afetados), **Bloquear e Reagendar** (abre uma fila na Agenda para selecionar apenas data e horário) ou **Voltar**. O link para conversar com a cliente no WhatsApp permanece junto ao atendimento afetado.

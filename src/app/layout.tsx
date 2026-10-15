@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SupportFooter } from "@/components/support-footer";
 import { SupportChat } from "@/components/support-chat";
+import { INTRO_BOOT_SCRIPT } from "@/lib/intro-session";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,5 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="pt-BR"><body>{children}<SupportFooter/><SupportChat/></body></html>;
+  return <html lang="pt-BR" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{ __html: INTRO_BOOT_SCRIPT }}/></head><body>{children}<SupportFooter/><SupportChat/></body></html>;
 }
