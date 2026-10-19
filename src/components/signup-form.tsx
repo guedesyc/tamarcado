@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { PasswordField } from "@/components/password-field";
@@ -17,8 +17,13 @@ export function SignupForm({error}:{error?:string}) {
   const [password,setPassword]=useState("");
   const [confirmPassword,setConfirmPassword]=useState("");
   const [mismatch,setMismatch]=useState(false);
+  const [submitting,setSubmitting]=useState(false);
+  const submissionStarted=useRef(false);
   function validate(event:FormEvent<HTMLFormElement>){
-    if(password!==confirmPassword){event.preventDefault();setMismatch(true)}
+    if(submissionStarted.current){event.preventDefault();return}
+    if(password!==confirmPassword){event.preventDefault();setMismatch(true);return}
+    submissionStarted.current=true;
+    setSubmitting(true);
   }
 
   return <form className="form-card" action="/api/auth/signup" method="post" onSubmit={validate}>
@@ -31,7 +36,7 @@ export function SignupForm({error}:{error?:string}) {
     <div className="form-field"><label htmlFor="confirmPassword">Confirme sua senha</label><PasswordField id="confirmPassword" name="confirmPassword" autoComplete="new-password" minLength={10} placeholder="Digite a mesma senha novamente" required value={confirmPassword} onChange={event=>{setConfirmPassword(event.target.value);setMismatch(false)}}/></div>
     <p className="signup-email-hint">Depois do cadastro, confirme seu e-mail pelo link que enviaremos. A configuração profissional começa em seguida.</p>
     {(mismatch||errorMessages[error??""])&&<p className="form-error" role="alert">{mismatch?"As senhas não coincidem. Confira os dois campos.":errorMessages[error??""]}</p>}
-    <button className="btn" style={{width:"100%",marginTop:8}}>Criar meu acesso <Check size={16}/></button>
+    <button className="btn" type="submit" disabled={submitting} aria-busy={submitting} style={{width:"100%",marginTop:8}}>{submitting?"Criando conta…":<>Criar meu acesso <Check size={16}/></>}</button>
     <p style={{textAlign:"center",fontSize:11,lineHeight:1.6}}>Ao continuar, você concorda com os <Link href="/termos" style={{textDecoration:"underline"}}>Termos de Uso</Link> e a <Link href="/privacidade" style={{textDecoration:"underline"}}>Política de Privacidade</Link>.</p>
     <p style={{textAlign:"center",fontSize:12}}>Já tem acesso? <Link href="/entrar" style={{color:"var(--green)",fontWeight:700}}>Entrar</Link></p>
   </form>;
