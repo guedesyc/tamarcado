@@ -11,6 +11,20 @@ function phoneDigits(phone: string | null) {
   const digits = (phone ?? "").replace(/\D/g, "");
   return digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
 }
+const SLOTS_ERROR = "Não foi possível consultar os horários. Atualize a página e tente de novo.";
+const SAVE_ERROR = "Não foi possível salvar o novo horário. Atualize a página e tente de novo.";
+
+/** Errors whose message is safe to show: the API's own Portuguese text or our fallback. */
+class RescheduleError extends Error {}
+
+/** A non-JSON answer (expired session, server down, HTML error page) becomes null instead of a parser error. */
+async function readResult(response: Response): Promise<ApiResult | null> {
+  try { return await response.json() as ApiResult; } catch { return null; }
+}
+
+// Network failures ("Failed to fetch") and parser errors are technical English messages; show the fallback instead.
+const errorMessage = (reason: unknown, fallback: string) => (reason instanceof RescheduleError ? reason.message : fallback);
+
 function formatDateTime(value: string, timeZone: string) {
   return new Intl.DateTimeFormat("pt-BR", { dateStyle: "full", timeStyle: "short", timeZone }).format(new Date(value));
 }
@@ -34,12 +48,12 @@ function RescheduleItem({ appointment, initialDate, timeZone, onComplete }: { ap
     const controller = new AbortController();
     fetch(`/api/appointments/${appointment.id}/reschedule?date=${encodeURIComponent(date)}`, { cache: "no-store", signal: controller.signal })
       .then(async response => {
-        const result = await response.json() as ApiResult;
-        if (!response.ok) throw new Error(result.error ?? "Não foi possível consultar os horários.");
+        const result = await readResult(response);
+        if (!response.ok || !result) throw new RescheduleError(result?.error ?? SLOTS_ERROR);
         const available = result.slots ?? [];
         setSlots(available); setTime(available[0] ?? "");
       })
-      .catch(reason => { if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Não foi possível consultar os horários."); })
+      .catch(reason => { if (!controller.signal.aborted) setError(errorMessage(reason, SLOTS_ERROR)); })
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [appointment.id, date]);
@@ -49,10 +63,10 @@ function RescheduleItem({ appointment, initialDate, timeZone, onComplete }: { ap
     setSaving(true); setError("");
     try {
       const response = await fetch(`/api/appointments/${appointment.id}/reschedule`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ date, time }) });
-      const result = await response.json() as ApiResult;
-      if (!response.ok || !result.start_at) throw new Error(result.error ?? "Não foi possível salvar o novo horário.");
+      const result = await readResult(response);
+      if (!response.ok || !result?.start_at) throw new RescheduleError(result?.error ?? SAVE_ERROR);
       setNewStart(result.start_at); onComplete(appointment.id);
-    } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível salvar o novo horário."); }
+    } catch (reason) { setError(errorMessage(reason, SAVE_ERROR)); }
     finally { setSaving(false); }
   }
 
