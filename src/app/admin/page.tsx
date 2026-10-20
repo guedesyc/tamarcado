@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Admin | Tá Marcado", robots: { index: false, follow: false, nocache: true } };
 
 const NOTICES: Record<string, string> = {
-  reenviado: "E-mail de confirmação reenviado.",
+  reenviado: "E-mail de confirmação reenviado para a profissional.",
   "ja-confirmado": "Esse e-mail já está confirmado.",
   "erro-reenvio": "Não foi possível reenviar o e-mail agora. Tente de novo em alguns minutos.",
 };
@@ -54,6 +54,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const rows = (data ?? []) as ProfessionalRow[];
   const now = new Date();
   const liveMode = stripeIsLiveMode();
+  const noticeTarget = typeof params.alvo === "string" ? rows.find(row => row.user_id === params.alvo) : undefined;
   const visible = filterProfessionals(rows, { query, pending, now, liveMode });
   const steps = funnel(rows, liveMode);
   const pendingCounts = Object.fromEntries(PENDING_KEYS.map(key => [key, rows.filter(row => pendingItems(row, now, liveMode).includes(key)).length]));
@@ -66,7 +67,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     <span className="eyebrow">Somente leitura</span>
     <h1 className="serif" style={{ fontSize: 40, margin: "10px 0 4px" }}>Painel da plataforma</h1>
     <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 0 }}>Profissionais cadastradas e onde cada uma parou. Dados das clientes aparecem só como números.</p>
-    {notice && <p className="pill" role="status">{notice}</p>}
+    {notice && <p role="status" style={{ padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 700, background: params.aviso === "erro-reenvio" ? "#fbe9ec" : "#e8f3ec", color: params.aviso === "erro-reenvio" ? "#8a2f45" : "#245c3a", border: `1px solid ${params.aviso === "erro-reenvio" ? "#efc3cd" : "#bfdcc8"}` }}>{notice}{noticeTarget?.email ? ` (${noticeTarget.email})` : ""}</p>}
     {error && <p className="pill" role="alert">Não foi possível carregar os dados. Confira se as migrations do painel foram aplicadas.</p>}
 
     <section aria-label="Funil" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 10, margin: "22px 0" }}>

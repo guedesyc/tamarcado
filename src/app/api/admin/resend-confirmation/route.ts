@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   if (!isSameSiteOrigin(request)) return notFound();
   const access = await getPlatformAdminAccess();
   if (access.status !== "ok") return notFound();
-  const back = (notice: string) => NextResponse.redirect(siteUrl(`/admin?aviso=${notice}`, request.url), 303);
+  const back = (notice: string, userId?: string) => NextResponse.redirect(siteUrl(`/admin?aviso=${notice}${userId ? `&alvo=${userId}` : ""}`, request.url), 303);
   if (!rateLimitRequest(request, "admin-resend-confirmation", 20, 15 * 60 * 1000).allowed) return back("erro-reenvio");
   const form = await request.formData();
   const parsed = schema.safeParse({ userId: form.get("userId") });
@@ -22,12 +22,13 @@ export async function POST(request: Request) {
   const { data, error } = await admin.auth.admin.getUserById(parsed.data.userId);
   const user = data?.user;
   if (error || !user?.email) return back("erro-reenvio");
-  if (user.email_confirmed_at) return back("ja-confirmado");
+  if (user.email_confirmed_at) return back("ja-confirmado", user.id);
   const { error: resendError } = await admin.auth.resend({
     type: "signup",
     email: user.email,
     options: { emailRedirectTo: siteUrl("/auth/callback", request.url).toString() },
   });
   await recordAdminAudit(access.userId, "admin.resend_confirmation", user.id, { ok: !resendError });
-  return back(resendError ? "erro-reenvio" : "reenviado");
+  if (resendError) console.error("[admin-resend] resend failed", { code: "code" in resendError ? resendError.code : undefined, status: resendError.status });
+  return back(resendError ? "erro-reenvio" : "reenviado", user.id);
 }
