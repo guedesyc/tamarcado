@@ -25,7 +25,11 @@ export function AdminMfa({ hasVerifiedFactor }: { hasVerifiedFactor: boolean }) 
     setBusy(true); setError(null);
     try {
       const response = await fetch("/api/admin/mfa/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code, factorId: enrollment?.factorId }) });
-      if (!response.ok) { setError("Código inválido ou expirado. Confira o app autenticador."); return; }
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        setError(typeof body?.error === "string" ? body.error : "Não foi possível verificar o código. Tente de novo.");
+        return;
+      }
       window.location.reload();
     } finally { setBusy(false); }
   }
