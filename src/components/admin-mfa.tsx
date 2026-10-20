@@ -45,7 +45,10 @@ export function AdminMfa({ hasVerifiedFactor }: { hasVerifiedFactor: boolean }) 
         <p style={{ fontSize: 12, overflowWrap: "anywhere" }}>Ou digite a chave: <code>{enrollment.secret}</code></p>
       </>}
       {!enrollment && <p>Digite o código de 6 dígitos do seu app autenticador.</p>}
-      <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} aria-label="Código de 6 dígitos" style={{ width: "100%", padding: "10px 12px", fontSize: 18, letterSpacing: 4, margin: "6px 0 12px" }}/>
+      <div className="form-field">
+        <label htmlFor="admin-mfa-code">Código de 6 dígitos</label>
+        <input id="admin-mfa-code" name="code" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} required autoFocus placeholder="000000" value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ""))} style={{ fontSize: 20, letterSpacing: 6, textAlign: "center" }}/>
+      </div>
       <button className="btn" type="submit" disabled={busy || code.length !== 6}>Verificar</button>
     </form>}
     {error && <p role="alert" style={{ color: "#a33" }}>{error}</p>}

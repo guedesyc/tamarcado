@@ -84,8 +84,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         {PENDING_KEYS.map(key => <Link className="pill" key={key} href={`/admin?pendencia=${key}`} style={{ fontWeight: pending === key ? 700 : 400 }}>{PENDING_LABELS[key]} ({pendingCounts[key]})</Link>)}
       </div>
       <form method="get" action="/admin" style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
-        <input name="q" defaultValue={query} placeholder="Buscar por nome, e-mail, negócio ou link" aria-label="Buscar profissional" style={{ flex: "1 1 260px", padding: "9px 12px" }}/>
-        <select name="pendencia" defaultValue={pending ?? ""} aria-label="Filtrar por pendência" style={{ padding: "9px 12px" }}>
+        <input name="q" defaultValue={query} placeholder="Buscar por nome, e-mail, negócio ou link" aria-label="Buscar profissional" style={{ flex: "1 1 260px", padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 10, background: "#fff" }}/>
+        <select name="pendencia" defaultValue={pending ?? ""} aria-label="Filtrar por pendência" style={{ padding: "9px 12px", border: "1px solid var(--line)", borderRadius: 10, background: "#fff" }}>
           <option value="">Todas as pendências</option>
           {PENDING_KEYS.map(key => <option key={key} value={key}>{PENDING_LABELS[key]}</option>)}
         </select>
