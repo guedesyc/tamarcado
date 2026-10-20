@@ -26,7 +26,7 @@ test("duration must be a positive number of minutes", () => {
 test("preview profile keeps at most 4 named services and uses local photos as full URLs", () => {
   const service = (id, name, photo = null) => ({ id, name, price: "100", duration: "60", photo });
   const profile = buildPreviewProfile({
-    name: "Ana Tranças", specialty: "Trancista · Salvador", slug: "", description: "", avatar: "data:image/jpeg;base64,AAA",
+    name: "Ana Tranças", specialty: "Trancista · Salvador", slug: "", description: "", logo: "data:image/jpeg;base64,AAA", cover: "data:image/jpeg;base64,CCC",
     services: [service("1", "Box braids", "data:image/jpeg;base64,BBB"), service("2", ""), service("3", "Nagô"), service("4", "Fulani"), service("5", "Extra")],
   });
   assert.equal(profile.slug, "ana-trancas");
@@ -34,4 +34,5 @@ test("preview profile keeps at most 4 named services and uses local photos as fu
   assert.deepEqual(profile.services.map(item => item.name), ["Box braids", "Nagô", "Fulani"]);
   assert.equal(profile.services[0].portfolio[0].path, "data:image/jpeg;base64,BBB");
   assert.equal(profile.avatar_path, "data:image/jpeg;base64,AAA");
+  assert.equal(profile.cover_path, "data:image/jpeg;base64,CCC");
 });

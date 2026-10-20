@@ -32,7 +32,7 @@ export function PublicProfileView({ profile, imageBaseUrl, headerActions, previe
         <ServicePhotoCarousel images={service.portfolio ?? []} baseUrl={imageBaseUrl}/>
         <div className="service-text"><b>{service.name}</b>{service.description && <p className="public-service-description">{service.description}</p>}</div>
         <div className="public-service-details">
-          <small><Clock3 size={13}/> {service.duration ? `${Math.floor(service.duration / 60)}h${service.duration % 60 ? ` ${service.duration % 60}min` : ""}` : "Duração combinada com a profissional"}</small>
+          <small style={{ display: "flex", alignItems: "center", gap: 5 }}><Clock3 size={13}/> {service.duration ? `${Math.floor(service.duration / 60)}h${service.duration % 60 ? ` ${service.duration % 60}min` : ""}` : "Duração combinada com a profissional"}</small>
           <div className="service-price">{service.price === null ? "A combinar" : `${service.price_from ? "A partir de " : ""}R$ ${(service.price / 100).toFixed(2).replace(".", ",")}`}<small>valor estimado</small></div>
         </div>
         {preview

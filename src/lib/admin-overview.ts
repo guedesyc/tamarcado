@@ -93,7 +93,7 @@ export function parsePendingFilter(value: unknown): PendingKey | null {
 }
 
 function normalize(value: string) {
-  return value.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 export function filterProfessionals(rows: ProfessionalRow[], options: { query?: string; pending?: PendingKey | null; now: Date; liveMode: boolean }) {
