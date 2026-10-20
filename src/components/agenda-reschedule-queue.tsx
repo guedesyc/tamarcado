@@ -24,9 +24,14 @@ function RescheduleItem({ appointment, initialDate, timeZone, onComplete }: { ap
   const [error, setError] = useState("");
   const [newStart, setNewStart] = useState("");
 
+  // The date only changes here, so the previous slots are cleared in the handler instead of
+  // synchronously inside the effect (which caused an extra render on every date change).
+  function changeDate(value: string) {
+    setDate(value); setLoading(true); setError(""); setSlots([]); setTime("");
+  }
+
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true); setError(""); setSlots([]); setTime("");
     fetch(`/api/appointments/${appointment.id}/reschedule?date=${encodeURIComponent(date)}`, { cache: "no-store", signal: controller.signal })
       .then(async response => {
         const result = await response.json() as ApiResult;
@@ -60,7 +65,7 @@ function RescheduleItem({ appointment, initialDate, timeZone, onComplete }: { ap
   return <article className="agenda-reschedule-item">
     <div className="agenda-reschedule-summary"><b>{client} · {appointment.service_name_snapshot}</b><small>Horário atual: {formatDateTime(appointment.start_at, timeZone)} · {status}</small></div>
     {newStart ? <div className="agenda-reschedule-success" role="status"><Check size={16}/><span>Reagendado para {when}.</span>{phone.length >= 12 && <a className="pill" href={`https://wa.me/${phone}?text=${encodeURIComponent(message)}`} target="_blank" rel="noreferrer"><MessageCircle size={14}/> Avisar no WhatsApp</a>}</div> : <div className="agenda-reschedule-fields">
-      <div className="form-field"><label htmlFor={`reschedule-date-${appointment.id}`}>Nova data</label><input id={`reschedule-date-${appointment.id}`} type="date" min={initialDate} value={date} onChange={event => setDate(event.target.value)}/></div>
+      <div className="form-field"><label htmlFor={`reschedule-date-${appointment.id}`}>Nova data</label><input id={`reschedule-date-${appointment.id}`} type="date" min={initialDate} value={date} onChange={event => changeDate(event.target.value)}/></div>
       <div className="form-field"><label htmlFor={`reschedule-time-${appointment.id}`}>Horário disponível</label><select id={`reschedule-time-${appointment.id}`} value={time} onChange={event => setTime(event.target.value)} disabled={loading || slots.length === 0}><option value="">{loading ? "Buscando horários…" : slots.length ? "Selecione" : "Sem horários disponíveis"}</option>{slots.map(slot => <option value={slot} key={slot}>{slot}</option>)}</select></div>
       <button type="button" className="btn agenda-block-reschedule" disabled={saving || loading || !time} onClick={() => void save()}>{saving ? "Salvando…" : <><Check size={15}/> Salvar novo horário</>}</button>
       {error && <p className="form-error" role="alert">{error}</p>}
