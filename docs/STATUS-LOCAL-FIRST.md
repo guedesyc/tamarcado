@@ -1,5 +1,13 @@
 # Tá Marcado — andamento e próximos passos
 
+## Painel de admin da plataforma — 19/10/2026
+
+- [x] `/admin` somente leitura: funil, lista de profissionais com busca e filtro por pendência, último acesso, assinatura e ações de reenviar confirmação e abrir a página pública. Detalhes e passo a passo em `docs/ADMIN-PLATAFORMA.md`.
+- [x] Acesso pelo Supabase Auth existente: allowlist `platform_admins` (RLS sem policies), 2FA TOTP obrigatório (`aal2`), 404 para quem não é admin, `noindex` e fora do sitemap. Visualizações e ações gravadas em `audit_logs`.
+- [x] `last_seen_at` em `platform_user_activity`, atualizado pelo proxy de `/app` no máximo uma vez por hora.
+- [x] Typecheck, testes e build locais passaram. O fluxo logado (2FA e dados reais) não foi testado contra o Supabase.
+- [ ] Aplicar as migrations `202610190001` e `202610190002` no Supabase, inserir a conta do fundador em `platform_admins` e configurar o 2FA em `/admin`.
+
 ## Navegação profissional e treinamento — 15/10/2026
 
 - [x] A navegação lateral de Início, Agenda, Serviços, Lista de espera e demais seções usa a mesma lista de módulos; a navegação móvel também usa essa lista. Corrige os módulos que não apareciam no Início.
