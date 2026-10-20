@@ -17,7 +17,7 @@ export function ServicePhotoCarousel({ images, baseUrl }: { images: Photo[]; bas
   const currentIndex = index % images.length;
   const photo = images[currentIndex];
   return <span className="service-thumb service-photo-carousel">
-    <img src={`${baseUrl}/${photo.path}`} alt={photo.alt || "Exemplo do serviço"} loading="lazy"/>
+    <img src={baseUrl ? `${baseUrl}/${photo.path}` : photo.path} alt={photo.alt || "Exemplo do serviço"} loading="lazy"/>
     {images.length > 1 && <>
       <button type="button" className="service-photo-nav previous" aria-label="Foto anterior" onClick={() => setIndex((currentIndex - 1 + images.length) % images.length)}><ChevronLeft size={15}/></button>
       <button type="button" className="service-photo-nav next" aria-label="Próxima foto" onClick={() => setIndex((currentIndex + 1) % images.length)}><ChevronRight size={15}/></button>

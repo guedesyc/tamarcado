@@ -65,7 +65,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
 
   return <main className="wrap" style={{ maxWidth: 1400, paddingTop: 28, paddingBottom: 80 }}>
     <span className="eyebrow">Somente leitura</span>
-    <h1 className="serif" style={{ fontSize: 40, margin: "10px 0 4px" }}>Painel da plataforma</h1>
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+      <h1 className="serif" style={{ fontSize: 40, margin: "10px 0 4px" }}>Painel da plataforma</h1>
+      <Link className="btn small secondary" href="/admin/previa">Gerador de prévia</Link>
+    </div>
     <p style={{ fontSize: 13, color: "var(--muted)", marginTop: 0 }}>Profissionais cadastradas e onde cada uma parou. Dados das clientes aparecem só como números.</p>
     {notice && <p role="status" style={{ padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 700, background: params.aviso === "erro-reenvio" ? "#fbe9ec" : "#e8f3ec", color: params.aviso === "erro-reenvio" ? "#8a2f45" : "#245c3a", border: `1px solid ${params.aviso === "erro-reenvio" ? "#efc3cd" : "#bfdcc8"}` }}>{notice}{noticeTarget?.email ? ` (${noticeTarget.email})` : ""}</p>}
     {error && <p className="pill" role="alert">Não foi possível carregar os dados. Confira se as migrations do painel foram aplicadas.</p>}
